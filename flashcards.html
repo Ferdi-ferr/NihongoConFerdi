@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flashcards Nihongo — L1, L2, L3</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;background:#f5f5f0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem}
+#app{width:100%;max-width:560px}
+h1{font-size:16px;font-weight:600;color:#444;margin-bottom:1.25rem;text-align:center;letter-spacing:.03em}
+.top-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:.75rem;flex-wrap:wrap;gap:8px}
+.lesson-filters{display:flex;gap:6px}
+.lbtn{font-size:12px;padding:4px 12px;border-radius:99px;border:1px solid #ccc;background:#fff;color:#888;cursor:pointer;transition:all .15s}
+.lbtn.active{background:#3b72d4;color:#fff;border-color:transparent}
+.dir-toggle{font-size:12px;padding:4px 14px;border-radius:99px;border:1px solid #ccc;background:#fff;color:#555;cursor:pointer}
+.shuffle-btn{font-size:12px;padding:4px 12px;border-radius:99px;border:1px solid #ccc;background:#fff;color:#555;cursor:pointer}
+.progress-text{font-size:12px;color:#999;text-align:center;margin-bottom:6px}
+.prog-bar-wrap{height:3px;background:#ddd;border-radius:2px;margin-bottom:.9rem;overflow:hidden}
+.prog-bar-fill{height:100%;background:#3b72d4;border-radius:2px;transition:width .3s}
+.card-wrap{perspective:1000px;height:220px;cursor:pointer;margin-bottom:1rem}
+.card-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.4,0,.2,1)}
+.card-inner.flipped{transform:rotateY(180deg)}
+.card-face{position:absolute;width:100%;height:100%;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:16px;border:1px solid #e0e0d8;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;gap:10px}
+.card-back{transform:rotateY(180deg)}
+.card-label{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#aaa;position:absolute;top:14px;left:18px}
+.card-lesson{font-size:11px;color:#bbb;position:absolute;top:14px;right:18px;font-weight:600}
+.front-main{font-size:22px;font-weight:500;color:#222;text-align:center;white-space:pre-line;line-height:1.4}
+.back-jp{font-size:32px;font-weight:500;color:#222;text-align:center;line-height:1.3}
+.back-rom{font-size:14px;color:#888;text-align:center}
+.card-hint{font-size:11px;color:#ccc;position:absolute;bottom:13px}
+.controls{display:flex;align-items:center;gap:12px;justify-content:center;margin-bottom:.9rem}
+.btn{font-size:14px;padding:9px 22px;border-radius:10px;border:1px solid #ddd;background:#f7f7f4;color:#333;cursor:pointer;transition:all .15s;font-weight:500}
+.btn:hover{background:#ececea}
+.btn-know{background:#e8f5ec;color:#2d7a3e;border-color:transparent}
+.btn-know:hover{background:#d4edda}
+.btn-skip{background:#fdecea;color:#b03030;border-color:transparent}
+.btn-skip:hover{background:#f9d6d4}
+.counter{font-size:13px;color:#999;min-width:70px;text-align:center}
+.stats-bar{display:flex;gap:8px;justify-content:center;font-size:12px;color:#aaa;flex-wrap:wrap}
+.stat{padding:3px 10px;border-radius:99px;background:#f0f0eb}
+.stat.known{color:#2d7a3e}
+.stat.skipped{color:#b03030}
+.done-msg{text-align:center;padding:2.5rem 1rem;background:#fff;border-radius:16px;border:1px solid #e0e0d8}
+.done-msg h2{font-size:20px;font-weight:600;margin-bottom:8px;color:#222}
+.done-msg p{font-size:14px;color:#777;margin-bottom:1.5rem}
+.done-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+/* ── TORII HOME BUTTON ── */
+.torii-home{
+  position:fixed;top:14px;left:14px;z-index:999;
+  text-decoration:none;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  opacity:.85;transition:opacity .2s,transform .2s;
+}
+.torii-home:hover{opacity:1;transform:scale(1.08);}
+.torii-label{
+  font-size:10px;letter-spacing:.12em;text-transform:uppercase;
+  color:#c0392b;font-family:sans-serif;font-weight:600;
+}
+
+/* ── VOCAB PANEL ── */
+.vocab-btn{font-size:12px;padding:4px 12px;border-radius:99px;border:1px solid transparent;background:#c0392b;color:#fff;cursor:pointer;transition:all .15s;font-weight:500}
+.vocab-btn:hover{background:#a93226}
+
+.vocab-overlay{
+  display:none;position:fixed;inset:0;z-index:1000;
+  background:rgba(0,0,0,.45);
+  align-items:flex-start;justify-content:center;
+  padding:1rem;overflow-y:auto;
+}
+.vocab-overlay.open{display:flex;}
+.vocab-panel{
+  background:#fff;border-radius:20px;
+  width:100%;max-width:860px;
+  padding:1.5rem;
+  margin:auto;
+}
+.vocab-panel-header{
+  display:flex;justify-content:space-between;align-items:center;
+  margin-bottom:1.25rem;
+}
+.vocab-panel-title{font-size:1rem;font-weight:600;color:#333;letter-spacing:.04em}
+.vocab-close-btn{font-size:13px;padding:6px 16px;border-radius:99px;border:1px solid #ddd;background:#f7f4f0;color:#555;cursor:pointer;font-weight:500}
+.vocab-close-btn:hover{background:#ece8e0}
+
+.vocab-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem;}
+@media(max-width:600px){.vocab-grid{grid-template-columns:1fr;}}
+
+.vcol-title{
+  font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:#3b72d4;margin-bottom:.6rem;padding-bottom:.4rem;
+  border-bottom:2px solid #e8e0d8;
+  display:flex;justify-content:space-between;align-items:center;
+}
+.vcol-arrow{display:none;font-size:.9rem;color:#3b72d4;transition:transform .25s}
+.vcol-hint{display:none;font-size:.65rem;color:#3b72d4;font-weight:400;letter-spacing:.03em}
+.vcol-rows{overflow:hidden;transition:max-height .3s ease}
+
+@media(max-width:600px){
+  .vcol-title{cursor:pointer;user-select:none;}
+  .vcol-arrow{display:inline;}
+  .vcol-hint{display:inline;}
+  .vcol-title.collapsed .vcol-arrow{transform:rotate(-90deg)}
+  .vcol-rows.collapsed{max-height:0 !important;}
+}
+
+.vocab-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  gap:.5rem;padding:5px 0;
+  border-bottom:1px solid #f0ede8;
+  font-size:.82rem;
+}
+.vocab-row:last-child{border-bottom:none}
+.vocab-es{color:#555;flex:1}
+.vocab-jp{color:#1a1209;font-size:.95rem;text-align:right;white-space:nowrap}
+
+</style>
+</head>
+<body>
+<a class="torii-home" href="./" title="Inicio">
+  <svg width="44" height="38" viewBox="0 0 44 38" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <filter id="grain" x="-5%" y="-5%" width="110%" height="110%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+        <feColorMatrix type="saturate" values="0"/>
+        <feBlend in="SourceGraphic" mode="multiply" result="blend"/>
+        <feComposite in="blend" in2="SourceGraphic" operator="in"/>
+      </filter>
+    </defs>
+    <ellipse cx="22" cy="37" rx="14" ry="2.5" fill="rgba(0,0,0,.13)"/>
+    <rect x="6" y="14" width="5" height="22" rx="1.5" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="33" y="14" width="5" height="22" rx="1.5" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="4" y="19" width="36" height="3.5" rx="1.5" fill="#a93226" filter="url(#grain)"/>
+    <path d="M1,8 Q3,4 22,5.5 Q41,4 43,8 L40,11 Q22,9.5 4,11 Z" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="5" y="11" width="34" height="3" rx="1" fill="#b03020" filter="url(#grain)"/>
+    <path d="M4,8.5 Q22,7 40,8.5" stroke="rgba(255,255,255,.18)" stroke-width="1" fill="none"/>
+    <rect x="16" y="11.5" width="12" height="2" rx=".5" fill="#7a1f18" opacity=".7"/>
+  </svg>
+  <span class="torii-label">inicio</span>
+</a>
+<div id="app">
+  <h1>Flashcards Nihongo</h1>
+  <div class="top-bar">
+    <div class="lesson-filters">
+      <button class="lbtn active" onclick="toggleLesson(1,this)">L1</button>
+      <button class="lbtn active" onclick="toggleLesson(2,this)">L2</button>
+      <button class="lbtn active" onclick="toggleLesson(3,this)">L3</button>
+      <button class="vocab-btn" onclick="openVocab()">📋 Ver vocab</button>
+    </div>
+    <div style="display:flex;gap:6px">
+      <button class="shuffle-btn" onclick="shuffleDeck()">⇄ Barajar</button>
+      <button class="dir-toggle" id="dirBtn" onclick="toggleDir()">ES → JP</button>
+    </div>
+  </div>
+  <div class="prog-bar-wrap"><div class="prog-bar-fill" id="progBar" style="width:0%"></div></div>
+  <div class="progress-text" id="progressText"></div>
+  <div class="card-wrap" id="cardWrap" onclick="flipCard()">
+    <div class="card-inner" id="cardInner">
+      <div class="card-face card-front">
+        <span class="card-label" id="frontLabel">Español</span>
+        <span class="card-lesson" id="cardLesson"></span>
+        <div class="front-main" id="frontContent"></div>
+        <span class="card-hint">toca para voltear</span>
+      </div>
+      <div class="card-face card-back">
+        <span class="card-label" id="backLabel">Japonés</span>
+        <div class="back-jp" id="backJP"></div>
+        <div class="back-rom" id="backRom"></div>
+      </div>
+    </div>
+  </div>
+  <div class="controls" id="ctrlBar">
+    <button class="btn btn-skip" onclick="markCard(false)">✗ Repasar</button>
+    <span class="counter" id="counter"></span>
+    <button class="btn btn-know" onclick="markCard(true)">✓ Lo sé</button>
+  </div>
+  <div class="stats-bar">
+    <span class="stat" id="statTotal"></span>
+    <span class="stat known" id="statKnown"></span>
+    <span class="stat skipped" id="statSkip"></span>
+  </div>
+  <div id="doneMsg" class="done-msg" style="display:none">
+    <h2>¡Ronda completa! 🎉</h2>
+    <p id="doneSummary"></p>
+    <div class="done-btns">
+      <button class="btn" onclick="restart(false)">Repetir todo</button>
+      <button class="btn btn-skip" onclick="restart(true)">Solo repasar</button>
+    </div>
+  </div>
+</div>
+<script>
+const ALL=[
+  {es:"yo",jp:"わたし",rom:"watashi",l:1},
+  {es:"usted",jp:"あなた",rom:"anata",l:1},
+  {es:"aquella persona",jp:"あのひと (あのかた)",rom:"ano hito (ano kata)",l:1},
+  {es:"Sr./Sra./Srta.",jp:"〜さん",rom:"~san",l:1},
+  {es:"niño (sufijo)",jp:"〜くん",rom:"~kun",l:1},
+  {es:"nacionalidad (sufijo)",jp:"〜じん (〜人)",rom:"~jin",l:1},
+  {es:"maestro (3ª persona)",jp:"せんせい",rom:"sensei",l:1},
+  {es:"maestro (1ª persona)",jp:"きょうし",rom:"kyoushi",l:1},
+  {es:"estudiante",jp:"がくせい",rom:"gakusei",l:1},
+  {es:"empleado de empresa",jp:"かいしゃいん",rom:"kaishain",l:1},
+  {es:"empleado de ~ empresa",jp:"〜しゃいん",rom:"~shain",l:1},
+  {es:"empleado de banco",jp:"ぎんこういん",rom:"ginkouin",l:1},
+  {es:"médico",jp:"いしゃ",rom:"isha",l:1},
+  {es:"investigador",jp:"けんきゅうしゃ",rom:"kenkyuusha",l:1},
+  {es:"universidad",jp:"だいがく",rom:"daigaku",l:1},
+  {es:"hospital",jp:"びょういん",rom:"byouin",l:1},
+  {es:"quién",jp:"だれ (どなた)",rom:"dare (donata)",l:1},
+  {es:"~ años de edad",jp:"〜さい",rom:"~sai",l:1},
+  {es:"¿Cuántos años?",jp:"なんさい",rom:"nansai",l:1},
+  {es:"sí",jp:"はい",rom:"hai",l:1},
+  {es:"no",jp:"いいえ",rom:"iie",l:1},
+  {es:"Mucho gusto",jp:"はじめまして",rom:"hajimemashite",l:1},
+  {es:"Soy/Vengo de ~",jp:"〜からきました",rom:"~kara kimashita",l:1},
+  {es:"Encantado [por favor tráteme bien]",jp:"どうぞよろしく [おねがいします]",rom:"douzo yoroshiku [onegaishimasu]",l:1},
+  {es:"Disculpe, pero...",jp:"しつれいですが",rom:"shitsurei desu ga",l:1},
+  {es:"¿Cómo te llamas?",jp:"おなまえは？",rom:"onamae wa?",l:1},
+  {es:"Le presento a ~",jp:"こちらは〜さんです",rom:"kochira wa ~san desu",l:1},
+  {es:"Estados Unidos",jp:"アメリカ",rom:"Amerika",l:1},
+  {es:"Reino Unido",jp:"イギリス",rom:"Igirisu",l:1},
+  {es:"India",jp:"インド",rom:"Indo",l:1},
+  {es:"Indonesia",jp:"インドネシア",rom:"Indoneshia",l:1},
+  {es:"Corea del Sur",jp:"かんこく",rom:"Kankoku",l:1},
+  {es:"Tailandia",jp:"タイ",rom:"Tai",l:1},
+  {es:"China",jp:"ちゅうごく",rom:"Chuugoku",l:1},
+  {es:"Alemania",jp:"ドイツ",rom:"Doitsu",l:1},
+  {es:"Japón",jp:"にほん (日本)",rom:"Nihon",l:1},
+  {es:"Brasil",jp:"ブラジル",rom:"Burajiru",l:1},
+  {es:"libro",jp:"ほん",rom:"hon",l:2},
+  {es:"diccionario",jp:"じしょ",rom:"jisho",l:2},
+  {es:"revista",jp:"ざっし",rom:"zasshi",l:2},
+  {es:"periódico",jp:"しんぶん",rom:"shinbun",l:2},
+  {es:"cuaderno",jp:"ノート",rom:"nooto",l:2},
+  {es:"agenda",jp:"てちょう",rom:"techou",l:2},
+  {es:"tarjeta de presentación",jp:"めいし",rom:"meishi",l:2},
+  {es:"tarjeta",jp:"カード",rom:"kaado",l:2},
+  {es:"lápiz",jp:"えんぴつ",rom:"enpitsu",l:2},
+  {es:"bolígrafo",jp:"ボールペン",rom:"boorupen",l:2},
+  {es:"portaminas",jp:"シャープペンシル",rom:"shaapupenshiru",l:2},
+  {es:"plumón",jp:"ペン",rom:"pen",l:2},
+  {es:"llave",jp:"かぎ",rom:"kagi",l:2},
+  {es:"reloj",jp:"とけい",rom:"tokei",l:2},
+  {es:"reloj de pulsera",jp:"うでどけい",rom:"udedokei",l:2},
+  {es:"paraguas",jp:"かさ",rom:"kasa",l:2},
+  {es:"bolso / maleta",jp:"かばん",rom:"kaban",l:2},
+  {es:"CD",jp:"シーディー",rom:"shii-dii",l:2},
+  {es:"earphones / audífonos",jp:"イヤホン",rom:"iyahon",l:2},
+  {es:"headphones",jp:"ヘッドホン",rom:"heddohon",l:2},
+  {es:"televisión",jp:"テレビ",rom:"terebi",l:2},
+  {es:"radio",jp:"ラジオ",rom:"rajio",l:2},
+  {es:"cámara",jp:"カメラ",rom:"kamera",l:2},
+  {es:"computadora",jp:"コンピューター",rom:"konpyuutaa",l:2},
+  {es:"laptop",jp:"パソコン",rom:"pasokon",l:2},
+  {es:"tablet",jp:"タブレット",rom:"taburetto",l:2},
+  {es:"celular",jp:"けいたい／スマホ",rom:"keitai / sumaho",l:2},
+  {es:"automóvil",jp:"くるま",rom:"kuruma",l:2},
+  {es:"escritorio",jp:"つくえ",rom:"tsukue",l:2},
+  {es:"silla",jp:"いす",rom:"isu",l:2},
+  {es:"chocolate",jp:"チョコレート",rom:"chokoreeto",l:2},
+  {es:"café",jp:"コーヒー",rom:"koohii",l:2},
+  {es:"souvenir",jp:"[お]みやげ",rom:"[o]miyage",l:2},
+  {es:"qué / ¿qué?",jp:"なん",rom:"nan",l:2},
+  {es:"sí, eso",jp:"そう",rom:"sou",l:2},
+  {es:"este... (muletilla)",jp:"あのう",rom:"anou",l:2},
+  {es:"¿eh?! / ¿cómo?",jp:"えっ",rom:"e'",l:2},
+  {es:"No, no es así",jp:"ちがいます",rom:"chigaimasu",l:2},
+  {es:"aquí",jp:"ここ",rom:"koko",l:3},
+  {es:"ahí",jp:"そこ",rom:"soko",l:3},
+  {es:"allá",jp:"あそこ",rom:"asoko",l:3},
+  {es:"¿dónde?",jp:"どこ",rom:"doko",l:3},
+  {es:"por aquí (formal)",jp:"こちら",rom:"kochira",l:3},
+  {es:"por ahí (formal)",jp:"そちら",rom:"sochira",l:3},
+  {es:"por allá (formal)",jp:"あちら",rom:"achira",l:3},
+  {es:"¿por dónde? (formal)",jp:"どちら",rom:"dochira",l:3},
+  {es:"aula",jp:"きょうしつ",rom:"kyoushitsu",l:3},
+  {es:"comedor",jp:"しょくどう",rom:"shokudou",l:3},
+  {es:"oficina",jp:"じむしょ",rom:"jimusho",l:3},
+  {es:"sala de reuniones",jp:"かいぎしつ",rom:"kaigishitsu",l:3},
+  {es:"recepción / front desk",jp:"うけつけ",rom:"uketsuke",l:3},
+  {es:"vestíbulo / lobby",jp:"ロビー",rom:"robii",l:3},
+  {es:"habitación",jp:"へや",rom:"heya",l:3},
+  {es:"baño / servicio",jp:"トイレ (おてあらい)",rom:"toire (otearai)",l:3},
+  {es:"escalera",jp:"かいだん",rom:"kaidan",l:3},
+  {es:"elevador",jp:"エレベーター",rom:"erebeetaa",l:3},
+  {es:"escalera eléctrica",jp:"エスカレーター",rom:"esukareetaa",l:3},
+  {es:"máquina expendedora",jp:"じどうはんばいき／じはんき",rom:"jidouhanbaiki / jihan-ki",l:3},
+  {es:"teléfono / llamada",jp:"でんわ",rom:"denwa",l:3},
+  {es:"[su] país",jp:"[お]くに",rom:"[o]kuni",l:3},
+  {es:"empresa / firma",jp:"かいしゃ",rom:"kaisha",l:3},
+  {es:"casa, hogar (propio)",jp:"うち",rom:"uchi",l:3},
+  {es:"casa (habitación)",jp:"いえ",rom:"ie",l:3},
+  {es:"zapatos",jp:"くつ",rom:"kutsu",l:3},
+  {es:"corbata",jp:"ネクタイ",rom:"nekutai",l:3},
+  {es:"vino",jp:"ワイン",rom:"wain",l:3},
+  {es:"pasillo / sección (super)",jp:"うりば",rom:"uriba",l:3},
+  {es:"sótano",jp:"ちか",rom:"chika",l:3},
+  {es:"~ piso / planta",jp:"〜かい (〜がい)",rom:"~kai (~gai)",l:3},
+  {es:"¿qué piso?",jp:"なんがい",rom:"nangai",l:3},
+  {es:"yen",jp:"〜えん",rom:"~en",l:3},
+  {es:"¿cuánto cuesta?",jp:"いくら",rom:"ikura",l:3},
+  {es:"cien",jp:"ひゃく",rom:"hyaku",l:3},
+  {es:"mil",jp:"せん",rom:"sen",l:3},
+  {es:"diez mil",jp:"まん",rom:"man",l:3},
+  {es:"Bienvenido, pásele",jp:"いらっしゃいませ",rom:"irasshaimase",l:3},
+  {es:"¿Puede mostrarme ~?",jp:"[〜を]みせてください",rom:"[~wo] misete kudasai",l:3},
+  {es:"Deme ~ por favor",jp:"[〜を]ください",rom:"[~wo] kudasai",l:3},
+  {es:"bueno, entonces",jp:"じゃ",rom:"ja",l:3},
+];
+
+let deck=[],idx=0,flipped=false,known=0,skipped=0;
+let activeLessons=new Set([1,2,3]);
+let dirEsJp=true;
+
+function buildDeck(){
+  deck=ALL.filter(c=>activeLessons.has(c.l));
+  idx=0;known=0;skipped=0;flipped=false;
+  showCard();updateStats();
+}
+
+function shuffleDeck(){
+  for(let i=deck.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [deck[i],deck[j]]=[deck[j],deck[i]];
+  }
+  idx=0;flipped=false;showCard();
+}
+
+function toggleLesson(n,btn){
+  if(activeLessons.has(n)){
+    if(activeLessons.size===1)return;
+    activeLessons.delete(n);btn.classList.remove('active');
+  }else{
+    activeLessons.add(n);btn.classList.add('active');
+  }
+  buildDeck();
+}
+
+function toggleDir(){
+  dirEsJp=!dirEsJp;
+  document.getElementById('dirBtn').textContent=dirEsJp?'ES → JP':'JP → ES';
+  flipped=false;
+  document.getElementById('cardInner').classList.remove('flipped');
+  showCard();
+}
+
+function showCard(){
+  const done=document.getElementById('doneMsg');
+  const wrap=document.getElementById('cardWrap');
+  const ctrl=document.getElementById('ctrlBar');
+  if(idx>=deck.length){
+    done.style.display='block';wrap.style.display='none';ctrl.style.display='none';
+    document.getElementById('doneSummary').textContent=
+      'Sabías '+known+' de '+deck.length+' tarjetas. '+(skipped>0?'Quedan '+skipped+' para repasar.':'¡Perfecto, todas correctas!');
+    return;
+  }
+  done.style.display='none';wrap.style.display='block';ctrl.style.display='flex';
+  const c=deck[idx];
+  if(dirEsJp){
+    document.getElementById('frontLabel').textContent='Español';
+    document.getElementById('frontContent').textContent=c.es;
+    document.getElementById('backLabel').textContent='Japonés';
+    document.getElementById('backJP').textContent=c.jp;
+    document.getElementById('backRom').textContent=c.rom;
+  }else{
+    document.getElementById('frontLabel').textContent='Japonés';
+    document.getElementById('frontContent').textContent=c.jp+'\n'+c.rom;
+    document.getElementById('backLabel').textContent='Español';
+    document.getElementById('backJP').textContent=c.es;
+    document.getElementById('backRom').textContent='';
+  }
+  document.getElementById('cardLesson').textContent='L'+c.l;
+  document.getElementById('counter').textContent=(idx+1)+' / '+deck.length;
+  const pct=Math.round((idx/deck.length)*100);
+  document.getElementById('progBar').style.width=pct+'%';
+  document.getElementById('progressText').textContent=pct+'% completado';
+  document.getElementById('cardInner').classList.remove('flipped');
+  flipped=false;
+}
+
+function flipCard(){
+  flipped=!flipped;
+  document.getElementById('cardInner').classList.toggle('flipped',flipped);
+}
+
+function markCard(isKnown){
+  if(isKnown)known++;else skipped++;
+  idx++;
+  updateStats();
+  showCard();
+}
+
+function updateStats(){
+  document.getElementById('statTotal').textContent='Total: '+deck.length;
+  document.getElementById('statKnown').textContent='✓ '+known;
+  document.getElementById('statSkip').textContent='✗ '+skipped;
+}
+
+function restart(onlySkipped){
+  buildDeck();
+  shuffleDeck();
+}
+
+buildDeck();
+shuffleDeck();
+
+// ── VOCAB PANEL ──────────────────────────────────────────────────
+const VOCAB_ROWS = {
+  1: `<div class="vocab-row"><span class="vocab-es">yo</span><span class="vocab-jp">わたし</span></div><div class="vocab-row"><span class="vocab-es">usted</span><span class="vocab-jp">あなた</span></div><div class="vocab-row"><span class="vocab-es">aquella persona</span><span class="vocab-jp">あのひと (あのかた)</span></div><div class="vocab-row"><span class="vocab-es">Sr./Sra./Srta.</span><span class="vocab-jp">〜さん</span></div><div class="vocab-row"><span class="vocab-es">niño (sufijo)</span><span class="vocab-jp">〜くん</span></div><div class="vocab-row"><span class="vocab-es">nacionalidad (sufijo)</span><span class="vocab-jp">〜じん (〜人)</span></div><div class="vocab-row"><span class="vocab-es">maestro (3ª persona)</span><span class="vocab-jp">せんせい</span></div><div class="vocab-row"><span class="vocab-es">maestro (1ª persona)</span><span class="vocab-jp">きょうし</span></div><div class="vocab-row"><span class="vocab-es">estudiante</span><span class="vocab-jp">がくせい</span></div><div class="vocab-row"><span class="vocab-es">empleado de empresa</span><span class="vocab-jp">かいしゃいん</span></div><div class="vocab-row"><span class="vocab-es">empleado de ~ empresa</span><span class="vocab-jp">〜しゃいん</span></div><div class="vocab-row"><span class="vocab-es">empleado de banco</span><span class="vocab-jp">ぎんこういん</span></div><div class="vocab-row"><span class="vocab-es">médico</span><span class="vocab-jp">いしゃ</span></div><div class="vocab-row"><span class="vocab-es">investigador</span><span class="vocab-jp">けんきゅうしゃ</span></div><div class="vocab-row"><span class="vocab-es">universidad</span><span class="vocab-jp">だいがく</span></div><div class="vocab-row"><span class="vocab-es">hospital</span><span class="vocab-jp">びょういん</span></div><div class="vocab-row"><span class="vocab-es">¿quién?</span><span class="vocab-jp">だれ (どなた)</span></div><div class="vocab-row"><span class="vocab-es">~ años de edad</span><span class="vocab-jp">〜さい</span></div><div class="vocab-row"><span class="vocab-es">¿cuántos años?</span><span class="vocab-jp">なんさい</span></div><div class="vocab-row"><span class="vocab-es">sí</span><span class="vocab-jp">はい</span></div><div class="vocab-row"><span class="vocab-es">no</span><span class="vocab-jp">いいえ</span></div><div class="vocab-row"><span class="vocab-es">Mucho gusto</span><span class="vocab-jp">はじめまして</span></div><div class="vocab-row"><span class="vocab-es">Soy/Vengo de ~</span><span class="vocab-jp">〜からきました</span></div><div class="vocab-row"><span class="vocab-es">Encantado [tráteme bien]</span><span class="vocab-jp">どうぞよろしく</span></div><div class="vocab-row"><span class="vocab-es">Disculpe, pero...</span><span class="vocab-jp">しつれいですが</span></div><div class="vocab-row"><span class="vocab-es">¿Cómo te llamas?</span><span class="vocab-jp">おなまえは？</span></div><div class="vocab-row"><span class="vocab-es">Le presento a ~</span><span class="vocab-jp">こちらは〜さんです</span></div><div class="vocab-row"><span class="vocab-es">Estados Unidos</span><span class="vocab-jp">アメリカ</span></div><div class="vocab-row"><span class="vocab-es">Reino Unido</span><span class="vocab-jp">イギリス</span></div><div class="vocab-row"><span class="vocab-es">India</span><span class="vocab-jp">インド</span></div><div class="vocab-row"><span class="vocab-es">Indonesia</span><span class="vocab-jp">インドネシア</span></div><div class="vocab-row"><span class="vocab-es">Corea del Sur</span><span class="vocab-jp">かんこく</span></div><div class="vocab-row"><span class="vocab-es">Tailandia</span><span class="vocab-jp">タイ</span></div><div class="vocab-row"><span class="vocab-es">China</span><span class="vocab-jp">ちゅうごく</span></div><div class="vocab-row"><span class="vocab-es">Alemania</span><span class="vocab-jp">ドイツ</span></div><div class="vocab-row"><span class="vocab-es">Japón</span><span class="vocab-jp">にほん (日本)</span></div><div class="vocab-row"><span class="vocab-es">Brasil</span><span class="vocab-jp">ブラジル</span></div>`,
+  2: `<div class="vocab-row"><span class="vocab-es">libro</span><span class="vocab-jp">ほん</span></div><div class="vocab-row"><span class="vocab-es">diccionario</span><span class="vocab-jp">じしょ</span></div><div class="vocab-row"><span class="vocab-es">revista</span><span class="vocab-jp">ざっし</span></div><div class="vocab-row"><span class="vocab-es">periódico</span><span class="vocab-jp">しんぶん</span></div><div class="vocab-row"><span class="vocab-es">cuaderno</span><span class="vocab-jp">ノート</span></div><div class="vocab-row"><span class="vocab-es">agenda</span><span class="vocab-jp">てちょう</span></div><div class="vocab-row"><span class="vocab-es">tarjeta de presentación</span><span class="vocab-jp">めいし</span></div><div class="vocab-row"><span class="vocab-es">tarjeta</span><span class="vocab-jp">カード</span></div><div class="vocab-row"><span class="vocab-es">lápiz</span><span class="vocab-jp">えんぴつ</span></div><div class="vocab-row"><span class="vocab-es">bolígrafo</span><span class="vocab-jp">ボールペン</span></div><div class="vocab-row"><span class="vocab-es">portaminas</span><span class="vocab-jp">シャープペンシル</span></div><div class="vocab-row"><span class="vocab-es">plumón</span><span class="vocab-jp">ペン</span></div><div class="vocab-row"><span class="vocab-es">llave</span><span class="vocab-jp">かぎ</span></div><div class="vocab-row"><span class="vocab-es">reloj</span><span class="vocab-jp">とけい</span></div><div class="vocab-row"><span class="vocab-es">reloj de pulsera</span><span class="vocab-jp">うでどけい</span></div><div class="vocab-row"><span class="vocab-es">paraguas</span><span class="vocab-jp">かさ</span></div><div class="vocab-row"><span class="vocab-es">bolso / maleta</span><span class="vocab-jp">かばん</span></div><div class="vocab-row"><span class="vocab-es">CD</span><span class="vocab-jp">シーディー</span></div><div class="vocab-row"><span class="vocab-es">earphones / audífonos</span><span class="vocab-jp">イヤホン</span></div><div class="vocab-row"><span class="vocab-es">headphones</span><span class="vocab-jp">ヘッドホン</span></div><div class="vocab-row"><span class="vocab-es">televisión</span><span class="vocab-jp">テレビ</span></div><div class="vocab-row"><span class="vocab-es">radio</span><span class="vocab-jp">ラジオ</span></div><div class="vocab-row"><span class="vocab-es">cámara</span><span class="vocab-jp">カメラ</span></div><div class="vocab-row"><span class="vocab-es">computadora</span><span class="vocab-jp">コンピューター</span></div><div class="vocab-row"><span class="vocab-es">laptop</span><span class="vocab-jp">パソコン</span></div><div class="vocab-row"><span class="vocab-es">tablet</span><span class="vocab-jp">タブレット</span></div><div class="vocab-row"><span class="vocab-es">celular</span><span class="vocab-jp">けいたい／スマホ</span></div><div class="vocab-row"><span class="vocab-es">automóvil</span><span class="vocab-jp">くるま</span></div><div class="vocab-row"><span class="vocab-es">escritorio</span><span class="vocab-jp">つくえ</span></div><div class="vocab-row"><span class="vocab-es">silla</span><span class="vocab-jp">いす</span></div><div class="vocab-row"><span class="vocab-es">chocolate</span><span class="vocab-jp">チョコレート</span></div><div class="vocab-row"><span class="vocab-es">café</span><span class="vocab-jp">コーヒー</span></div><div class="vocab-row"><span class="vocab-es">souvenir</span><span class="vocab-jp">[お]みやげ</span></div><div class="vocab-row"><span class="vocab-es">¿qué?</span><span class="vocab-jp">なん</span></div><div class="vocab-row"><span class="vocab-es">sí, eso</span><span class="vocab-jp">そう</span></div><div class="vocab-row"><span class="vocab-es">este... (muletilla)</span><span class="vocab-jp">あのう</span></div><div class="vocab-row"><span class="vocab-es">¿eh?! / ¿cómo?</span><span class="vocab-jp">えっ</span></div><div class="vocab-row"><span class="vocab-es">No, no es así</span><span class="vocab-jp">ちがいます</span></div>`,
+  3: `<div class="vocab-row"><span class="vocab-es">aquí</span><span class="vocab-jp">ここ</span></div><div class="vocab-row"><span class="vocab-es">ahí</span><span class="vocab-jp">そこ</span></div><div class="vocab-row"><span class="vocab-es">allá</span><span class="vocab-jp">あそこ</span></div><div class="vocab-row"><span class="vocab-es">¿dónde?</span><span class="vocab-jp">どこ</span></div><div class="vocab-row"><span class="vocab-es">por aquí (formal)</span><span class="vocab-jp">こちら</span></div><div class="vocab-row"><span class="vocab-es">por ahí (formal)</span><span class="vocab-jp">そちら</span></div><div class="vocab-row"><span class="vocab-es">por allá (formal)</span><span class="vocab-jp">あちら</span></div><div class="vocab-row"><span class="vocab-es">¿por dónde? (formal)</span><span class="vocab-jp">どちら</span></div><div class="vocab-row"><span class="vocab-es">aula</span><span class="vocab-jp">きょうしつ</span></div><div class="vocab-row"><span class="vocab-es">comedor</span><span class="vocab-jp">しょくどう</span></div><div class="vocab-row"><span class="vocab-es">oficina</span><span class="vocab-jp">じむしょ</span></div><div class="vocab-row"><span class="vocab-es">sala de reuniones</span><span class="vocab-jp">かいぎしつ</span></div><div class="vocab-row"><span class="vocab-es">recepción / front desk</span><span class="vocab-jp">うけつけ</span></div><div class="vocab-row"><span class="vocab-es">vestíbulo / lobby</span><span class="vocab-jp">ロビー</span></div><div class="vocab-row"><span class="vocab-es">habitación</span><span class="vocab-jp">へや</span></div><div class="vocab-row"><span class="vocab-es">baño / servicio</span><span class="vocab-jp">トイレ (おてあらい)</span></div><div class="vocab-row"><span class="vocab-es">escalera</span><span class="vocab-jp">かいだん</span></div><div class="vocab-row"><span class="vocab-es">elevador</span><span class="vocab-jp">エレベーター</span></div><div class="vocab-row"><span class="vocab-es">escalera eléctrica</span><span class="vocab-jp">エスカレーター</span></div><div class="vocab-row"><span class="vocab-es">máquina expendedora</span><span class="vocab-jp">じどうはんばいき／じはんき</span></div><div class="vocab-row"><span class="vocab-es">teléfono / llamada</span><span class="vocab-jp">でんわ</span></div><div class="vocab-row"><span class="vocab-es">[su] país</span><span class="vocab-jp">[お]くに</span></div><div class="vocab-row"><span class="vocab-es">empresa / firma</span><span class="vocab-jp">かいしゃ</span></div><div class="vocab-row"><span class="vocab-es">casa, hogar (propio)</span><span class="vocab-jp">うち</span></div><div class="vocab-row"><span class="vocab-es">casa (habitación)</span><span class="vocab-jp">いえ</span></div><div class="vocab-row"><span class="vocab-es">zapatos</span><span class="vocab-jp">くつ</span></div><div class="vocab-row"><span class="vocab-es">corbata</span><span class="vocab-jp">ネクタイ</span></div><div class="vocab-row"><span class="vocab-es">vino</span><span class="vocab-jp">ワイン</span></div><div class="vocab-row"><span class="vocab-es">pasillo / sección</span><span class="vocab-jp">うりば</span></div><div class="vocab-row"><span class="vocab-es">sótano</span><span class="vocab-jp">ちか</span></div><div class="vocab-row"><span class="vocab-es">~ piso / planta</span><span class="vocab-jp">〜かい (〜がい)</span></div><div class="vocab-row"><span class="vocab-es">¿qué piso?</span><span class="vocab-jp">なんがい</span></div><div class="vocab-row"><span class="vocab-es">yen</span><span class="vocab-jp">〜えん</span></div><div class="vocab-row"><span class="vocab-es">¿cuánto cuesta?</span><span class="vocab-jp">いくら</span></div><div class="vocab-row"><span class="vocab-es">cien</span><span class="vocab-jp">ひゃく</span></div><div class="vocab-row"><span class="vocab-es">mil</span><span class="vocab-jp">せん</span></div><div class="vocab-row"><span class="vocab-es">diez mil</span><span class="vocab-jp">まん</span></div><div class="vocab-row"><span class="vocab-es">Bienvenido, pásele</span><span class="vocab-jp">いらっしゃいませ</span></div><div class="vocab-row"><span class="vocab-es">¿Puede mostrarme ~?</span><span class="vocab-jp">[〜を]みせてください</span></div><div class="vocab-row"><span class="vocab-es">Deme ~ por favor</span><span class="vocab-jp">[〜を]ください</span></div><div class="vocab-row"><span class="vocab-es">bueno, entonces</span><span class="vocab-jp">じゃ</span></div>`
+};
+
+function openVocab(){
+  const grid = document.getElementById('vocabGrid');
+  if(!grid.children.length){
+    [1,2,3].forEach(l => {
+      const col = document.createElement('div');
+      col.innerHTML =
+        '<div class="vcol-title" onclick="toggleVocabCol(this)">' +
+          'Lección ' + l +
+          '<span><span class="vcol-arrow">▼</span><span class="vcol-hint"> (ocultar)</span></span>' +
+        '</div>' +
+        '<div class="vcol-rows">' + VOCAB_ROWS[l] + '</div>';
+      grid.appendChild(col);
+    });
+    // set initial max-height for animation
+    document.querySelectorAll('.vcol-rows').forEach(r => {
+      r.style.maxHeight = r.scrollHeight + 'px';
+    });
+  }
+  document.getElementById('vocabOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeVocab(){
+  document.getElementById('vocabOverlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeVocabOutside(e){
+  if(e.target === document.getElementById('vocabOverlay')) closeVocab();
+}
+
+function toggleVocabCol(titleEl){
+  titleEl.classList.toggle('collapsed');
+  const rows = titleEl.nextElementSibling;
+  rows.classList.toggle('collapsed');
+  const hint = titleEl.querySelector('.vcol-hint');
+  if(hint) hint.textContent = titleEl.classList.contains('collapsed') ? ' (mostrar)' : ' (ocultar)';
+}
+
+</script>
+</body>
+</html>
