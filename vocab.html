@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vocabulario — Nihongo con Ferdi</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;background:#f5f5f0;min-height:100vh;padding:1.5rem 1rem;display:flex;flex-direction:column;align-items:center;}
+
+/* torii */
+.torii-home{position:fixed;top:14px;left:14px;z-index:999;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:3px;opacity:.85;transition:opacity .2s,transform .2s}
+.torii-home:hover{opacity:1;transform:scale(1.08)}
+.torii-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#c0392b;font-family:sans-serif;font-weight:600}
+
+h1{font-size:15px;font-weight:600;color:#555;margin-bottom:.25rem;text-align:center;letter-spacing:.03em;margin-top:.5rem}
+.subtitle{font-size:.8rem;color:#a08070;margin-bottom:1.5rem;text-align:center;font-style:italic}
+
+/* panel */
+.panel{background:#fff;border-radius:20px;width:100%;max-width:1100px;padding:1.5rem;border:1px solid #e0d8d0;}
+
+/* grid */
+.vocab-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.25rem;}
+@media(max-width:600px){.vocab-grid{grid-template-columns:1fr;}}
+
+/* column title */
+.vcol-title{
+  font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:#3b72d4;margin-bottom:.6rem;padding-bottom:.4rem;
+  border-bottom:2px solid #e8e0d8;
+  display:flex;justify-content:space-between;align-items:center;
+}
+/* toggle hidden by default (desktop) */
+.vcol-toggle{
+  display:none !important;
+}
+.vcol-arrow{font-size:.75rem;transition:transform .25s;display:inline-block;}
+.vcol-rows{overflow:hidden;}
+
+/* mobile only: show toggle, enable accordion */
+@media(max-width:600px){
+  .vcol-title{cursor:pointer;user-select:none;}
+  .vcol-toggle{display:flex !important;align-items:center;gap:3px;
+    font-size:.6rem;color:#3b72d4;font-weight:400;letter-spacing:.03em;cursor:pointer;}
+  .vcol-rows{transition:max-height .3s ease;}
+  .vcol-rows.collapsed{max-height:0 !important;}
+  .vcol-title.collapsed .vcol-arrow{transform:rotate(-90deg)}
+}
+
+/* rows */
+.vocab-row{
+  display:flex;justify-content:space-between;align-items:baseline;
+  gap:.5rem;padding:5px 0;
+  border-bottom:1px solid #f0ede8;
+  font-size:.82rem;
+}
+.vocab-row:last-child{border-bottom:none}
+.vocab-es{color:#555;flex:1}
+.vocab-jp{color:#1a1209;font-size:.95rem;text-align:right;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<a class="torii-home" href="./" title="Inicio">
+  <svg width="44" height="38" viewBox="0 0 44 38" xmlns="http://www.w3.org/2000/svg">
+    <defs><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feBlend in="SourceGraphic" mode="multiply" result="blend"/><feComposite in="blend" in2="SourceGraphic" operator="in"/></filter></defs>
+    <ellipse cx="22" cy="37" rx="14" ry="2.5" fill="rgba(0,0,0,.13)"/>
+    <rect x="6" y="14" width="5" height="22" rx="1.5" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="33" y="14" width="5" height="22" rx="1.5" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="4" y="19" width="36" height="3.5" rx="1.5" fill="#a93226" filter="url(#grain)"/>
+    <path d="M1,8 Q3,4 22,5.5 Q41,4 43,8 L40,11 Q22,9.5 4,11 Z" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="5" y="11" width="34" height="3" rx="1" fill="#b03020" filter="url(#grain)"/>
+    <path d="M4,8.5 Q22,7 40,8.5" stroke="rgba(255,255,255,.18)" stroke-width="1" fill="none"/>
+    <rect x="16" y="11.5" width="12" height="2" rx=".5" fill="#7a1f18" opacity=".7"/>
+  </svg>
+  <span class="torii-label">inicio</span>
+</a>
+
+<h1>Vocabulario</h1>
+<p class="subtitle">Lecciones 1, 2 y 3</p>
+
+<div class="panel">
+  <div class="vocab-grid" id="vocabGrid"></div>
+</div>
+
+<script>
+const VOCAB = {
+  1:[["yo","わたし"],["usted","あなた"],["aquella persona","あのひと (あのかた)"],["Sr./Sra./Srta.","〜さん"],["niño (sufijo)","〜くん"],["nacionalidad (sufijo)","〜じん (〜人)"],["maestro (3ª persona)","せんせい"],["maestro (1ª persona)","きょうし"],["estudiante","がくせい"],["empleado de empresa","かいしゃいん"],["empleado de ~ empresa","〜しゃいん"],["empleado de banco","ぎんこういん"],["médico","いしゃ"],["investigador","けんきゅうしゃ"],["universidad","だいがく"],["hospital","びょういん"],["¿quién?","だれ (どなた)"],["~ años de edad","〜さい"],["¿cuántos años?","なんさい"],["sí","はい"],["no","いいえ"],["Mucho gusto","はじめまして"],["Soy/Vengo de ~","〜からきました"],["Encantado [tráteme bien]","どうぞよろしく"],["Disculpe, pero...","しつれいですが"],["¿Cómo te llamas?","おなまえは？"],["Le presento a ~","こちらは〜さんです"],["Estados Unidos","アメリカ"],["Reino Unido","イギリス"],["India","インド"],["Indonesia","インドネシア"],["Corea del Sur","かんこく"],["Tailandia","タイ"],["China","ちゅうごく"],["Alemania","ドイツ"],["Japón","にほん (日本)"],["Brasil","ブラジル"]],
+  2:[["libro","ほん"],["diccionario","じしょ"],["revista","ざっし"],["periódico","しんぶん"],["cuaderno","ノート"],["agenda","てちょう"],["tarjeta de presentación","めいし"],["tarjeta","カード"],["lápiz","えんぴつ"],["bolígrafo","ボールペン"],["portaminas","シャープペンシル"],["plumón","ペン"],["llave","かぎ"],["reloj","とけい"],["reloj de pulsera","うでどけい"],["paraguas","かさ"],["bolso / maleta","かばん"],["CD","シーディー"],["earphones / audífonos","イヤホン"],["headphones","ヘッドホン"],["televisión","テレビ"],["radio","ラジオ"],["cámara","カメラ"],["computadora","コンピューター"],["laptop","パソコン"],["tablet","タブレット"],["celular","けいたい／スマホ"],["automóvil","くるま"],["escritorio","つくえ"],["silla","いす"],["chocolate","チョコレート"],["café","コーヒー"],["souvenir","[お]みやげ"],["¿qué?","なん"],["sí, eso","そう"],["este... (muletilla)","あのう"],["¿eh?! / ¿cómo?","えっ"],["No, no es así","ちがいます"]],
+  3:[["aquí","ここ"],["ahí","そこ"],["allá","あそこ"],["¿dónde?","どこ"],["por aquí (formal)","こちら"],["por ahí (formal)","そちら"],["por allá (formal)","あちら"],["¿por dónde? (formal)","どちら"],["aula","きょうしつ"],["comedor","しょくどう"],["oficina","じむしょ"],["sala de reuniones","かいぎしつ"],["recepción / front desk","うけつけ"],["vestíbulo / lobby","ロビー"],["habitación","へや"],["baño / servicio","トイレ (おてあらい)"],["escalera","かいだん"],["elevador","エレベーター"],["escalera eléctrica","エスカレーター"],["máquina expendedora","じどうはんばいき／じはんき"],["teléfono / llamada","でんわ"],["[su] país","[お]くに"],["empresa / firma","かいしゃ"],["casa, hogar (propio)","うち"],["casa (habitación)","いえ"],["zapatos","くつ"],["corbata","ネクタイ"],["vino","ワイン"],["pasillo / sección","うりば"],["sótano","ちか"],["~ piso / planta","〜かい (〜がい)"],["¿qué piso?","なんがい"],["yen","〜えん"],["¿cuánto cuesta?","いくら"],["cien","ひゃく"],["mil","せん"],["diez mil","まん"],["Bienvenido, pásele","いらっしゃいませ"],["¿Puede mostrarme ~?","[〜を]みせてください"],["Deme ~ por favor","[〜を]ください"],["bueno, entonces","じゃ"]],
+  4:[["levantarse","おきます"],["acostarse / dormir","ねます"],["trabajar","はたらきます"],["descansar / estar de vacaciones","やすみます"],["estudiar","べんきょうします"],["terminar","おわります"],["gran almacén / tienda departamental","デパート"],["banco","ぎんこう"],["oficina de correos","ゆうびんきょく"],["biblioteca","としょかん"],["museo de arte","びじゅつかん"],["ahora","いま"],["las ~ horas","〜じ"],["~ minutos","〜ふん (〜ぷん)"],["~ y media","はん"],["¿qué hora?","なんじ"],["¿qué minuto?","なんぷん"],["de la mañana (a.m.)","ごぜん"],["de la tarde (p.m.)","ごご"],["la mañana","あさ"],["día / medio día","ひる"],["noche","ばん (よる)"],["antier","おととい"],["ayer","きのう"],["hoy","きょう"],["mañana","あした"],["pasado mañana","あさって"],["esta mañana","けさ"],["esta noche","こんばん"],["descanso / día libre / día festivo","やすみ"],["hora del almuerzo / descanso de medio día","ひるやすみ"],["examen","しけん"],["reunión / conferencia","かいぎ"],["película","えいが"],["todas las mañanas","まいあさ"],["todas las noches","まいばん"],["todos los días","まいにち"],["lunes","げつようび"],["martes","かようび"],["miércoles","すいようび"],["jueves","もくようび"],["viernes","きんようび"],["sábado","どようび"],["domingo","にちようび"],["¿qué día de la semana?","なんようび"],["desde ~","〜から"],["hasta ~","〜まで"],["y (conector de sustantivos)","〜と〜"],["¡Qué difícil!","たいへんですね。"],["número","ばんごう"],["¿qué número?","なんばん"],["allí / su lugar","そちら"],["Nueva York","ニューヨーク"],["Pekín","ペキン"],["Los Ángeles","ロサンゼルス"],["Londres","ロンドン"]]
+};
+
+const isMobile = () => window.innerWidth <= 600;
+
+function build(){
+  const grid = document.getElementById('vocabGrid');
+  grid.innerHTML = '';
+  [1,2,3,4].forEach(l => {
+    const col = document.createElement('div');
+    const rows = VOCAB[l].map(([es,jp]) =>
+      `<div class="vocab-row"><span class="vocab-es">${es}</span><span class="vocab-jp">${jp}</span></div>`
+    ).join('');
+    col.innerHTML =
+      `<div class="vcol-title" id="title-${l}" onclick="toggleCol(${l})">` +
+        `Lección ${l}` +
+        `<span class="vcol-toggle">ocultar <span class="vcol-arrow">▼</span></span>` +
+      `</div>` +
+      `<div class="vcol-rows" id="rows-${l}">${rows}</div>`;
+    grid.appendChild(col);
+  });
+  // set max-height once after render, only used on mobile for animation
+  requestAnimationFrame(()=>{
+    document.querySelectorAll('.vcol-rows').forEach(r => {
+      r.style.maxHeight = r.scrollHeight + 'px';
+    });
+  });
+}
+
+function toggleCol(l){
+  if(window.innerWidth > 600) return; // no-op on desktop
+  const title = document.getElementById('title-'+l);
+  const rows  = document.getElementById('rows-'+l);
+  const tog   = title.querySelector('.vcol-toggle');
+  const collapsed = rows.classList.toggle('collapsed');
+  title.classList.toggle('collapsed', collapsed);
+  if(collapsed){
+    rows.style.maxHeight = '0';
+    tog.innerHTML = 'mostrar <span class="vcol-arrow" style="transform:rotate(-90deg);display:inline-block;transition:transform .25s">▼</span>';
+  } else {
+    rows.style.maxHeight = rows.scrollHeight + 'px';
+    tog.innerHTML = 'ocultar <span class="vcol-arrow" style="display:inline-block;transition:transform .25s">▼</span>';
+  }
+}
+
+build();
+</script>
+</body>
+</html>
