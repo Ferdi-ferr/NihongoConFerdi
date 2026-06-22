@@ -155,6 +155,7 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
       <button class="lbtn active" onclick="toggleLesson(1,this)">L1</button>
       <button class="lbtn active" onclick="toggleLesson(2,this)">L2</button>
       <button class="lbtn active" onclick="toggleLesson(3,this)">L3</button>
+      <button class="lbtn active" onclick="toggleLesson(4,this)">L4</button>
     </div>
     <button class="shuffle-btn" onclick="buildDeck()">⇄ Barajar</button>
   </div>
@@ -317,11 +318,63 @@ const ALL = [
   {es:"Puede mostrarme ~",          kana:"みせてください",  accepted:["misete kudasai","misete kudosai","misete kudasai"], l:3},
   {es:"Deme ~ por favor",           kana:"ください",        accepted:["kudasai"],                         l:3},
   {es:"bueno, entonces",            kana:"じゃ",            accepted:["ja","jya"],                         l:3, note:"ja / jya"},
+  // L4
+  {es:"levantarse",                      kana:"おきます",          accepted:["okimasu"],                          l:4},
+  {es:"acostarse / dormir",              kana:"ねます",            accepted:["nemasu"],                           l:4},
+  {es:"trabajar",                        kana:"はたらきます",      accepted:["hatarakimasu"],                     l:4},
+  {es:"descansar",                       kana:"やすみます",        accepted:["yasumimasu"],                       l:4},
+  {es:"estudiar",                        kana:"べんきょうします",  accepted:["benkyoshimasu","benkyoushimasu"],    l:4, note:"benkyoshimasu / benkyoushimasu"},
+  {es:"terminar",                        kana:"おわります",        accepted:["owarimasu"],                        l:4},
+  {es:"gran almacén",                    kana:"デパート",          accepted:["depaato","depato"],                 l:4, note:"depaato / depato"},
+  {es:"banco",                           kana:"ぎんこう",          accepted:["ginko","ginkou"],                   l:4, note:"ginko / ginkou"},
+  {es:"oficina de correos",              kana:"ゆうびんきょく",    accepted:["yubinkyoku","yuubinkyoku"],         l:4, note:"yubinkyoku / yuubinkyoku"},
+  {es:"biblioteca",                      kana:"としょかん",        accepted:["toshokan"],                         l:4},
+  {es:"museo de arte",                   kana:"びじゅつかん",      accepted:["bijutsukan"],                       l:4},
+  {es:"ahora",                           kana:"いま",              accepted:["ima"],                              l:4},
+  {es:"y media (hora)",                  kana:"はん",              accepted:["han"],                              l:4},
+  {es:"¿qué hora?",                      kana:"なんじ",            accepted:["nanji"],                            l:4},
+  {es:"¿qué minuto?",                    kana:"なんぷん",          accepted:["nanpun","nanfun"],                  l:4, note:"nanpun / nanfun"},
+  {es:"de la mañana (a.m.)",             kana:"ごぜん",            accepted:["gozen"],                            l:4},
+  {es:"de la tarde (p.m.)",              kana:"ごご",              accepted:["gogo"],                             l:4},
+  {es:"la mañana",                       kana:"あさ",              accepted:["asa"],                              l:4},
+  {es:"día / medio día",                 kana:"ひる",              accepted:["hiru"],                             l:4},
+  {es:"noche",                           kana:"ばん",              accepted:["ban","yoru"],                       l:4, note:"ban / yoru"},
+  {es:"antier",                          kana:"おととい",          accepted:["ototoi"],                           l:4},
+  {es:"ayer",                            kana:"きのう",            accepted:["kino","kinou"],                     l:4, note:"kino / kinou"},
+  {es:"hoy",                             kana:"きょう",            accepted:["kyo","kyou"],                       l:4, note:"kyo / kyou"},
+  {es:"mañana",                          kana:"あした",            accepted:["ashita"],                           l:4},
+  {es:"pasado mañana",                   kana:"あさって",          accepted:["asatte"],                           l:4},
+  {es:"esta mañana",                     kana:"けさ",              accepted:["kesa"],                             l:4},
+  {es:"esta noche",                      kana:"こんばん",          accepted:["konban"],                           l:4},
+  {es:"día libre / festivo",             kana:"やすみ",            accepted:["yasumi"],                           l:4},
+  {es:"hora del almuerzo",               kana:"ひるやすみ",        accepted:["hiruyasumi"],                       l:4},
+  {es:"examen",                          kana:"しけん",            accepted:["shiken"],                           l:4},
+  {es:"reunión / conferencia",           kana:"かいぎ",            accepted:["kaigi"],                            l:4},
+  {es:"película",                        kana:"えいが",            accepted:["eiga"],                             l:4},
+  {es:"todas las mañanas",               kana:"まいあさ",          accepted:["maiasa"],                           l:4},
+  {es:"todas las noches",                kana:"まいばん",          accepted:["maiban"],                           l:4},
+  {es:"todos los días",                  kana:"まいにち",          accepted:["mainichi"],                         l:4},
+  {es:"lunes",                           kana:"げつようび",        accepted:["getsuyobi","getsuyoubi"],           l:4, note:"getsuyobi / getsuyoubi"},
+  {es:"martes",                          kana:"かようび",          accepted:["kayobi","kayoubi"],                 l:4, note:"kayobi / kayoubi"},
+  {es:"miércoles",                       kana:"すいようび",        accepted:["suiyobi","suiyoubi"],               l:4, note:"suiyobi / suiyoubi"},
+  {es:"jueves",                          kana:"もくようび",        accepted:["mokuyobi","mokuyoubi"],             l:4, note:"mokuyobi / mokuyoubi"},
+  {es:"viernes",                         kana:"きんようび",        accepted:["kinyobi","kinyoubi"],               l:4, note:"kinyobi / kinyoubi"},
+  {es:"sábado",                          kana:"どようび",          accepted:["doyobi","doyoubi"],                 l:4, note:"doyobi / doyoubi"},
+  {es:"domingo",                         kana:"にちようび",        accepted:["nichiyobi","nichiyoubi"],           l:4, note:"nichiyobi / nichiyoubi"},
+  {es:"¿qué día?",                       kana:"なんようび",        accepted:["nanyobi","nanyoubi"],               l:4, note:"nanyobi / nanyoubi"},
+  {es:"desde ~",                         kana:"〜から",            accepted:["kara"],                             l:4},
+  {es:"hasta ~",                         kana:"〜まで",            accepted:["made"],                             l:4},
+  {es:"número",                          kana:"ばんごう",          accepted:["bango","bangou"],                   l:4, note:"bango / bangou"},
+  {es:"¿qué número?",                    kana:"なんばん",          accepted:["nanban"],                           l:4},
+  {es:"Nueva York",                      kana:"ニューヨーク",      accepted:["nyuyoku","nyuuyooku","new york"],   l:4, note:"nyuyoku / nyuuyooku"},
+  {es:"Pekín",                           kana:"ペキン",            accepted:["pekin","beijing"],                  l:4, note:"pekin / beijing"},
+  {es:"Los Ángeles",                     kana:"ロサンゼルス",      accepted:["losanzerusu","los angeles"],        l:4, note:"losanzerusu / los angeles"},
+  {es:"Londres",                         kana:"ロンドン",          accepted:["rondon","london"],                  l:4, note:"rondon / london"},
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────
 let deck=[], idx=0, cardStates=[];
-let activeLessons=new Set([1,2,3]);
+let activeLessons=new Set([1,2,3,4]);
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flashcards Nihongo — L1, L2, L3</title>
+<title>Flashcards Nihongo — L1, L2, L3, L4</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:sans-serif;background:#f5f5f0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem}
@@ -89,6 +89,7 @@ h1{font-size:16px;font-weight:600;color:#444;margin-bottom:1.25rem;text-align:ce
       <button class="lbtn active" onclick="toggleLesson(1,this)">L1</button>
       <button class="lbtn active" onclick="toggleLesson(2,this)">L2</button>
       <button class="lbtn active" onclick="toggleLesson(3,this)">L3</button>
+      <button class="lbtn active" onclick="toggleLesson(4,this)">L4</button>
     </div>
     <div style="display:flex;gap:6px">
       <button class="shuffle-btn" onclick="shuffleDeck()">⇄ Barajar</button>
@@ -249,10 +250,67 @@ const ALL=[
   {es:"¿Puede mostrarme ~?",jp:"[〜を]みせてください",rom:"[~wo] misete kudasai",l:3},
   {es:"Deme ~ por favor",jp:"[〜を]ください",rom:"[~wo] kudasai",l:3},
   {es:"bueno, entonces",jp:"じゃ",rom:"ja",l:3},
+  // L4
+  {es:"levantarse",jp:"おきます",rom:"okimasu",l:4},
+  {es:"acostarse / dormir",jp:"ねます",rom:"nemasu",l:4},
+  {es:"trabajar",jp:"はたらきます",rom:"hatarakimasu",l:4},
+  {es:"descansar / estar de vacaciones",jp:"やすみます",rom:"yasumimasu",l:4},
+  {es:"estudiar",jp:"べんきょうします",rom:"benkyou shimasu",l:4},
+  {es:"terminar",jp:"おわります",rom:"owarimasu",l:4},
+  {es:"gran almacén / tienda departamental",jp:"デパート",rom:"depaato",l:4},
+  {es:"banco",jp:"ぎんこう",rom:"ginkou",l:4},
+  {es:"oficina de correos",jp:"ゆうびんきょく",rom:"yuubinkyoku",l:4},
+  {es:"biblioteca",jp:"としょかん",rom:"toshokan",l:4},
+  {es:"museo de arte",jp:"びじゅつかん",rom:"bijutsukan",l:4},
+  {es:"ahora",jp:"いま",rom:"ima",l:4},
+  {es:"las ~ horas",jp:"〜じ",rom:"~ji",l:4},
+  {es:"~ minutos",jp:"〜ふん (〜ぷん)",rom:"~fun (~pun)",l:4},
+  {es:"~ y media",jp:"はん",rom:"han",l:4},
+  {es:"¿qué hora?",jp:"なんじ",rom:"nanji",l:4},
+  {es:"¿qué minuto?",jp:"なんぷん",rom:"nanpun",l:4},
+  {es:"de la mañana (a.m.)",jp:"ごぜん",rom:"gozen",l:4},
+  {es:"de la tarde (p.m.)",jp:"ごご",rom:"gogo",l:4},
+  {es:"la mañana",jp:"あさ",rom:"asa",l:4},
+  {es:"día / medio día",jp:"ひる",rom:"hiru",l:4},
+  {es:"noche",jp:"ばん (よる)",rom:"ban (yoru)",l:4},
+  {es:"antier",jp:"おととい",rom:"ototoi",l:4},
+  {es:"ayer",jp:"きのう",rom:"kinou",l:4},
+  {es:"hoy",jp:"きょう",rom:"kyou",l:4},
+  {es:"mañana",jp:"あした",rom:"ashita",l:4},
+  {es:"pasado mañana",jp:"あさって",rom:"asatte",l:4},
+  {es:"esta mañana",jp:"けさ",rom:"kesa",l:4},
+  {es:"esta noche",jp:"こんばん",rom:"konban",l:4},
+  {es:"descanso / día libre / día festivo",jp:"やすみ",rom:"yasumi",l:4},
+  {es:"hora del almuerzo / descanso de medio día",jp:"ひるやすみ",rom:"hiruyasumi",l:4},
+  {es:"examen",jp:"しけん",rom:"shiken",l:4},
+  {es:"reunión / conferencia",jp:"かいぎ",rom:"kaigi",l:4},
+  {es:"película",jp:"えいが",rom:"eiga",l:4},
+  {es:"todas las mañanas",jp:"まいあさ",rom:"maiasa",l:4},
+  {es:"todas las noches",jp:"まいばん",rom:"maiban",l:4},
+  {es:"todos los días",jp:"まいにち",rom:"mainichi",l:4},
+  {es:"lunes",jp:"げつようび",rom:"getsuyoubi",l:4},
+  {es:"martes",jp:"かようび",rom:"kayoubi",l:4},
+  {es:"miércoles",jp:"すいようび",rom:"suiyoubi",l:4},
+  {es:"jueves",jp:"もくようび",rom:"mokuyoubi",l:4},
+  {es:"viernes",jp:"きんようび",rom:"kin'youbi",l:4},
+  {es:"sábado",jp:"どようび",rom:"doyoubi",l:4},
+  {es:"domingo",jp:"にちようび",rom:"nichiyoubi",l:4},
+  {es:"¿qué día de la semana?",jp:"なんようび",rom:"nanyoubi",l:4},
+  {es:"desde ~",jp:"〜から",rom:"~kara",l:4},
+  {es:"hasta ~",jp:"〜まで",rom:"~made",l:4},
+  {es:"y (conector de sustantivos)",jp:"〜と〜",rom:"~to~",l:4},
+  {es:"¡Qué difícil!",jp:"たいへんですね。",rom:"taihen desu ne",l:4},
+  {es:"número",jp:"ばんごう",rom:"bangou",l:4},
+  {es:"¿qué número?",jp:"なんばん",rom:"nanban",l:4},
+  {es:"allí / su lugar",jp:"そちら",rom:"sochira",l:4},
+  {es:"Nueva York",jp:"ニューヨーク",rom:"nyuuyooku",l:4},
+  {es:"Pekín",jp:"ペキン",rom:"pekin",l:4},
+  {es:"Los Ángeles",jp:"ロサンゼルス",rom:"rosanzerusu",l:4},
+  {es:"Londres",jp:"ロンドン",rom:"rondon",l:4},
 ];
 
 let deck=[],idx=0,flipped=false,known=0,skipped=0;
-let activeLessons=new Set([1,2,3]);
+let activeLessons=new Set([1,2,3,4]);
 let dirEsJp=true;
 
 function buildDeck(){

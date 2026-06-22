@@ -181,6 +181,7 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
       <button class="lbtn active" onclick="toggleLesson(1,this)">L1</button>
       <button class="lbtn active" onclick="toggleLesson(2,this)">L2</button>
       <button class="lbtn active" onclick="toggleLesson(3,this)">L3</button>
+      <button class="lbtn active" onclick="toggleLesson(4,this)">L4</button>
     </div>
     <button class="shuffle-btn" onclick="buildDeck()">⇄ Barajar</button>
   </div>
@@ -325,6 +326,55 @@ const ALL=[
   {es:"diez mil",                        tokens:["ま","ん"],                                         rom:"man",             l:3},
   {es:"Bienvenido, pásele",              tokens:["い","らっ","しゃ","い","ま","せ"],                 rom:"irasshaimase",    l:3},
   {es:"bueno, entonces",                 tokens:["じゃ"],                                            rom:"ja",              l:3},
+  // L4
+  {es:"levantarse",                      tokens:["お","き","ま","す"],                              rom:"okimasu",          l:4},
+  {es:"acostarse / dormir",              tokens:["ね","ま","す"],                                   rom:"nemasu",           l:4},
+  {es:"trabajar",                        tokens:["は","た","ら","き","ま","す"],                    rom:"hatarakimasu",     l:4},
+  {es:"descansar",                       tokens:["や","す","み","ま","す"],                         rom:"yasumimasu",       l:4},
+  {es:"estudiar",                        tokens:["べん","きょう","し","ま","す"],                   rom:"benkyoushimasu",   l:4},
+  {es:"terminar",                        tokens:["お","わ","り","ま","す"],                         rom:"owarimasu",        l:4},
+  {es:"gran almacén",                    tokens:["デ","パー","ト"],                                 rom:"depaato",          l:4},
+  {es:"banco",                           tokens:["ぎ","ん","こ","う"],                              rom:"ginkou",           l:4},
+  {es:"oficina de correos",              tokens:["ゆう","び","ん","きょ","く"],                     rom:"yuubinkyoku",      l:4},
+  {es:"biblioteca",                      tokens:["と","しょ","か","ん"],                            rom:"toshokan",         l:4},
+  {es:"museo de arte",                   tokens:["び","じゅ","つ","か","ん"],                       rom:"bijutsukan",       l:4},
+  {es:"ahora",                           tokens:["い","ま"],                                        rom:"ima",              l:4},
+  {es:"y media",                         tokens:["は","ん"],                                        rom:"han",              l:4},
+  {es:"¿qué hora?",                      tokens:["な","ん","じ"],                                   rom:"nanji",            l:4},
+  {es:"de la mañana (a.m.)",             tokens:["ご","ぜ","ん"],                                   rom:"gozen",            l:4},
+  {es:"de la tarde (p.m.)",              tokens:["ご","ご"],                                        rom:"gogo",             l:4},
+  {es:"la mañana",                       tokens:["あ","さ"],                                        rom:"asa",              l:4},
+  {es:"día / medio día",                 tokens:["ひ","る"],                                        rom:"hiru",             l:4},
+  {es:"noche",                           tokens:["ば","ん"],                                        rom:"ban",              l:4},
+  {es:"antier",                          tokens:["お","と","と","い"],                              rom:"ototoi",           l:4},
+  {es:"ayer",                            tokens:["き","の","う"],                                   rom:"kinou",            l:4},
+  {es:"hoy",                             tokens:["きょ","う"],                                      rom:"kyou",             l:4},
+  {es:"mañana",                          tokens:["あ","し","た"],                                   rom:"ashita",           l:4},
+  {es:"pasado mañana",                   tokens:["あ","さっ","て"],                                 rom:"asatte",           l:4},
+  {es:"esta mañana",                     tokens:["け","さ"],                                        rom:"kesa",             l:4},
+  {es:"esta noche",                      tokens:["こ","ん","ば","ん"],                              rom:"konban",           l:4},
+  {es:"día libre / festivo",             tokens:["や","す","み"],                                   rom:"yasumi",           l:4},
+  {es:"hora del almuerzo",               tokens:["ひ","る","や","す","み"],                         rom:"hiruyasumi",       l:4},
+  {es:"examen",                          tokens:["し","け","ん"],                                   rom:"shiken",           l:4},
+  {es:"reunión / conferencia",           tokens:["か","い","ぎ"],                                   rom:"kaigi",            l:4},
+  {es:"película",                        tokens:["え","い","が"],                                   rom:"eiga",             l:4},
+  {es:"todas las mañanas",               tokens:["ま","い","あ","さ"],                              rom:"maiasa",           l:4},
+  {es:"todas las noches",                tokens:["ま","い","ば","ん"],                              rom:"maiban",           l:4},
+  {es:"todos los días",                  tokens:["ま","い","に","ち"],                              rom:"mainichi",         l:4},
+  {es:"lunes",                           tokens:["げ","つ","よう","び"],                            rom:"getsuyoubi",       l:4},
+  {es:"martes",                          tokens:["か","よう","び"],                                 rom:"kayoubi",          l:4},
+  {es:"miércoles",                       tokens:["す","い","よう","び"],                            rom:"suiyoubi",         l:4},
+  {es:"jueves",                          tokens:["も","く","よう","び"],                            rom:"mokuyoubi",        l:4},
+  {es:"viernes",                         tokens:["き","ん","よう","び"],                            rom:"kinyoubi",         l:4},
+  {es:"sábado",                          tokens:["ど","よう","び"],                                 rom:"doyoubi",          l:4},
+  {es:"domingo",                         tokens:["に","ち","よう","び"],                            rom:"nichiyoubi",       l:4},
+  {es:"¿qué día?",                       tokens:["な","ん","よう","び"],                            rom:"nanyoubi",         l:4},
+  {es:"número",                          tokens:["ば","ん","ごう"],                                 rom:"bangou",           l:4},
+  {es:"¿qué número?",                    tokens:["な","ん","ば","ん"],                              rom:"nanban",           l:4},
+  {es:"Nueva York",                      tokens:["ニュー","ヨー","ク"],                             rom:"nyuuyooku",        l:4},
+  {es:"Pekín",                           tokens:["ペ","キ","ン"],                                   rom:"pekin",            l:4},
+  {es:"Los Ángeles",                     tokens:["ロ","サ","ン","ゼ","ル","ス"],                    rom:"rosanzerusu",      l:4},
+  {es:"Londres",                         tokens:["ロ","ン","ド","ン"],                              rom:"rondon",           l:4},
 ];
 
 const HIRA_POOL=["あ","い","う","え","お","か","き","く","け","こ","さ","し","す","せ","そ","た","ち","つ","て","と","な","に","ぬ","ね","の","は","ひ","ふ","へ","ほ","ま","み","む","め","も","や","ゆ","よ","ら","り","る","れ","ろ","わ","を","ん","が","ぎ","ぐ","げ","ご","ざ","じ","ず","ぜ","ぞ","だ","で","ど","ば","び","ぶ","べ","ぼ","きゃ","きょ","しゃ","しょ","ちゃ","ちょ","にゃ","にょ","ひゃ","ひょ","みゃ","みょ","りゃ","りょ","ぎゃ","ぎょ","じゃ","じょ","びゃ","びょ"];
@@ -336,7 +386,7 @@ const KATA_POOL=["ア","イ","ウ","エ","オ","カ","キ","ク","ケ","コ","�
 // 'correct'  — verified and correct
 // 'revealed' — answer was shown
 
-let deck=[], idx=0, activeLessons=new Set([1,2,3]);
+let deck=[], idx=0, activeLessons=new Set([1,2,3,4]);
 let cardStates=[];   // per-card: { phase, answer, buttons, hadError }
 
 const TARGET=18;
