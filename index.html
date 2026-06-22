@@ -151,6 +151,20 @@ body{
   grid-template-columns:repeat(3,1fr);
   gap:1rem;
 }
+@media(max-width:600px){
+  .cards-grid{grid-template-columns:1fr;}
+  .app-card{
+    flex-direction:row;
+    align-items:center;
+    gap:1rem;
+    padding:1rem 1.25rem;
+  }
+  .card-icon{font-size:1.6rem;flex-shrink:0}
+  .card-jp{font-size:1rem;text-align:left}
+  .card-es{font-size:.72rem;text-align:left}
+  .card-desc{font-size:.78rem;text-align:left}
+  .card-arrow{display:block;margin-left:auto;opacity:1;transform:none;font-size:.85rem;color:#c0392b}
+}
 
 .app-card{
   position:relative;
