@@ -148,8 +148,8 @@ body{
 
 .cards-grid{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
-  gap:1.5rem;
+  grid-template-columns:repeat(3,1fr);
+  gap:1rem;
 }
 
 .app-card{
@@ -159,8 +159,8 @@ body{
   background:#fff;
   border:1px solid var(--mist);
   border-radius:20px;
-  padding:2rem 1.5rem 1.75rem;
-  display:flex;flex-direction:column;align-items:center;gap:.75rem;
+  padding:1.25rem 1rem 1rem;
+  display:flex;flex-direction:column;align-items:center;gap:.4rem;
   overflow:hidden;
   transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
   cursor:pointer;
@@ -185,27 +185,27 @@ body{
 .app-card:hover::before{opacity:1}
 
 .card-icon{
-  font-size:2.8rem;
+  font-size:2rem;
   line-height:1;
   position:relative;z-index:1;
 }
 .card-jp{
   font-family:'Noto Serif JP',serif;
-  font-size:1.5rem;
+  font-size:1.1rem;
   font-weight:300;
   color:var(--ink);
   position:relative;z-index:1;
   letter-spacing:.05em;
 }
 .card-es{
-  font-size:.9rem;
+  font-size:.75rem;
   letter-spacing:.1em;
   text-transform:uppercase;
   color:#a08070;
   position:relative;z-index:1;
 }
 .card-desc{
-  font-size:.95rem;
+  font-size:.8rem;
   font-style:italic;
   color:#7a6a60;
   text-align:center;
@@ -382,7 +382,7 @@ footer{
       <div class="card-icon">📖</div>
       <div>
         <div class="card-jp" style="font-size:.95rem">単語リスト</div>
-        <div class="card-es">Vocabulario L1 · L2 · L3</div>
+        <div class="card-es">Vocabulario L1 · L2 · L3 · L4</div>
       </div>
       <div class="card-arrow" style="display:block;margin-left:auto;opacity:1;transform:none;font-size:.8rem;color:#c0392b">→</div>
     </a>
@@ -434,7 +434,23 @@ footer{
       <div class="card-icon">✒️</div>
       <div class="card-jp">漢字を書く</div>
       <div class="card-es">Escribe Kanji</div>
-      <div class="card-desc">Practica la escritura de kanjis individuales y combinados</div>
+      <div class="card-desc">Kanjis individuales, combinados y números</div>
+      <div class="card-arrow">始める →</div>
+    </a>
+
+    <a class="app-card" href="repaso_horas.html">
+      <div class="card-icon">🕐</div>
+      <div class="card-jp">時計の練習</div>
+      <div class="card-es">Horas del reloj</div>
+      <div class="card-desc">Digital ↔ hiragana, am y pm</div>
+      <div class="card-arrow">始める →</div>
+    </a>
+
+    <a class="app-card" href="repaso_verbos.html">
+      <div class="card-icon">📝</div>
+      <div class="card-jp">動詞ます</div>
+      <div class="card-es">Verbos ます</div>
+      <div class="card-desc">Ordena oraciones en presente y pasado</div>
       <div class="card-arrow">始める →</div>
     </a>
 
@@ -469,6 +485,5 @@ for(let i=0;i<28;i++){
 }
 </script>
 
-<div class="watermark">Powered by Ferdi</div>
 </body>
 </html>

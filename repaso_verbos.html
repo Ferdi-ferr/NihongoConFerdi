@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verbos ます — Nihongo con Ferdi</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;background:#f5f0eb;min-height:100vh;padding:1.5rem 1rem 3rem;display:flex;flex-direction:column;align-items:center;}
+.torii-home{position:fixed;top:14px;left:14px;z-index:999;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:3px;opacity:.85;transition:opacity .2s,transform .2s}
+.torii-home:hover{opacity:1;transform:scale(1.08)}
+.torii-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#c0392b;font-family:sans-serif;font-weight:600}
+h1{font-size:1rem;font-weight:600;color:#555;margin-bottom:.2rem;text-align:center;margin-top:.5rem}
+.subtitle{font-size:.8rem;color:#a08070;margin-bottom:1.25rem;text-align:center;font-style:italic}
+
+/* exercise sheet */
+.sheet{display:flex;flex-direction:column;gap:.75rem;width:100%;max-width:680px;}
+
+/* single exercise row */
+.ex-row{background:#fff;border:1px solid #e0d8d0;border-radius:14px;padding:.9rem 1rem;display:flex;flex-direction:column;gap:.5rem;}
+.ex-row.state-ok{border-color:#2d7a3e;background:#f0faf2;}
+.ex-row.state-err{border-color:#c03030;background:#fdf0f0;animation:shake .35s ease;}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+
+.ex-prompt{font-size:.82rem;color:#555;margin-bottom:.2rem;}
+.ex-prompt span{font-weight:600;color:#1a1209;}
+
+/* blocks + answer area side by side */
+.ex-body{display:flex;gap:.5rem;align-items:flex-start;flex-wrap:wrap;}
+
+.block-pool{display:flex;flex-wrap:wrap;gap:5px;flex:1;min-width:160px;}
+.block-btn{font-size:.9rem;padding:5px 10px;border-radius:8px;border:1.5px solid #d8d0c8;background:#fff;color:#222;cursor:pointer;font-family:inherit;transition:all .15s;white-space:nowrap;}
+.block-btn:hover:not(:disabled){background:#f5ede8;border-color:#3b72d4;}
+.block-btn:disabled{opacity:.15;cursor:default;}
+
+.answer-box{display:flex;flex-wrap:wrap;gap:5px;min-height:38px;min-width:180px;flex:1;
+  background:#faf7f2;border:2px dashed #d8d0c8;border-radius:10px;padding:5px 8px;
+  align-items:center;transition:border-color .2s,background .2s;}
+.answer-box.has-content{border-style:solid;border-color:#3b72d4;}
+.answer-box.ok{border-color:#2d7a3e;background:#e8f5ec;}
+.answer-box.err{border-color:#c03030;background:#fdecea;}
+.answer-box.revealed{border-color:#c8a800;background:#fffbe6;}
+
+.ans-tok{font-size:.9rem;padding:4px 9px;border-radius:7px;background:#3b72d4;color:#fff;
+  cursor:pointer;border:none;font-family:inherit;white-space:nowrap;}
+.ans-tok:hover{opacity:.8;}
+.ans-tok.ok{background:#2d7a3e;cursor:default;}
+.ans-tok.err{background:#c03030;cursor:default;}
+.ans-tok.revealed{background:#c8a800;cursor:default;}
+
+/* row footer */
+.ex-footer{display:flex;align-items:center;gap:.5rem;flex-wrap:wrap;min-height:22px;}
+.ex-status{font-size:.75rem;font-weight:600;}
+.ex-status.ok{color:#2d7a3e;}
+.ex-status.err{color:#b03030;}
+.ex-status.revealed{color:#8a6800;}
+.ex-btn{font-size:.72rem;padding:3px 10px;border-radius:99px;border:none;cursor:pointer;font-family:inherit;font-weight:500;}
+.ex-btn.retry{background:#fdecea;color:#b03030;}
+.ex-btn.reveal{background:#fdf6e3;color:#8a6800;}
+.del-btn{font-size:.8rem;padding:4px 8px;border-radius:7px;border:1px solid #ddd;background:#f7f4f0;color:#888;cursor:pointer;}
+.del-btn:disabled{opacity:.3;cursor:default;}
+
+/* bottom reset */
+.bottom-bar{margin-top:1.5rem;text-align:center;}
+.reset-btn{font-size:13px;padding:10px 24px;border-radius:10px;border:none;background:#3b72d4;color:#fff;cursor:pointer;font-weight:500;font-family:inherit;}
+.reset-btn:hover{background:#2f5eab;}
+</style>
+</head>
+<body>
+
+<a class="torii-home" href="./" title="Inicio">
+  <svg width="44" height="38" viewBox="0 0 44 38" xmlns="http://www.w3.org/2000/svg">
+    <defs><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feBlend in="SourceGraphic" mode="multiply" result="blend"/><feComposite in="blend" in2="SourceGraphic" operator="in"/></filter></defs>
+    <ellipse cx="22" cy="37" rx="14" ry="2.5" fill="rgba(0,0,0,.13)"/>
+    <rect x="6" y="14" width="5" height="22" rx="1.5" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="33" y="14" width="5" height="22" rx="1.5" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="4" y="19" width="36" height="3.5" rx="1.5" fill="#a93226" filter="url(#grain)"/>
+    <path d="M1,8 Q3,4 22,5.5 Q41,4 43,8 L40,11 Q22,9.5 4,11 Z" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="5" y="11" width="34" height="3" rx="1" fill="#b03020" filter="url(#grain)"/>
+    <path d="M4,8.5 Q22,7 40,8.5" stroke="rgba(255,255,255,.18)" stroke-width="1" fill="none"/>
+    <rect x="16" y="11.5" width="12" height="2" rx=".5" fill="#7a1f18" opacity=".7"/>
+  </svg>
+  <span class="torii-label">inicio</span>
+</a>
+
+<h1>Verbos ます — Ordenar</h1>
+<p class="subtitle">Ordena los bloques para formar la oración correcta</p>
+
+<div class="sheet" id="sheet"></div>
+
+<div class="bottom-bar">
+  <button class="reset-btn" onclick="buildSheet()">↺ Resolver todo de nuevo</button>
+</div>
+
+<script>
+// ── EXERCISES ─────────────────────────────────────────────────────
+// prompt: Spanish sentence
+// tokens: correct order of blocks
+// extra: distractor blocks (1-2)
+const EXERCISES = [
+  // 1 — personaje + から～まで
+  {
+    es:'Tanaka-san trabaja de lunes a viernes.',
+    note:null,
+    tokens:['たなかさんは','げつようびから','きんようびまで','はたらき','ます'],
+    extra:['ません','ました']
+  },
+  // 2 — わたしは explícito + と
+  {
+    es:'Los sábados y domingos descanso.',
+    note:null,
+    tokens:['わたしは','どようびと','にちようびは','やすみ','ます'],
+    extra:['ません','ました']
+  },
+  // 3 — 1SG implícito + hora
+  {
+    es:'(yo) Me levanto a las 7 de la mañana todos los días.',
+    note:'わたし implícito',
+    tokens:['まいにち','ごぜんしちじに','おき','ます'],
+    extra:['ません','ました']
+  },
+  // 4 — personaje + pasado negativo
+  {
+    es:'Ayer Ken-san no estudió.',
+    note:null,
+    tokens:['きのう','ケンさんは','べんきょうし','ませんでした'],
+    extra:['ました','ません']
+  },
+  // 5 — わたしは explícito + から
+  {
+    es:'Trabajo desde las 9 de la mañana.',
+    note:null,
+    tokens:['わたしは','ごぜん','くじから','はたらき','ます'],
+    extra:['ません','ました']
+  },
+  // 6 — 1SG implícito + pasado + hasta
+  {
+    es:'(yo) Estudié hasta las 11 de la noche.',
+    note:'わたし implícito',
+    tokens:['ごご','じゅういちじまで','べんきょうし','ました'],
+    extra:['ます','ませんでした']
+  },
+  // 7 — personaje + negativo presente
+  {
+    es:'Los miércoles Yuki-san no descansa.',
+    note:null,
+    tokens:['すいようびは','ユキさんは','やすみ','ません'],
+    extra:['ます','ませんでした']
+  },
+  // 8 — わたしは explícito + pasado negativo
+  {
+    es:'Esta mañana no me levanté.',
+    note:null,
+    tokens:['わたしは','けさ','おき','ませんでした'],
+    extra:['ました','ません']
+  },
+  // 9 — 1SG implícito + frecuencia + と
+  {
+    es:'(yo) Los lunes y martes trabajo.',
+    note:'わたし implícito',
+    tokens:['げつようびと','かようびは','はたらき','ます'],
+    extra:['ません','ました']
+  },
+  // 10 — personaje + pasado afirmativo
+  {
+    es:'Ayer Sato-san terminó tarde.',
+    note:null,
+    tokens:['きのう','さとうさんは','おそく','おわり','ました'],
+    extra:['ます','ませんでした']
+  },
+];
+
+// ── STATE ─────────────────────────────────────────────────────────
+let states = [];
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function showHint(i){
+  states[i].hintShown=true;
+  renderEx(i);
+}
+
+function buildSheet(){
+  states = EXERCISES.map(ex=>({
+    phase:'input',
+    answer:[],
+    pool:shuffle([...ex.tokens]),
+    hintShown:false,
+  }));
+  renderAll();
+}
+
+function renderAll(){
+  const sheet=document.getElementById('sheet');
+  sheet.innerHTML='';
+  EXERCISES.forEach((_,i)=>renderEx(i));
+}
+
+function renderEx(i){
+  const ex=EXERCISES[i];
+  const st=states[i];
+  const done=st.phase!=='input';
+
+  const row=document.createElement('div');
+  row.className='ex-row'+(done?' state-'+st.phase:'');
+  row.id='ex-'+i;
+
+  // prompt — number + note + always-visible hint button
+  const p=document.createElement('div');
+  p.className='ex-prompt';
+  const noteHtml=ex.note?'<span style="font-size:.68rem;color:#aaa;font-style:italic;margin-left:.4rem">('+ex.note+')</span>':'';
+  if(st.hintShown||st.phase==='correct'||st.phase==='revealed'){
+    p.innerHTML='<span style="font-weight:600;color:#888">'+(i+1)+'.</span>'+noteHtml+
+      ' <span style="font-size:.72rem;color:#8a6800;font-style:italic;">'+ex.es+'</span>';
+  } else {
+    const numSpan='<span style="font-weight:600;color:#888">'+(i+1)+'.</span>'+noteHtml;
+    const hintBtn='<button class="ex-btn reveal" style="margin-left:.4rem" onclick="showHint('+i+')">💡 Ver pista</button>';
+    p.innerHTML=numSpan+hintBtn;
+  }
+  row.appendChild(p);
+
+  // body: pool + answer
+  const body=document.createElement('div');
+  body.className='ex-body';
+
+  // pool
+  const pool=document.createElement('div');
+  pool.className='block-pool';
+  const usedSet=getUsed(st.answer,st.pool);
+  st.pool.forEach((k,pi)=>{
+    const b=document.createElement('button');
+    b.className='block-btn';
+    b.textContent=k;
+    b.disabled=done||usedSet.has(pi);
+    if(!done&&!usedSet.has(pi)) b.onclick=(()=>{const ki=pi,kk=k;return()=>addToken(i,kk,ki);})();
+    pool.appendChild(b);
+  });
+
+  // answer box
+  const box=document.createElement('div');
+  const hasContent=st.answer.length>0;
+  box.className='answer-box'+(hasContent?' has-content':'')+(done?' '+st.phase:'');
+
+  st.answer.forEach((tok,ti)=>{
+    const b=document.createElement('button');
+    b.className='ans-tok'+(done?' '+st.phase:'');
+    b.textContent=tok;
+    if(!done) b.onclick=(()=>{const pos=ti;return()=>removeToken(i,pos);})();
+    box.appendChild(b);
+  });
+
+  // del button
+  const delBtn=document.createElement('button');
+  delBtn.className='del-btn';
+  delBtn.textContent='←';
+  delBtn.disabled=done||st.answer.length===0;
+  if(!done&&st.answer.length>0) delBtn.onclick=()=>removeLast(i);
+
+  body.appendChild(pool);
+  body.appendChild(box);
+  body.appendChild(delBtn);
+  row.appendChild(body);
+
+  // footer
+  const footer=document.createElement('div');
+  footer.className='ex-footer';
+  if(st.phase==='correct'){
+    const s=document.createElement('span');
+    s.className='ex-status ok';
+    s.innerHTML='✓ ¡Correcto! <span style="font-size:.72rem;color:#2d7a3e;font-style:italic;font-weight:400">'+ex.es+'</span>';
+    footer.appendChild(s);
+  } else if(st.phase==='wrong'){
+    const s=document.createElement('span');
+    s.className='ex-status err';
+    s.textContent='✗ Incorrecto';
+    footer.appendChild(s);
+    const rb=document.createElement('button');
+    rb.className='ex-btn retry';
+    rb.textContent='↺ Reintentar';
+    rb.onclick=()=>retry(i);
+    footer.appendChild(rb);
+
+    const vb=document.createElement('button');
+    vb.className='ex-btn reveal';
+    vb.textContent='👁 Ver respuesta';
+    vb.onclick=()=>reveal(i);
+    footer.appendChild(vb);
+  } else if(st.phase==='revealed'){
+    const s=document.createElement('span');
+    s.className='ex-status revealed';
+    s.innerHTML='👁 '+ex.tokens.join(' ')+' <span style="font-size:.68rem;color:#8a6800;font-style:italic;">'+ex.es+'</span>';
+    footer.appendChild(s);
+  } else {
+    const vb=document.createElement('button');
+    vb.className='ex-btn reveal';
+    vb.textContent='👁 Ver respuesta';
+    vb.onclick=()=>reveal(i);
+    footer.appendChild(vb);
+  }
+  row.appendChild(footer);
+
+  // replace or append
+  const existing=document.getElementById('ex-'+i);
+  const sheet=document.getElementById('sheet');
+  if(existing) sheet.replaceChild(row,existing);
+  else sheet.appendChild(row);
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────
+function getUsed(answer,pool){
+  const used=new Set();
+  for(const t of answer){
+    for(let i=0;i<pool.length;i++){
+      if(pool[i]===t&&!used.has(i)){used.add(i);break;}
+    }
+  }
+  return used;
+}
+
+function addToken(exIdx,tok,poolIdx){
+  const st=states[exIdx];
+  if(st.phase!=='input')return;
+  const ex=EXERCISES[exIdx];
+  st.answer.push(tok);
+  // auto-verify when complete
+  if(st.answer.length===ex.tokens.length){
+    setTimeout(()=>verify(exIdx),100);
+  } else {
+    renderEx(exIdx);
+  }
+}
+
+function removeToken(exIdx,pos){
+  const st=states[exIdx];
+  if(st.phase!=='input')return;
+  st.answer.splice(pos,1);
+  renderEx(exIdx);
+}
+
+function removeLast(exIdx){
+  const st=states[exIdx];
+  if(st.phase!=='input'||st.answer.length===0)return;
+  st.answer.pop();
+  renderEx(exIdx);
+}
+
+function verify(exIdx){
+  const st=states[exIdx];
+  const ex=EXERCISES[exIdx];
+  const ok=st.answer.every((t,i)=>t===ex.tokens[i]);
+  st.phase=ok?'correct':'wrong';
+  renderEx(exIdx);
+  if(ok){
+    // brief green flash on row
+    const row=document.getElementById('ex-'+exIdx);
+    row.style.transition='background .3s';
+  }
+}
+
+function retry(exIdx){
+  states[exIdx].phase='input';
+  states[exIdx].answer=[];
+  renderEx(exIdx);
+}
+
+function reveal(exIdx){
+  states[exIdx].phase='revealed';
+  states[exIdx].answer=[...EXERCISES[exIdx].tokens];
+  renderEx(exIdx);
+}
+
+buildSheet();
+</script>
+</body>
+</html>
