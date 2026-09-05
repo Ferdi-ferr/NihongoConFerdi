@@ -133,6 +133,21 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
   color:#c0392b;font-family:sans-serif;font-weight:600;
 }
 
+/* watermark */
+.watermark{
+  font-size:11px;font-family:sans-serif;
+  color:rgba(0,0,0,.18);letter-spacing:.08em;
+  pointer-events:none;
+  text-align:center;
+  padding:1.5rem 0 .75rem;
+  width:100%;
+}
+@media(min-width:720px){
+  .watermark{
+    position:fixed;bottom:12px;right:16px;
+    padding:0;width:auto;
+    text-align:right;
+  }
 }
 </style>
 </head>
@@ -167,6 +182,7 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
       <button class="lbtn active" onclick="toggleLesson(2,this)">L2</button>
       <button class="lbtn active" onclick="toggleLesson(3,this)">L3</button>
       <button class="lbtn active" onclick="toggleLesson(4,this)">L4</button>
+      <button class="lbtn active" onclick="toggleLesson(5,this)">L5</button>
     </div>
     <button class="shuffle-btn" onclick="buildDeck()">⇄ Barajar</button>
   </div>
@@ -360,6 +376,43 @@ const ALL=[
   {es:"Pekín",                           tokens:["ペ","キ","ン"],                                   rom:"pekin",            l:4},
   {es:"Los Ángeles",                     tokens:["ロ","サ","ン","ゼ","ル","ス"],                    rom:"rosanzerusu",      l:4},
   {es:"Londres",                         tokens:["ロ","ン","ド","ン"],                              rom:"rondon",           l:4},
+  {es:"ir",                              tokens:["い","き","ま","す"],                              rom:"ikimasu",          l:5},
+  {es:"venir",                           tokens:["き","ま","す"],                                   rom:"kimasu",           l:5},
+  {es:"volver / regresar",               tokens:["か","え","り","ま","す"],                         rom:"kaerimasu",        l:5},
+  {es:"escuela",                         tokens:["がっ","こう"],                                    rom:"gakkou",           l:5},
+  {es:"supermercado",                    tokens:["スー","パー"],                                    rom:"suupaa",           l:5},
+  {es:"estación",                        tokens:["え","き"],                                        rom:"eki",              l:5},
+  {es:"avión",                           tokens:["ひ","こう","き"],                                 rom:"hikouki",          l:5},
+  {es:"buque / barco",                   tokens:["ふ","ね"],                                        rom:"fune",             l:5},
+  {es:"tren eléctrico",                  tokens:["で","ん","しゃ"],                                 rom:"densha",           l:5},
+  {es:"metro",                           tokens:["ち","か","て","つ"],                              rom:"chikatetsu",       l:5},
+  {es:"Shinkansen / tren bala",          tokens:["し","ん","か","ん","せ","ん"],                    rom:"shinkansen",       l:5},
+  {es:"autobús / camión",                tokens:["バ","ス"],                                        rom:"basu",             l:5},
+  {es:"taxi",                            tokens:["タ","ク","シー"],                                 rom:"takushii",         l:5},
+  {es:"bicicleta",                       tokens:["じ","て","ん","しゃ"],                            rom:"jitensha",         l:5},
+  {es:"a pie / andando",                 tokens:["あ","る","い","て"],                              rom:"aruite",           l:5},
+  {es:"persona / gente",                 tokens:["ひ","と"],                                        rom:"hito",             l:5},
+  {es:"amigo(s)",                        tokens:["と","も","だ","ち"],                              rom:"tomodachi",        l:5},
+  {es:"él / novio",                      tokens:["か","れ"],                                        rom:"kare",             l:5},
+  {es:"ella / novia",                    tokens:["か","の","じょ"],                                 rom:"kanojo",           l:5},
+  {es:"familia",                         tokens:["か","ぞ","く"],                                   rom:"kazoku",           l:5},
+  {es:"solo",                            tokens:["ひ","と","り","で"],                              rom:"hitori de",        l:5},
+  {es:"la semana pasada",                tokens:["せ","ん","しゅう"],                               rom:"senshuu",          l:5},
+  {es:"esta semana",                     tokens:["こ","ん","しゅう"],                               rom:"konshuu",          l:5},
+  {es:"la semana que viene",             tokens:["ら","い","しゅう"],                               rom:"raishuu",          l:5},
+  {es:"el mes pasado",                   tokens:["せ","ん","げ","つ"],                              rom:"sengetsu",         l:5},
+  {es:"este mes",                        tokens:["こ","ん","げ","つ"],                              rom:"kongetsu",         l:5},
+  {es:"el mes que viene",                tokens:["ら","い","げ","つ"],                              rom:"raigetsu",         l:5},
+  {es:"el año pasado",                   tokens:["きょ","ね","ん"],                                 rom:"kyonen",           l:5},
+  {es:"este año",                        tokens:["こ","と","し"],                                   rom:"kotoshi",          l:5},
+  {es:"el año que viene",                tokens:["ら","い","ね","ん"],                              rom:"rainen",           l:5},
+  {es:"¿cuándo?",                        tokens:["い","つ"],                                        rom:"itsu",             l:5},
+  {es:"cumpleaños",                      tokens:["た","ん","じょう","び"],                          rom:"tanjoubi",         l:5},
+  {es:"De nada.",                        tokens:["ど","う","い","た","し","ま","し","て"],           rom:"dou itashimashite",l:5},
+  {es:"próximo / siguiente",             tokens:["つ","ぎ","の"],                                   rom:"tsugi no",         l:5},
+  {es:"(tren) ordinario / local",        tokens:["ふ","つう"],                                      rom:"futsuu",           l:5},
+  {es:"(tren) expreso",                  tokens:["きゅう","こう"],                                  rom:"kyuukou",          l:5},
+  {es:"(tren) superexpreso",             tokens:["とっ","きゅう"],                                  rom:"tokkyuu",          l:5},
 ];
 
 const HIRA_POOL=["あ","い","う","え","お","か","き","く","け","こ","さ","し","す","せ","そ","た","ち","つ","て","と","な","に","ぬ","ね","の","は","ひ","ふ","へ","ほ","ま","み","む","め","も","や","ゆ","よ","ら","り","る","れ","ろ","わ","を","ん","が","ぎ","ぐ","げ","ご","ざ","じ","ず","ぜ","ぞ","だ","で","ど","ば","び","ぶ","べ","ぼ","きゃ","きょ","しゃ","しょ","ちゃ","ちょ","にゃ","にょ","ひゃ","ひょ","みゃ","みょ","りゃ","りょ","ぎゃ","ぎょ","じゃ","じょ","びゃ","びょ"];
@@ -371,7 +424,7 @@ const KATA_POOL=["ア","イ","ウ","エ","オ","カ","キ","ク","ケ","コ","�
 // 'correct'  — verified and correct
 // 'revealed' — answer was shown
 
-let deck=[], idx=0, activeLessons=new Set([1,2,3,4]);
+let deck=[], idx=0, activeLessons=new Set([1,2,3,4,5]);
 let cardStates=[];   // per-card: { phase, answer, buttons, hadError }
 
 const TARGET=18;
@@ -732,6 +785,6 @@ function reviewAll(){
 }
 </script>
 
-
+<div class="watermark">Powered by Ferdi</div>
 </body>
 </html>

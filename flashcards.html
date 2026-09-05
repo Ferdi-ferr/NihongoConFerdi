@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flashcards Nihongo — L1, L2, L3, L4</title>
+<title>Flashcards Nihongo — L1, L2, L3, L4, L5</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:sans-serif;background:#f5f5f0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem}
@@ -90,6 +90,7 @@ h1{font-size:16px;font-weight:600;color:#444;margin-bottom:1.25rem;text-align:ce
       <button class="lbtn active" onclick="toggleLesson(2,this)">L2</button>
       <button class="lbtn active" onclick="toggleLesson(3,this)">L3</button>
       <button class="lbtn active" onclick="toggleLesson(4,this)">L4</button>
+      <button class="lbtn active" onclick="toggleLesson(5,this)">L5</button>
     </div>
     <div style="display:flex;gap:6px">
       <button class="shuffle-btn" onclick="shuffleDeck()">⇄ Barajar</button>
@@ -307,10 +308,70 @@ const ALL=[
   {es:"Pekín",jp:"ペキン",rom:"pekin",l:4},
   {es:"Los Ángeles",jp:"ロサンゼルス",rom:"rosanzerusu",l:4},
   {es:"Londres",jp:"ロンドン",rom:"rondon",l:4},
+  // L5
+  {es:"ir",jp:"いきます",rom:"ikimasu",l:5},
+  {es:"venir",jp:"きます",rom:"kimasu",l:5},
+  {es:"volver / regresar / irse a casa",jp:"かえります",rom:"kaerimasu",l:5},
+  {es:"escuela",jp:"がっこう",rom:"gakkou",l:5},
+  {es:"supermercado",jp:"スーパー",rom:"suupaa",l:5},
+  {es:"estación",jp:"えき",rom:"eki",l:5},
+  {es:"avión",jp:"ひこうき",rom:"hikouki",l:5},
+  {es:"buque / barco",jp:"ふね",rom:"fune",l:5},
+  {es:"tren eléctrico",jp:"でんしゃ",rom:"densha",l:5},
+  {es:"metro",jp:"ちかてつ",rom:"chikatetsu",l:5},
+  {es:"Shinkansen / tren bala",jp:"しんかんせん",rom:"shinkansen",l:5},
+  {es:"autobús / camión",jp:"バス",rom:"basu",l:5},
+  {es:"taxi",jp:"タクシー",rom:"takushii",l:5},
+  {es:"bicicleta",jp:"じてんしゃ",rom:"jitensha",l:5},
+  {es:"a pie / andando",jp:"あるいて",rom:"aruite",l:5},
+  {es:"persona / gente",jp:"ひと",rom:"hito",l:5},
+  {es:"amigo(s)",jp:"ともだち",rom:"tomodachi",l:5},
+  {es:"él / novio",jp:"かれ",rom:"kare",l:5},
+  {es:"ella / novia",jp:"かのじょ",rom:"kanojo",l:5},
+  {es:"familia",jp:"かぞく",rom:"kazoku",l:5},
+  {es:"solo",jp:"ひとりで",rom:"hitori de",l:5},
+  {es:"la semana pasada",jp:"せんしゅう",rom:"senshuu",l:5},
+  {es:"esta semana",jp:"こんしゅう",rom:"konshuu",l:5},
+  {es:"la semana que viene",jp:"らいしゅう",rom:"raishuu",l:5},
+  {es:"el mes pasado",jp:"せんげつ",rom:"sengetsu",l:5},
+  {es:"este mes",jp:"こんげつ",rom:"kongetsu",l:5},
+  {es:"el mes que viene",jp:"らいげつ",rom:"raigetsu",l:5},
+  {es:"el año pasado",jp:"きょねん",rom:"kyonen",l:5},
+  {es:"este año",jp:"ことし",rom:"kotoshi",l:5},
+  {es:"el año que viene",jp:"らいねん",rom:"rainen",l:5},
+  {es:"~ año(s)",jp:"〜ねん",rom:"~nen",l:5},
+  {es:"¿qué año?",jp:"なんねん",rom:"nannen",l:5},
+  {es:"~ mes",jp:"〜がつ",rom:"~gatsu",l:5},
+  {es:"¿qué mes?",jp:"なんがつ",rom:"nangatsu",l:5},
+  {es:"día 1 del mes",jp:"ついたち",rom:"tsuitachi",l:5},
+  {es:"día 2",jp:"ふつか",rom:"futsuka",l:5},
+  {es:"día 3",jp:"みっか",rom:"mikka",l:5},
+  {es:"día 4",jp:"よっか",rom:"yokka",l:5},
+  {es:"día 5",jp:"いつか",rom:"itsuka",l:5},
+  {es:"día 6",jp:"むいか",rom:"muika",l:5},
+  {es:"día 7",jp:"なのか",rom:"nanoka",l:5},
+  {es:"día 8",jp:"ようか",rom:"youka",l:5},
+  {es:"día 9",jp:"ここのか",rom:"kokonoka",l:5},
+  {es:"día 10",jp:"とおか",rom:"tooka",l:5},
+  {es:"día 14",jp:"じゅうよっか",rom:"juuyokka",l:5},
+  {es:"día 20",jp:"はつか",rom:"hatsuka",l:5},
+  {es:"día 24",jp:"にじゅうよっか",rom:"nijuuyokka",l:5},
+  {es:"~ día(s)",jp:"〜にち",rom:"~nichi",l:5},
+  {es:"¿qué día del mes?",jp:"なんにち",rom:"nannichi",l:5},
+  {es:"¿cuándo?",jp:"いつ",rom:"itsu",l:5},
+  {es:"cumpleaños",jp:"たんじょうび",rom:"tanjoubi",l:5},
+  {es:"Estoy de acuerdo.",jp:"そうですね。",rom:"sou desu ne",l:5},
+  {es:"[Muchas] gracias.",jp:"[どうも]ありがとうございました。",rom:"[doumo] arigatou gozaimashita",l:5},
+  {es:"De nada.",jp:"どういたしまして。",rom:"dou itashimashite",l:5},
+  {es:"andén ~",jp:"〜ばんせん",rom:"~bansen",l:5},
+  {es:"próximo / siguiente",jp:"つぎの",rom:"tsugi no",l:5},
+  {es:"(tren) ordinario / local",jp:"ふつう",rom:"futsuu",l:5},
+  {es:"(tren) expreso",jp:"きゅうこう",rom:"kyuukou",l:5},
+  {es:"(tren) superexpreso",jp:"とっきゅう",rom:"tokkyuu",l:5},
 ];
 
 let deck=[],idx=0,flipped=false,known=0,skipped=0;
-let activeLessons=new Set([1,2,3,4]);
+let activeLessons=new Set([1,2,3,4,5]);
 let dirEsJp=true;
 
 function buildDeck(){
