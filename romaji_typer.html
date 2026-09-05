@@ -112,6 +112,21 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
 .done-msg p{font-size:14px;color:#777;margin-bottom:1.5rem}
 .done-btns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 
+/* watermark */
+.watermark{
+  font-size:11px;font-family:sans-serif;
+  color:rgba(0,0,0,.18);letter-spacing:.08em;
+  pointer-events:none;
+  text-align:center;
+  padding:1.5rem 0 .75rem;
+  width:100%;
+}
+@media(min-width:720px){
+  .watermark{
+    position:fixed;bottom:12px;right:16px;
+    padding:0;width:auto;
+    text-align:right;
+  }
 }
 </style>
 </head>
@@ -141,6 +156,7 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
       <button class="lbtn active" onclick="toggleLesson(2,this)">L2</button>
       <button class="lbtn active" onclick="toggleLesson(3,this)">L3</button>
       <button class="lbtn active" onclick="toggleLesson(4,this)">L4</button>
+      <button class="lbtn active" onclick="toggleLesson(5,this)">L5</button>
     </div>
     <button class="shuffle-btn" onclick="buildDeck()">⇄ Barajar</button>
   </div>
@@ -355,11 +371,65 @@ const ALL = [
   {es:"Pekín",                           kana:"ペキン",            accepted:["pekin","beijing"],                  l:4, note:"pekin / beijing"},
   {es:"Los Ángeles",                     kana:"ロサンゼルス",      accepted:["losanzerusu","los angeles"],        l:4, note:"losanzerusu / los angeles"},
   {es:"Londres",                         kana:"ロンドン",          accepted:["rondon","london"],                  l:4, note:"rondon / london"},
+  // L5
+  {es:"ir",                              kana:"いきます",          accepted:["ikimasu"],                          l:5},
+  {es:"venir",                           kana:"きます",            accepted:["kimasu"],                           l:5},
+  {es:"volver / regresar",               kana:"かえります",        accepted:["kaerimasu"],                        l:5},
+  {es:"escuela",                         kana:"がっこう",          accepted:["gakko","gakkou"],                   l:5, note:"gakko / gakkou"},
+  {es:"supermercado",                    kana:"スーパー",          accepted:["suupa","suupaa"],                   l:5, note:"suupa / suupaa"},
+  {es:"estación",                        kana:"えき",              accepted:["eki"],                              l:5},
+  {es:"avión",                           kana:"ひこうき",          accepted:["hikouki","hikoki"],                 l:5, note:"hikouki / hikoki"},
+  {es:"buque / barco",                   kana:"ふね",              accepted:["fune"],                             l:5},
+  {es:"tren eléctrico",                  kana:"でんしゃ",          accepted:["densha"],                           l:5},
+  {es:"metro",                           kana:"ちかてつ",          accepted:["chikatetsu"],                       l:5},
+  {es:"Shinkansen / tren bala",          kana:"しんかんせん",      accepted:["shinkansen"],                       l:5},
+  {es:"autobús / camión",                kana:"バス",              accepted:["basu","bus"],                       l:5, note:"basu / bus"},
+  {es:"taxi",                            kana:"タクシー",          accepted:["takushi","takushii","taxi"],        l:5, note:"takushi / taxi"},
+  {es:"bicicleta",                       kana:"じてんしゃ",        accepted:["jitensha"],                         l:5},
+  {es:"a pie / andando",                 kana:"あるいて",          accepted:["aruite"],                           l:5},
+  {es:"persona / gente",                 kana:"ひと",              accepted:["hito"],                             l:5},
+  {es:"amigo(s)",                        kana:"ともだち",          accepted:["tomodachi"],                        l:5},
+  {es:"él / novio",                      kana:"かれ",              accepted:["kare"],                             l:5},
+  {es:"ella / novia",                    kana:"かのじょ",          accepted:["kanojo"],                           l:5},
+  {es:"familia",                         kana:"かぞく",            accepted:["kazoku"],                           l:5},
+  {es:"solo",                            kana:"ひとりで",          accepted:["hitori de","hitoride"],             l:5, note:"hitori de / hitoride"},
+  {es:"la semana pasada",                kana:"せんしゅう",        accepted:["senshu","senshuu"],                 l:5, note:"senshu / senshuu"},
+  {es:"esta semana",                     kana:"こんしゅう",        accepted:["konshu","konshuu"],                 l:5, note:"konshu / konshuu"},
+  {es:"la semana que viene",             kana:"らいしゅう",        accepted:["raishu","raishuu"],                 l:5, note:"raishu / raishuu"},
+  {es:"el mes pasado",                   kana:"せんげつ",          accepted:["sengetsu"],                         l:5},
+  {es:"este mes",                        kana:"こんげつ",          accepted:["kongetsu"],                         l:5},
+  {es:"el mes que viene",                kana:"らいげつ",          accepted:["raigetsu"],                         l:5},
+  {es:"el año pasado",                   kana:"きょねん",          accepted:["kyonen"],                           l:5},
+  {es:"este año",                        kana:"ことし",            accepted:["kotoshi"],                          l:5},
+  {es:"el año que viene",                kana:"らいねん",          accepted:["rainen"],                           l:5},
+  {es:"¿cuándo?",                        kana:"いつ",              accepted:["itsu"],                             l:5},
+  {es:"cumpleaños",                      kana:"たんじょうび",      accepted:["tanjobi","tanjoubi"],               l:5, note:"tanjobi / tanjoubi"},
+  {es:"día 1 del mes",                   kana:"ついたち",          accepted:["tsuitachi"],                        l:5},
+  {es:"día 2",                           kana:"ふつか",            accepted:["futsuka"],                          l:5},
+  {es:"día 3",                           kana:"みっか",            accepted:["mikka"],                            l:5},
+  {es:"día 4",                           kana:"よっか",            accepted:["yokka"],                            l:5},
+  {es:"día 5",                           kana:"いつか",            accepted:["itsuka"],                           l:5},
+  {es:"día 6",                           kana:"むいか",            accepted:["muika"],                            l:5},
+  {es:"día 7",                           kana:"なのか",            accepted:["nanoka"],                           l:5},
+  {es:"día 8",                           kana:"ようか",            accepted:["yoka","youka"],                     l:5, note:"yoka / youka"},
+  {es:"día 9",                           kana:"ここのか",          accepted:["kokonoka"],                         l:5},
+  {es:"día 10",                          kana:"とおか",            accepted:["tooka"],                            l:5},
+  {es:"día 14",                          kana:"じゅうよっか",      accepted:["juuyokka"],                         l:5},
+  {es:"día 20",                          kana:"はつか",            accepted:["hatsuka"],                          l:5},
+  {es:"día 24",                          kana:"にじゅうよっか",    accepted:["nijuuyokka"],                       l:5},
+  {es:"¿qué día del mes?",               kana:"なんにち",          accepted:["nannichi"],                         l:5},
+  {es:"Estoy de acuerdo.",               kana:"そうですね。",      accepted:["so desu ne","sou desu ne"],         l:5, note:"so desu ne / sou desu ne"},
+  {es:"[Muchas] gracias.",               kana:"ありがとうございました。", accepted:["arigatou gozaimashita","arigato gozaimashita"], l:5, note:"arigatou / arigato"},
+  {es:"De nada.",                        kana:"どういたしまして。", accepted:["dou itashimashite","do itashimashite"], l:5, note:"dou / do"},
+  {es:"próximo / siguiente",             kana:"つぎの",            accepted:["tsugi no","tsugino"],               l:5, note:"tsugi no / tsugino"},
+  {es:"(tren) ordinario / local",        kana:"ふつう",            accepted:["futsu","futsuu"],                   l:5, note:"futsu / futsuu"},
+  {es:"(tren) expreso",                  kana:"きゅうこう",        accepted:["kyuko","kyuukou"],                  l:5, note:"kyuko / kyuukou"},
+  {es:"(tren) superexpreso",             kana:"とっきゅう",        accepted:["tokkyu","tokkyuu"],                 l:5, note:"tokkyu / tokkyuu"},
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────
 let deck=[], idx=0, cardStates=[];
-let activeLessons=new Set([1,2,3,4]);
+let activeLessons=new Set([1,2,3,4,5]);
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
 
@@ -585,6 +655,6 @@ function reviewAll(){
 }
 </script>
 
-
+<div class="watermark">Powered by Ferdi</div>
 </body>
 </html>
