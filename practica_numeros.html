@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Números, Fechas y Horas — Nihongo con Ferdi</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/wanakana"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:sans-serif;background:#f5f0eb;min-height:100vh;padding:1.5rem 1rem 3rem;display:flex;flex-direction:column;align-items:center;gap:1rem;}
+.torii-home{position:fixed;top:14px;left:14px;z-index:999;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:3px;opacity:.85;transition:opacity .2s,transform .2s}
+.torii-home:hover{opacity:1;transform:scale(1.08)}
+.torii-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#c0392b;font-family:sans-serif;font-weight:600}
+h1{font-size:1rem;font-weight:600;color:#555;margin-bottom:.1rem;text-align:center;margin-top:.5rem}
+.subtitle{font-size:.8rem;color:#a08070;margin-bottom:.25rem;text-align:center;font-style:italic}
+.section-header{width:100%;max-width:560px;display:flex;align-items:center;gap:.75rem;margin-top:.5rem}
+.section-num{width:28px;height:28px;border-radius:50%;background:#c0392b;color:#fff;font-size:.8rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.section-title{font-size:.9rem;font-weight:600;color:#333}
+.section-sub{font-size:.75rem;color:#aaa}
+.switch-bar{display:flex;gap:6px;background:#fff;border:1px solid #e0d8d0;border-radius:99px;padding:4px;width:100%;max-width:560px;justify-content:center;}
+.sbtn{font-size:12px;padding:5px 16px;border-radius:99px;border:none;background:transparent;color:#888;cursor:pointer;transition:all .2s;font-family:inherit;font-weight:500}
+.sbtn.active{background:#3b72d4;color:#fff}
+.num-card{background:#fff;border:1px solid #e0d8d0;border-radius:16px;padding:1.5rem;width:100%;max-width:560px;display:flex;flex-direction:column;align-items:center;gap:.75rem;}
+.num-display{font-size:3rem;font-weight:700;color:#1a1209;letter-spacing:.05em;text-align:center}
+.num-type{font-size:.7rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#aaa}
+.input-wrap{display:flex;gap:8px;align-items:center;width:100%;max-width:440px}
+.kana-input{flex:1;font-size:1.1rem;padding:10px 14px;border-radius:10px;border:2px solid #d8d8d0;background:#fafaf7;color:#1a1209;font-family:'Noto Sans JP',sans-serif;outline:none;transition:border-color .15s;text-align:center;}
+.kana-input:focus{border-color:#3b72d4}
+.kana-input.ok{border-color:#2d7a3e;background:#f0faf2}
+.kana-input.err{border-color:#c03030;background:#fdf0f0;animation:shake .35s ease}
+.kana-input.revealed{border-color:#c8a800;background:#fffbe6}
+.kana-input:disabled{opacity:.7}
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}}
+.check-btn{padding:10px 18px;border-radius:10px;border:none;background:#3b72d4;color:#fff;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .15s;white-space:nowrap}
+.check-btn:hover{background:#2f5eab}
+.check-btn:disabled{opacity:.35;cursor:default}
+.feedback{min-height:22px;font-size:.85rem;font-weight:500;text-align:center}
+.feedback.ok{color:#2d7a3e}
+.feedback.err{color:#b03030}
+.feedback.hint-text{color:#8a6800}
+.action-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+.abtn{font-size:12px;padding:6px 14px;border-radius:10px;border:1px solid #ddd;background:#f7f4f0;color:#333;cursor:pointer;font-weight:500;font-family:inherit;transition:all .15s}
+.abtn:hover{background:#ece8e0}
+.abtn.reveal{background:#fdf6e3;color:#8a6800;border-color:transparent}
+.abtn.retry{background:#fdecea;color:#b03030;border-color:transparent}
+.abtn.next{background:#2d7a3e;color:#fff;border-color:transparent}
+.hint{font-size:.7rem;color:#bbb;font-style:italic;text-align:center}
+.divider{width:100%;max-width:560px;border:none;border-top:1px solid #e0d8d0;margin:.5rem 0}
+/* progress for section 2 */
+.prog-bar-wrap{height:3px;background:#ddd;border-radius:2px;overflow:hidden;width:100%;max-width:560px}
+.prog-bar-fill{height:100%;background:#c0392b;border-radius:2px;transition:width .3s}
+.prog-text{font-size:11px;color:#aaa;text-align:center}
+/* context card */
+.context-card{background:#fff;border:1px solid #e0d8d0;border-radius:16px;padding:1.25rem 1.5rem;width:100%;max-width:560px;display:flex;flex-direction:column;gap:.75rem;}
+.context-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#bbb;margin-bottom:.25rem}
+.context-chips{display:flex;gap:.6rem;flex-wrap:wrap;}
+.chip{display:flex;align-items:center;gap:.4rem;background:#faf7f2;border:1px solid #e8e0d8;border-radius:99px;padding:.35rem .85rem;}
+.chip-icon{font-size:1.1rem}
+.chip-text{font-size:.9rem;color:#1a1209;}
+.char-row{display:flex;align-items:center;gap:.75rem;}
+.char-avatar{width:52px;height:64px;flex-shrink:0}
+.char-info{display:flex;flex-direction:column;gap:2px}
+.char-name{font-size:1rem;font-weight:600;color:#1a1209;font-family:'Noto Sans JP',sans-serif}
+.char-prof{font-size:.72rem;color:#888;background:#f0f5f0;padding:2px 8px;border-radius:99px;display:inline-block}
+.q-card{background:#fff;border:1px solid #e0d8d0;border-radius:16px;padding:1.25rem 1.5rem;width:100%;max-width:560px;display:flex;flex-direction:column;gap:.6rem;}
+.q-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#bbb;}
+.q-text{font-size:1.1rem;color:#1a1209;font-family:'Noto Sans JP',sans-serif;line-height:1.8;}
+.done-card{background:#fff;border:1px solid #e0d8d0;border-radius:16px;padding:2.5rem 1.5rem;width:100%;max-width:560px;text-align:center;display:none;flex-direction:column;gap:1rem;align-items:center;}
+.done-card h2{font-size:1.3rem;font-weight:500}
+.done-card p{font-size:.9rem;color:#777}
+</style>
+</head>
+<body>
+<a class="torii-home" href="./" title="Inicio">
+  <svg width="44" height="38" viewBox="0 0 44 38" xmlns="http://www.w3.org/2000/svg">
+    <defs><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feBlend in="SourceGraphic" mode="multiply" result="blend"/><feComposite in="blend" in2="SourceGraphic" operator="in"/></filter></defs>
+    <ellipse cx="22" cy="37" rx="14" ry="2.5" fill="rgba(0,0,0,.13)"/>
+    <rect x="6" y="14" width="5" height="22" rx="1.5" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="33" y="14" width="5" height="22" rx="1.5" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="4" y="19" width="36" height="3.5" rx="1.5" fill="#a93226" filter="url(#grain)"/>
+    <path d="M1,8 Q3,4 22,5.5 Q41,4 43,8 L40,11 Q22,9.5 4,11 Z" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="5" y="11" width="34" height="3" rx="1" fill="#b03020" filter="url(#grain)"/>
+    <path d="M4,8.5 Q22,7 40,8.5" stroke="rgba(255,255,255,.18)" stroke-width="1" fill="none"/>
+    <rect x="16" y="11.5" width="12" height="2" rx=".5" fill="#7a1f18" opacity=".7"/>
+  </svg>
+  <span class="torii-label">inicio</span>
+</a>
+
+<h1>数字・日付・時間</h1>
+<p class="subtitle">Practica números, fechas y horas en japonés</p>
+
+<!-- ══ SECCIÓN 1 ══ -->
+<div class="section-header">
+  <div class="section-num">1</div>
+  <div>
+    <div class="section-title">Práctica de números</div>
+    <div class="section-sub">Lee el número y escríbelo en japonés</div>
+  </div>
+</div>
+<div class="switch-bar">
+  <button class="sbtn active" id="btnFecha" onclick="setType('fecha')">📅 Fecha</button>
+  <button class="sbtn" id="btnHora" onclick="setType('hora')">🕐 Hora</button>
+  <button class="sbtn" id="btnPrecio" onclick="setType('precio')">💴 Precio</button>
+</div>
+<div class="num-card">
+  <div class="num-type" id="numType"></div>
+  <div class="num-display" id="numDisplay"></div>
+  <div class="hint">Escribe en romaji → convierte a kana automáticamente</div>
+  <div class="input-wrap">
+    <input class="kana-input" id="numInput" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+    <button class="check-btn" id="numCheckBtn" onclick="verifyNum()">→</button>
+  </div>
+  <div class="feedback" id="numFeedback"></div>
+  <div class="action-row" id="numActions"></div>
+</div>
+
+<hr class="divider">
+
+<!-- ══ SECCIÓN 2 ══ -->
+<div class="section-header">
+  <div class="section-num">2</div>
+  <div>
+    <div class="section-title">Ejercicio con contexto</div>
+    <div class="section-sub">Lee la tarjeta y responde la pregunta</div>
+  </div>
+</div>
+<div class="prog-bar-wrap"><div class="prog-bar-fill" id="progBar" style="width:0%"></div></div>
+<div class="prog-text" id="progText"></div>
+<div class="context-card" id="ctxCard"></div>
+<div class="q-card" id="qCard"></div>
+<div class="done-card" id="doneCard">
+  <h2>¡Sección completa! 🎉</h2>
+  <p id="doneSummary"></p>
+  <button class="abtn next" onclick="initCtx()">↺ Repetir todo</button>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────
+const MONTHS={1:'いちがつ',2:'にがつ',3:'さんがつ',4:'しがつ',5:'ごがつ',6:'ろくがつ',7:'しちがつ',8:'はちがつ',9:'くがつ',10:'じゅうがつ',11:'じゅういちがつ',12:'じゅうにがつ'};
+const DAYS={1:'ついたち',2:'ふつか',3:'みっか',4:'よっか',5:'いつか',6:'むいか',7:'なのか',8:'ようか',9:'ここのか',10:'とおか',14:'じゅうよっか',20:'はつか',24:'にじゅうよっか'};
+const VALID_DAYS=[1,2,3,4,5,6,7,8,9,10,14,20,24];
+const HOURS_JP={1:'いちじ',2:'にじ',3:'さんじ',4:'よじ',5:'ごじ',6:'ろくじ',7:['しちじ','ななじ'],8:'はちじ',9:'くじ',10:'じゅうじ',11:'じゅういちじ',12:'じゅうにじ'};
+const MINS_JP={0:[''],1:['いっぷん'],2:['にふん'],3:['さんぷん'],4:['よんぷん'],5:['ごふん'],6:['ろっぷん'],7:['ななふん'],8:['はっぷん'],9:['きゅうふん'],10:['じゅっぷん','じっぷん'],15:['じゅうごふん'],20:['にじゅっぷん'],25:['にじゅうごふん'],30:['はん','さんじゅっぷん'],35:['さんじゅうごふん'],40:['よんじゅっぷん'],45:['よんじゅうごふん'],50:['ごじゅっぷん'],55:['ごじゅうごふん']};
+const VALID_MINS=[0,1,2,3,4,5,6,7,8,9,10,15,20,25,30,35,40,45,50,55];
+
+function rand(arr){return arr[Math.floor(Math.random()*arr.length)];}
+function pad(n){return n.toString().padStart(2,'0');}
+function norm(s){return s.trim().replace(/\s+/g,'').replace(/[。．]/g,'');}
+
+// ── SECTION 1 ─────────────────────────────────────────────────────
+let numType='fecha', numAccepted=[];
+
+function setType(t){
+  numType=t;
+  document.getElementById('btnFecha').classList.toggle('active',t==='fecha');
+  document.getElementById('btnHora').classList.toggle('active',t==='hora');
+  document.getElementById('btnPrecio').classList.toggle('active',t==='precio');
+  nextNum();
+}
+
+function priceToJP(n){
+  const KAZU=['','いち','に','さん','よん','ご','ろく','なな','はち','きゅう'];
+  const KAZU2=['','いち','に','さん','よん','ご','ろく','なな','はっ','きゅう'];
+  let s='';
+  const man=Math.floor(n/10000);
+  const rest=n%10000;
+  const sen=Math.floor(rest/1000);
+  const hyak=Math.floor((rest%1000)/100);
+  const ju=Math.floor((rest%100)/10);
+  const ichi=rest%10;
+  if(man) s+=(man===1?'':''+KAZU[man])+'まん';
+  if(sen) s+=(sen===1?'':''+KAZU[sen])+'せん';
+  if(hyak){
+    if(hyak===3) s+='さんびゃく';
+    else if(hyak===6) s+='ろっぴゃく';
+    else if(hyak===8) s+='はっぴゃく';
+    else s+=(hyak===1?'':KAZU[hyak])+'ひゃく';
+  }
+  if(ju) s+=(ju===1?'':KAZU[ju])+'じゅう';
+  if(ichi) s+=KAZU2[ichi];
+  return s+'えん';
+}
+
+function generateNum(){
+  if(numType==='fecha'){
+    const m=Math.ceil(Math.random()*12);
+    const d=rand(VALID_DAYS);
+    return {display:`${pad(d)}/${m}`, label:'¿Qué fecha es?', accepted:[norm(MONTHS[m]+DAYS[d])]};
+  } else if(numType==='hora'){
+    const h=Math.ceil(Math.random()*12);
+    const m=rand(VALID_MINS);
+    const ampm=Math.random()<0.5?'am':'pm';
+    const prefix=ampm==='am'?'ごぜん':'ごご';
+    const hArr=Array.isArray(HOURS_JP[h])?HOURS_JP[h]:[HOURS_JP[h]];
+    const mArr=MINS_JP[m]||[''];
+    const accepted=[];
+    hArr.forEach(hh=>mArr.forEach(mm=>accepted.push(norm(prefix+hh+mm))));
+    return {display:`${h}:${pad(m)} ${ampm}`, label:'¿Qué hora es?', accepted};
+  } else {
+    const prices=[500,800,1000,1200,1500,2000,2500,3000,3800,5000,8000,10000,12500,15000,20000,50000,100000];
+    const p=rand(prices);
+    return {display:`¥${p.toLocaleString()}`, label:'¿Cuánto cuesta?', accepted:[priceToJP(p)]};
+  }
+}
+
+function nextNum(){
+  const q=generateNum();
+  numAccepted=q.accepted;
+  document.getElementById('numType').textContent=q.label;
+  document.getElementById('numDisplay').textContent=q.display;
+  const inp=document.getElementById('numInput');
+  inp.value=''; inp.disabled=false; inp.className='kana-input';
+  document.getElementById('numCheckBtn').disabled=false;
+  document.getElementById('numFeedback').textContent='';
+  document.getElementById('numFeedback').className='feedback';
+  document.getElementById('numActions').innerHTML='';
+  inp.focus();
+}
+
+function verifyNum(){
+  const inp=document.getElementById('numInput');
+  const val=norm(inp.value);
+  if(!val) return;
+  const ok=numAccepted.some(a=>norm(a)===val);
+  inp.disabled=true; inp.classList.add(ok?'ok':'err');
+  document.getElementById('numCheckBtn').disabled=true;
+  const fb=document.getElementById('numFeedback');
+  const row=document.getElementById('numActions');
+  if(ok){
+    fb.textContent='¡Perfecto! ✓'; fb.className='feedback ok';
+    const nb=document.createElement('button');
+    nb.className='abtn next'; nb.textContent='Siguiente →'; nb.onclick=nextNum;
+    row.appendChild(nb);
+  } else {
+    fb.textContent='Incorrecto'; fb.className='feedback err';
+    addRetry(row,()=>{inp.value='';inp.disabled=false;inp.classList.remove('ok','err','revealed');document.getElementById('numCheckBtn').disabled=false;fb.textContent='';row.innerHTML='';inp.focus();});
+    addReveal(row,numAccepted[0],inp,fb,()=>{const nb=document.createElement('button');nb.className='abtn next';nb.textContent='Siguiente →';nb.onclick=nextNum;row.appendChild(nb);});
+  }
+}
+
+// ── SECTION 2 ─────────────────────────────────────────────────────
+function makeAvatar(skin,hair,shirt,badge){
+  return `<svg class="char-avatar" viewBox="0 0 90 110" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="45" cy="55" r="44" fill="#f8f4ef"/>
+    <rect x="8" y="70" width="12" height="28" rx="6" fill="${shirt}"/>
+    <rect x="70" y="70" width="12" height="28" rx="6" fill="${shirt}"/>
+    <ellipse cx="14" cy="98" rx="6" ry="5" fill="${skin}"/>
+    <ellipse cx="76" cy="98" rx="6" ry="5" fill="${skin}"/>
+    <rect x="18" y="68" width="54" height="42" rx="4" fill="${shirt}"/>
+    <rect x="38" y="60" width="14" height="12" rx="2" fill="${skin}"/>
+    <ellipse cx="45" cy="44" rx="20" ry="22" fill="${skin}"/>
+    <ellipse cx="45" cy="30" rx="20" ry="14" fill="${hair}"/>
+    <rect x="25" y="28" width="40" height="10" fill="${hair}"/>
+    <ellipse cx="38" cy="42" rx="2.5" ry="2.8" fill="#2a1a0a"/>
+    <ellipse cx="52" cy="42" rx="2.5" ry="2.8" fill="#2a1a0a"/>
+    <ellipse cx="37.5" cy="41.5" rx=".8" ry=".8" fill="white"/>
+    <ellipse cx="51.5" cy="41.5" rx=".8" ry=".8" fill="white"/>
+    <path d="M39,51 Q45,56 51,51" stroke="#c08070" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <rect x="52" y="76" width="14" height="10" rx="2" fill="${badge}" opacity=".9"/>
+    <text x="59" y="84" text-anchor="middle" font-size="6" fill="white" font-family="sans-serif" font-weight="bold">会</text>
+  </svg>`;
+}
+
+const CHARS={
+  tanaka:{name:'たなかさん',prof:'せんせい',skin:'#f0c898',hair:'#0a0500',shirt:'#2255aa',badge:'#9b59b6'},
+  ken:   {name:'ケンさん',  prof:'がくせい', skin:'#f2d0b0',hair:'#6b3a1a',shirt:'#27ae60',badge:'#e67e22'},
+  yuki:  {name:'ユキさん',  prof:'がくせい', skin:'#f5d0b0',hair:'#0a0500',shirt:'#e67e22',badge:'#e67e22'},
+  sato:  {name:'さとうさん',prof:'かいしゃいん',skin:'#f0c898',hair:'#0a0500',shirt:'#2c3e50',badge:'#27ae60'},
+  yamada:{name:'やまださん',prof:'かいしゃいん',skin:'#f0c898',hair:'#0a0500',shirt:'#2980b9',badge:'#27ae60'},
+  suzuki:{name:'すずきさん',prof:'かいしゃいん',skin:'#e8c090',hair:'#3a1800',shirt:'#c8a060',badge:'#27ae60'},
+};
+
+// 18 context questions
+const CTX_DECK=[
+  {char:'sato',  date:'03/3', time:'9:30 am', price:'2,500円',
+   q:'さとうさんは　なんがつ　なんにち　に　ぎんこうに　いきますか？',
+   accepted:['さんがつみっかにいきます','さんがつみっかにいきます']},
+  {char:'tanaka',date:'09/1', time:'8:00 am', price:'1,200円',
+   q:'たなかさんは　なんがつ　ついたち　に　どこに　いきますか？',
+   accepted:['くがつついたちにがっこうにいきます','くがつついたちにがっこうへいきます'],
+   hint:'(がっこう)'},
+  {char:'ken',   date:'20/7', time:'3:00 pm', price:'800円',
+   q:'ケンさんは　なんがつ　なんにち　に　としょかんに　いきますか？',
+   accepted:['しちがつはつかにとしょかんにいきます']},
+  {char:'yuki',  date:'14/2', time:'11:00 am',price:'500円',
+   q:'ユキさんは　なんがつ　なんにち　に　スーパーに　いきますか？',
+   accepted:['にがつじゅうよっかにすーぱーにいきます','にがつじゅうよっかにスーパーにいきます']},
+  {char:'sato',  date:'01/4', time:'9:00 am', price:'15,000円',
+   q:'さとうさんは　なんがつ　ついたち　に　かいしゃに　いきますか？',
+   accepted:['しがつついたちにかいしゃにいきます']},
+  {char:'yamada',date:'08/6', time:'2:30 pm', price:'3,800円',
+   q:'やまださんは　なんがつ　なんにち　に　びじゅつかんに　いきますか？',
+   accepted:['ろくがつようかにびじゅつかんにいきます']},
+  {char:'suzuki',date:'10/9', time:'7:00 am', price:'1,500円',
+   q:'すずきさんは　なんがつ　とおか　に　えきに　いきますか？',
+   accepted:['くがつとおかにえきにいきます']},
+  {char:'ken',   date:'24/3', time:'4:15 pm', price:'600円',
+   q:'ケンさんは　なんがつ　なんにち　に　スーパーに　いきますか？',
+   accepted:['さんがつにじゅうよっかにすーぱーにいきます','さんがつにじゅうよっかにスーパーにいきます']},
+  {char:'tanaka',date:'05/5', time:'10:30 am',price:'2,000円',
+   q:'たなかさんは　なんがつ　なんにち　に　ゆうびんきょくに　いきますか？',
+   accepted:['ごがついつかにゆうびんきょくにいきます']},
+  {char:'yuki',  date:'02/8', time:'6:00 pm', price:'8,000円',
+   q:'ユキさんは　なんがつ　ふつか　に　どこに　いきますか？',
+   accepted:['はちがつふつかにびょういんにいきます','はちがつふつかにスーパーにいきます'],
+   hint:'(びょういん か スーパー)'},
+  {char:'sato',  date:'07/11',time:'8:30 am', price:'12,500円',
+   q:'さとうさんは　なんがつ　なのか　に　かいぎしつに　いきますか？',
+   accepted:['じゅういちがつなのかにかいぎしつにいきます']},
+  {char:'yamada',date:'20/1', time:'1:00 pm', price:'5,000円',
+   q:'やまださんは　なんがつ　はつか　に　デパートに　いきますか？',
+   accepted:['いちがつはつかにでぱーとにいきます','いちがつはつかにデパートにいきます']},
+  {char:'suzuki',date:'04/12',time:'9:45 am', price:'20,000円',
+   q:'すずきさんは　なんがつ　よっか　に　ぎんこうに　いきますか？',
+   accepted:['じゅうにがつよっかにぎんこうにいきます']},
+  {char:'ken',   date:'06/3', time:'5:00 pm', price:'1,000円',
+   q:'ケンさんは　なんがつ　むいか　に　としょかんに　かえりますか？',
+   accepted:['さんがつむいかにとしょかんにかえります']},
+  {char:'tanaka',date:'09/6', time:'7:30 am', price:'3,000円',
+   q:'たなかさんは　なんがつ　ここのか　に　がっこうに　いきますか？',
+   accepted:['ろくがつここのかにがっこうにいきます']},
+  {char:'yuki',  date:'01/9', time:'11:30 am',price:'500円',
+   q:'ユキさんは　なんがつ　ついたち　に　スーパーに　いきますか？',
+   accepted:['くがつついたちにすーぱーにいきます','くがつついたちにスーパーにいきます']},
+  {char:'sato',  date:'14/7', time:'8:00 am', price:'50,000円',
+   q:'さとうさんは　なんがつ　じゅうよっか　に　かいしゃに　きますか？',
+   accepted:['しちがつじゅうよっかにかいしゃにきます']},
+  {char:'yamada',date:'24/10',time:'3:30 pm', price:'10,000円',
+   q:'やまださんは　なんがつ　にじゅうよっか　に　ゆうびんきょくに　いきますか？',
+   accepted:['じゅうがつにじゅうよっかにゆうびんきょくにいきます']},
+];
+
+let ctxDeck=[], ctxIdx=0, ctxOk=0, ctxErr=0;
+
+function shuffle(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function initCtx(){
+  ctxDeck=shuffle([...CTX_DECK]);
+  ctxIdx=0; ctxOk=0; ctxErr=0;
+  document.getElementById('doneCard').style.display='none';
+  document.getElementById('ctxCard').style.display='';
+  document.getElementById('qCard').style.display='';
+  renderCtx();
+}
+
+function renderCtx(){
+  const q=ctxDeck[ctxIdx];
+  const c=CHARS[q.char];
+  const pct=Math.round((ctxIdx/ctxDeck.length)*100);
+  document.getElementById('progBar').style.width=pct+'%';
+  document.getElementById('progText').textContent=(ctxIdx+1)+' / '+ctxDeck.length;
+
+  // context card
+  document.getElementById('ctxCard').innerHTML=`
+    <div>
+      <div class="context-label">Contexto</div>
+      <div class="context-chips">
+        <div class="chip"><span class="chip-icon">🗓</span><span class="chip-text">${q.date}</span></div>
+        <div class="chip"><span class="chip-icon">🕐</span><span class="chip-text">${q.time}</span></div>
+        <div class="chip"><span class="chip-icon">💴</span><span class="chip-text">${q.price}</span></div>
+      </div>
+    </div>
+    <div class="char-row">
+      ${makeAvatar(c.skin,c.hair,c.shirt,c.badge)}
+      <div class="char-info">
+        <div class="char-name">${c.name}</div>
+        <div class="char-prof">${c.prof}</div>
+      </div>
+    </div>`;
+
+  // question card
+  document.getElementById('qCard').innerHTML=`
+    <div class="q-label">Pregunta</div>
+    <div class="q-text">${q.q}</div>
+    ${q.hint?`<div class="hint">💡 Pista: ${q.hint}</div>`:''}
+    <div class="hint">Escribe en romaji → convierte a kana automáticamente</div>
+    <div class="input-wrap">
+      <input class="kana-input" id="ctxInput" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      <button class="check-btn" id="ctxCheckBtn" onclick="verifyCtx()">→</button>
+    </div>
+    <div class="feedback" id="ctxFeedback"></div>
+    <div class="action-row" id="ctxActions"></div>`;
+
+  wanakana.bind(document.getElementById('ctxInput'),{IMEMode:true});
+  document.getElementById('ctxInput').addEventListener('keydown',e=>{if(e.key==='Enter')verifyCtx();});
+  document.getElementById('ctxInput').focus();
+}
+
+function verifyCtx(){
+  const inp=document.getElementById('ctxInput');
+  const val=norm(inp.value);
+  if(!val) return;
+  const q=ctxDeck[ctxIdx];
+  const ok=q.accepted.some(a=>norm(a)===val);
+  inp.disabled=true; inp.classList.add(ok?'ok':'err');
+  document.getElementById('ctxCheckBtn').disabled=true;
+  const fb=document.getElementById('ctxFeedback');
+  const row=document.getElementById('ctxActions');
+  if(ok){
+    ctxOk++;
+    fb.textContent='¡Perfecto! ✓'; fb.className='feedback ok';
+    addNext(row);
+  } else {
+    ctxErr++;
+    fb.textContent='Incorrecto'; fb.className='feedback err';
+    addRetry(row,()=>{inp.value='';inp.disabled=false;inp.classList.remove('ok','err','revealed');document.getElementById('ctxCheckBtn').disabled=false;fb.textContent='';row.innerHTML='';inp.focus();});
+    addReveal(row,q.accepted[0],inp,fb,addNext.bind(null,row));
+  }
+}
+
+function addNext(row){
+  const nb=document.createElement('button');
+  nb.className='abtn next';
+  nb.textContent=ctxIdx===ctxDeck.length-1?'Ver resultados →':'Siguiente →';
+  nb.onclick=()=>{
+    ctxIdx++;
+    if(ctxIdx>=ctxDeck.length) showDone();
+    else renderCtx();
+  };
+  row.appendChild(nb);
+}
+
+function showDone(){
+  document.getElementById('ctxCard').style.display='none';
+  document.getElementById('qCard').style.display='none';
+  document.getElementById('progText').textContent='';
+  document.getElementById('progBar').style.width='100%';
+  const d=document.getElementById('doneCard');
+  d.style.display='flex';
+  document.getElementById('doneSummary').textContent=`✓ ${ctxOk} correctas · ✗ ${ctxErr} con errores.`;
+}
+
+// ── HELPERS ───────────────────────────────────────────────────────
+function addRetry(row,fn){
+  const b=document.createElement('button');
+  b.className='abtn retry'; b.textContent='↺ Reintentar'; b.onclick=fn;
+  row.appendChild(b);
+}
+function addReveal(row,answer,inp,fb,afterFn){
+  const b=document.createElement('button');
+  b.className='abtn reveal'; b.textContent='👁 Ver respuesta';
+  b.onclick=()=>{
+    inp.value=answer; inp.classList.remove('err'); inp.classList.add('revealed');
+    fb.textContent='Respuesta revelada'; fb.className='feedback hint-text';
+    row.innerHTML=''; afterFn();
+  };
+  row.appendChild(b);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+wanakana.bind(document.getElementById('numInput'),{IMEMode:true});
+document.getElementById('numInput').addEventListener('keydown',e=>{if(e.key==='Enter')verifyNum();});
+nextNum();
+initCtx();
+</script>
+</body>
+</html>
