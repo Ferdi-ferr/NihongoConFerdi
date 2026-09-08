@@ -100,6 +100,7 @@ h1{font-size:1rem;font-weight:600;color:#555;margin-bottom:.1rem;text-align:cent
 </div>
 <div class="switch-bar">
   <button class="sbtn active" id="btnFecha" onclick="setType('fecha')">📅 Fecha</button>
+  <button class="sbtn" id="btnDia" onclick="setType('dia')">📆 Días</button>
   <button class="sbtn" id="btnHora" onclick="setType('hora')">🕐 Hora</button>
   <button class="sbtn" id="btnPrecio" onclick="setType('precio')">💴 Precio</button>
 </div>
@@ -107,6 +108,7 @@ h1{font-size:1rem;font-weight:600;color:#555;margin-bottom:.1rem;text-align:cent
   <div class="num-type" id="numType"></div>
   <div class="num-display" id="numDisplay"></div>
   <div class="hint">Escribe en romaji → convierte a kana automáticamente</div>
+  <div class="hint" id="numHint" style="color:#9b59b6;font-style:normal;font-weight:500;min-height:16px"></div>
   <div class="input-wrap">
     <input class="kana-input" id="numInput" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
     <button class="check-btn" id="numCheckBtn" onclick="verifyNum()">→</button>
@@ -154,8 +156,10 @@ let numType='fecha', numAccepted=[];
 function setType(t){
   numType=t;
   document.getElementById('btnFecha').classList.toggle('active',t==='fecha');
+  document.getElementById('btnDia').classList.toggle('active',t==='dia');
   document.getElementById('btnHora').classList.toggle('active',t==='hora');
   document.getElementById('btnPrecio').classList.toggle('active',t==='precio');
+  if(t==='dia') resetDiaDeck();
   nextNum();
 }
 
@@ -182,7 +186,54 @@ function priceToJP(n){
   return s+'えん';
 }
 
+// ── DÍA DECK ──────────────────────────────────────────────────────
+const IRREGULAR_DAYS=[1,2,3,4,5,6,7,8,9,10,14,20,24];
+const REGULAR_DAYS=[11,12,13,15,16,17,18,19,21,22,23,25,26,27,28,29,30,31];
+const NUM_JP=['','いち','に','さん','よん','ご','ろく','なな','はち','きゅう'];
+
+function dayToJP(n){
+  if(DAYS[n]) return DAYS[n]; // irregular
+  // regular: number + にち
+  if(n<=9) return NUM_JP[n]+'にち';
+  if(n===10) return 'じゅうにち'; // just in case
+  const tens=Math.floor(n/10);
+  const units=n%10;
+  let s='';
+  if(tens===1) s='じゅう';
+  else if(tens===2) s='にじゅう';
+  else if(tens===3) s='さんじゅう';
+  if(units===0) s+='';
+  else s+=NUM_JP[units];
+  return s+'にち';
+}
+
+let diaDeck=[], diaIdx=0;
+
+function buildDiaDeck(){
+  const deck=[];
+  // irregulars appear twice
+  IRREGULAR_DAYS.forEach(d=>{ deck.push(d); deck.push(d); });
+  // regulars appear once
+  REGULAR_DAYS.forEach(d=>deck.push(d));
+  return shuffle(deck);
+}
+
+function resetDiaDeck(){
+  diaDeck=buildDiaDeck();
+  diaIdx=0;
+}
+
+function nextDia(){
+  if(diaIdx>=diaDeck.length){ diaDeck=buildDiaDeck(); diaIdx=0; }
+  const d=diaDeck[diaIdx++];
+  const accepted=[dayToJP(d)];
+  const isIrreg=IRREGULAR_DAYS.includes(d);
+  return {display:`día ${d}`, label:'¿Cómo se dice este día?', accepted,
+    hint: isIrreg?'(forma irregular)':null};
+}
+
 function generateNum(){
+  if(numType==='dia') return nextDia();
   if(numType==='fecha'){
     const m=Math.ceil(Math.random()*12);
     const d=rand(VALID_DAYS);
@@ -215,6 +266,9 @@ function nextNum(){
   document.getElementById('numFeedback').textContent='';
   document.getElementById('numFeedback').className='feedback';
   document.getElementById('numActions').innerHTML='';
+  // show irregular hint
+  const hintEl=document.getElementById('numHint');
+  if(hintEl) hintEl.textContent=q.hint||'';
   inp.focus();
 }
 
@@ -452,6 +506,7 @@ function addReveal(row,answer,inp,fb,afterFn){
 wanakana.bind(document.getElementById('numInput'),{IMEMode:true});
 document.getElementById('numInput').addEventListener('keydown',e=>{if(e.key==='Enter')verifyNum();});
 window.scrollTo(0,0);
+resetDiaDeck();
 nextNum();
 initCtx();
 </script>
