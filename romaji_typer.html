@@ -129,6 +129,7 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
   }
 }
 </style>
+<script src="https://unpkg.com/wanakana"></script>
 </head>
 <body>
 
@@ -504,7 +505,10 @@ function render(){
   input.value=done?st.typed:'';
   input.disabled=done;
   input.className='romaji-input'+(done?' state-'+st.phase:'');
-  if(!done) setTimeout(()=>input.focus(),50);
+  if(!done) setTimeout(()=>{
+    if(!input.dataset.wk){ wanakana.bind(input,{IMEMode:true}); input.dataset.wk='1'; }
+    input.focus();
+  },50);
 
   // variants
   renderVariants(card, st);
@@ -557,11 +561,15 @@ function handleKey(e){
 }
 
 function normalize(s){
-  return s.trim().toLowerCase()
-    .replace(/\s+/g,'')       // remove spaces
-    .replace(/[ー]/g,'')      // ignore long vowel mark if typed
-    .replace(/oo/g,'o')       // oo → o tolerance
-    .replace(/uu/g,'u');      // uu → u tolerance
+  let v=s.trim();
+  // if input is kana, convert to romaji for comparison
+  if(wanakana.isKana(v)) v=wanakana.toRomaji(v);
+  return v.toLowerCase()
+    .replace(/\s+/g,'')
+    .replace(/[ー]/g,'')
+    .replace(/oo/g,'o')
+    .replace(/uu/g,'u')
+    .replace(/chi/g,'chi').replace(/tchi/g,'cchi');
 }
 
 function verifyAnswer(){
@@ -655,6 +663,6 @@ function reviewAll(){
 }
 </script>
 
-<div class="watermark">Powered by Ferdi</div>
+
 </body>
 </html>
