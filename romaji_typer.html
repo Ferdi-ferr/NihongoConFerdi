@@ -20,6 +20,20 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
 .lbtn{font-size:12px;padding:4px 12px;border-radius:99px;border:1px solid #ccc;background:#fff;color:#888;cursor:pointer;transition:all .15s}
 .lbtn.active{background:#3b72d4;color:#fff;border-color:transparent}
 .shuffle-btn{font-size:12px;padding:4px 12px;border-radius:99px;border:1px solid #ccc;background:#fff;color:#555;cursor:pointer}
+/* theme filters */
+.filters-wrap{margin-bottom:.75rem;}
+.filters-toggle{display:none;width:100%;padding:6px 14px;border-radius:10px;border:1px solid #ddd;background:#f7f4f0;color:#555;cursor:pointer;font-size:12px;font-family:inherit;text-align:left;}
+.filters-body{display:flex;flex-direction:column;gap:8px;}
+.filter-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;}
+.filter-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#bbb;min-width:52px;}
+.tbtn{font-size:12px;padding:4px 12px;border-radius:99px;border:1px solid #ccc;background:#fff;color:#888;cursor:pointer;transition:all .15s;font-family:inherit;}
+.tbtn.active{background:#c0392b;color:#fff;border-color:transparent;}
+@media(max-width:600px){
+  .filters-toggle{display:block;}
+  .filters-body{display:none;}
+  .filters-body.open{display:flex;}
+}
+
 
 .prog-bar-wrap{height:3px;background:#ddd;border-radius:2px;margin-bottom:.6rem;overflow:hidden}
 .prog-bar-fill{height:100%;background:#3b72d4;border-radius:2px;transition:width .3s}
@@ -152,15 +166,34 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
   <h1>Escribe en Romaji</h1>
 
   <div class="top-bar">
-    <div class="lesson-filters">
-      <button class="lbtn active" onclick="toggleLesson(1,this)">L1</button>
-      <button class="lbtn active" onclick="toggleLesson(2,this)">L2</button>
-      <button class="lbtn active" onclick="toggleLesson(3,this)">L3</button>
-      <button class="lbtn active" onclick="toggleLesson(4,this)">L4</button>
-      <button class="lbtn active" onclick="toggleLesson(5,this)">L5</button>
-      <button class="lbtn active" onclick="toggleLesson(6,this)">L6</button>
-    </div>
     <button class="shuffle-btn" onclick="buildDeck()">⇄ Barajar</button>
+  </div>
+
+  <div class="filters-wrap">
+    <button class="filters-toggle" onclick="toggleFilters()">🔍 Filtros ▾</button>
+    <div class="filters-body" id="filtersBody">
+      <div class="filter-row">
+        <span class="filter-label">Lección</span>
+        <button class="lbtn active" id="lb1" onclick="toggleLesson(1,this)">L1</button>
+        <button class="lbtn active" id="lb2" onclick="toggleLesson(2,this)">L2</button>
+        <button class="lbtn active" id="lb3" onclick="toggleLesson(3,this)">L3</button>
+        <button class="lbtn active" id="lb4" onclick="toggleLesson(4,this)">L4</button>
+        <button class="lbtn active" id="lb5" onclick="toggleLesson(5,this)">L5</button>
+        <button class="lbtn active" id="lb6" onclick="toggleLesson(6,this)">L6</button>
+      </div>
+      <div class="filter-row">
+        <span class="filter-label">Tema</span>
+        <button class="tbtn" onclick="selectTheme('verbos')">🔤 Verbos</button>
+        <button class="tbtn" onclick="selectTheme('tiempo')">🕐 Tiempo</button>
+        <button class="tbtn" onclick="selectTheme('lugares')">📍 Lugares</button>
+        <button class="tbtn" onclick="selectTheme('transporte')">🚃 Transporte</button>
+        <button class="tbtn" onclick="selectTheme('comida')">🍱 Comida</button>
+        <button class="tbtn" onclick="selectTheme('personas')">👥 Personas</button>
+        <button class="tbtn" onclick="selectTheme('objetos')">📦 Objetos</button>
+        <button class="tbtn" onclick="selectTheme('frases')">💬 Frases</button>
+        <button class="tbtn" onclick="selectTheme('paises')">🌍 Países</button>
+      </div>
+    </div>
   </div>
 
   <div class="prog-bar-wrap"><div class="prog-bar-fill" id="progBar" style="width:0%"></div></div>
@@ -480,6 +513,9 @@ const ALL = [
   {es:"Hasta mañana.",                   kana:"じゃ、また。",      accepted:["ja mata","jya mata"],               l:6, note:"ja mata / jya mata"},
 ];
 
+// Tag themes
+ALL.forEach(tagThemes);
+
 // ── STATE ─────────────────────────────────────────────────────────
 let deck=[], idx=0, cardStates=[];
 let activeLessons=new Set([1,2,3,4,5,6]);
@@ -487,7 +523,7 @@ let activeLessons=new Set([1,2,3,4,5,6]);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
 
 function buildDeck(){
-  deck=ALL.filter(c=>activeLessons.has(c.l));
+  deck=ALL.filter(c=>activeLessons.has(c.l)&&(activeTheme===null||c.themes.includes(activeTheme)));
   shuffle(deck);
   cardStates=new Array(deck.length).fill(null);
   idx=0;
@@ -497,6 +533,96 @@ function buildDeck(){
   render(); updateStats();
 }
 
+
+// ── THEME FILTER ──────────────────────────────────────────────────
+const THEME_LESSONS = {
+  verbos:    [4,5,6],
+  tiempo:    [4,5],
+  lugares:   [3,4,5],
+  transporte:[5],
+  comida:    [6],
+  personas:  [1,5],
+  objetos:   [2],
+  frases:    [1,2,3,5,6],
+  paises:    [1,4],
+};
+
+// Tags per word — each entry in ALL gets a 'themes' array
+// We tag by matching patterns in es/kana fields
+function tagThemes(card){
+  const e=card.es.toLowerCase(), k=card.kana||'';
+  const tags=[];
+  // verbos — ends in ます
+  if(k.endsWith('ます')||k.endsWith('ません')) tags.push('verbos');
+  // tiempo
+  const tiempoWords=['じ','ぷん','ふん','はん','ごぜん','ごご','よる','あさ','ひる','ばん','きのう','きょう','あした','まいにち','まいあさ','まいばん','おととい','あさって','けさ','こんばん','やすみ','ひるやすみ','しけん','かいぎ','えいが','せんしゅう','こんしゅう','らいしゅう','せんげつ','こんげつ','らいげつ','きょねん','ことし','らいねん','ついたち','ふつか','みっか','よっか','いつか','むいか','なのか','ようか','ここのか','とおか','じゅうよっか','はつか','にじゅうよっか','いつ','たんじょうび','げつようび','かようび','すいようび','もくようび','きんようび','どようび','にちようび','なんようび'];
+  if(tiempoWords.some(w=>k.includes(w))) tags.push('tiempo');
+  // lugares
+  const lugarWords=['きょうしつ','しょくどう','じむしょ','かいぎしつ','うけつけ','ロビー','へや','トイレ','かいだん','エレベーター','エスカレーター','じどうはんばいき','デパート','ぎんこう','ゆうびんきょく','としょかん','びじゅつかん','がっこう','スーパー','えき','みせ','にわ','ここ','そこ','あそこ','どこ','こちら','そちら','あちら','どちら'];
+  if(lugarWords.some(w=>k.includes(w))) tags.push('lugares');
+  // transporte
+  const transWords=['ひこうき','ふね','でんしゃ','ちかてつ','しんかんせん','バス','タクシー','じてんしゃ','あるいて','ふつう','きゅうこう','とっきゅう','えき'];
+  if(transWords.some(w=>k.includes(w))) tags.push('transporte');
+  // comida
+  const comidaWords=['ごはん','あさごはん','ひるごはん','ばんごはん','パン','たまご','にく','さかな','やさい','くだもの','みず','おちゃ','こうちゃ','ぎゅうにゅう','ジュース','ビール','さけ','たばこ'];
+  if(comidaWords.some(w=>k.includes(w))) tags.push('comida');
+  // personas
+  const personasWords=['わたし','あなた','ひと','ともだち','かれ','かのじょ','かぞく','ひとりで','がくせい','かいしゃいん','せんせい','いしゃ','だれ','どなた'];
+  if(personasWords.some(w=>k.includes(w))) tags.push('personas');
+  // objetos
+  const objetosWords=['ほん','じしょ','ざっし','しんぶん','ノート','てちょう','めいし','カード','えんぴつ','ボールペン','シャープ','ペン','かぎ','とけい','かさ','かばん','テレビ','ラジオ','カメラ','コンピューター','パソコン','タブレット','けいたい','スマホ','くるま','チョコレート','コーヒー','てがみ','レポート','しゃしん','ビデオ','ネクタイ','ワイン','くつ'];
+  if(objetosWords.some(w=>k.includes(w))) tags.push('objetos');
+  // paises/ciudades
+  const paisesWords=['アメリカ','イギリス','インド','インドネシア','かんこく','タイ','ちゅうごく','ドイツ','にほん','ブラジル','ニューヨーク','ペキン','ロサンゼルス','ロンドン','おくに'];
+  if(paisesWords.some(w=>k.includes(w))) tags.push('paises');
+  // frases — anything not tagged elsewhere, or explicitly
+  const frasesWords=['はじめまして','よろしく','しつれい','おなまえ','こちら','そうです','ちがいます','いらっしゃいませ','みせてください','ください','じゃ','そうですね','ありがとう','どういたしまして','わかりました','いいですね','なんですか','またあした','いっしょに','ちょっと','いつも','ときどき','それから','ええ','はい','いいえ','すみません','どうぞ','だいじょうぶ'];
+  if(frasesWords.some(w=>k.includes(w))) tags.push('frases');
+  card.themes = tags.length>0 ? tags : ['frases']; // default to frases if untagged
+}
+
+let activeTheme = null;
+
+function selectTheme(theme){
+  // toggle off if already active
+  if(activeTheme===theme){
+    activeTheme=null;
+    document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
+    // restore all lessons
+    [1,2,3,4,5,6].forEach(n=>{
+      activeLessons.add(n);
+      const btn=document.getElementById('lb'+n);
+      if(btn) btn.classList.add('active');
+    });
+    buildDeck(); return;
+  }
+  activeTheme=theme;
+  // update theme buttons
+  document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  // activate only relevant lessons, deactivate others
+  const relevant=new Set(THEME_LESSONS[theme]||[]);
+  activeLessons.clear();
+  [1,2,3,4,5,6].forEach(n=>{
+    const btn=document.getElementById('lb'+n);
+    if(relevant.has(n)){
+      activeLessons.add(n);
+      if(btn) btn.classList.add('active');
+    } else {
+      if(btn) btn.classList.remove('active');
+    }
+  });
+  buildDeck();
+}
+
+function toggleFilters(){
+  const body=document.getElementById('filtersBody');
+  body.classList.toggle('open');
+  const btn=document.querySelector('.filters-toggle');
+  btn.textContent=body.classList.contains('open')?'🔍 Filtros ▴':'🔍 Filtros ▾';
+}
+
+// Tag all cards on load
 function toggleLesson(n,btn){
   if(activeLessons.has(n)){if(activeLessons.size===1)return;activeLessons.delete(n);btn.classList.remove('active');}
   else{activeLessons.add(n);btn.classList.add('active');}
