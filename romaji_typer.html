@@ -158,6 +158,7 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
       <button class="lbtn active" onclick="toggleLesson(3,this)">L3</button>
       <button class="lbtn active" onclick="toggleLesson(4,this)">L4</button>
       <button class="lbtn active" onclick="toggleLesson(5,this)">L5</button>
+      <button class="lbtn active" onclick="toggleLesson(6,this)">L6</button>
     </div>
     <button class="shuffle-btn" onclick="buildDeck()">⇄ Barajar</button>
   </div>
@@ -426,11 +427,62 @@ const ALL = [
   {es:"(tren) ordinario / local",        kana:"ふつう",            accepted:["futsu","futsuu"],                   l:5, note:"futsu / futsuu"},
   {es:"(tren) expreso",                  kana:"きゅうこう",        accepted:["kyuko","kyuukou"],                  l:5, note:"kyuko / kyuukou"},
   {es:"(tren) superexpreso",             kana:"とっきゅう",        accepted:["tokkyu","tokkyuu"],                 l:5, note:"tokkyu / tokkyuu"},
+  // L6
+  {es:"comer",                           kana:"たべます",          accepted:["tabemasu"],                         l:6},
+  {es:"beber / tomar",                   kana:"のみます",          accepted:["nomimasu"],                         l:6},
+  {es:"fumar",                           kana:"すいます",          accepted:["suimasu"],                          l:6},
+  {es:"ver / mirar",                     kana:"みます",            accepted:["mimasu"],                           l:6},
+  {es:"oír / escuchar",                  kana:"ききます",          accepted:["kikimasu"],                         l:6},
+  {es:"leer",                            kana:"よみます",          accepted:["yomimasu"],                         l:6},
+  {es:"escribir",                        kana:"かきます",          accepted:["kakimasu"],                         l:6},
+  {es:"comprar",                         kana:"かいます",          accepted:["kaimasu"],                          l:6},
+  {es:"sacar fotos",                     kana:"とります",          accepted:["torimasu"],                         l:6},
+  {es:"hacer",                           kana:"します",            accepted:["shimasu"],                          l:6},
+  {es:"ver a / encontrarse con",         kana:"あいます",          accepted:["aimasu"],                           l:6},
+  {es:"comida / arroz cocido",           kana:"ごはん",            accepted:["gohan"],                            l:6},
+  {es:"desayuno",                        kana:"あさごはん",        accepted:["asagohan"],                         l:6},
+  {es:"almuerzo",                        kana:"ひるごはん",        accepted:["hirugohan"],                        l:6},
+  {es:"cena",                            kana:"ばんごはん",        accepted:["bangohan"],                         l:6},
+  {es:"pan",                             kana:"パン",              accepted:["pan"],                              l:6},
+  {es:"huevo",                           kana:"たまご",            accepted:["tamago"],                           l:6},
+  {es:"carne",                           kana:"にく",              accepted:["niku"],                             l:6},
+  {es:"pescado / pez",                   kana:"さかな",            accepted:["sakana"],                           l:6},
+  {es:"verduras",                        kana:"やさい",            accepted:["yasai"],                            l:6},
+  {es:"frutas",                          kana:"くだもの",          accepted:["kudamono"],                         l:6},
+  {es:"agua",                            kana:"みず",              accepted:["mizu"],                             l:6},
+  {es:"té verde",                        kana:"おちゃ",            accepted:["ocha"],                             l:6},
+  {es:"té negro",                        kana:"こうちゃ",          accepted:["koucha","kocha"],                   l:6, note:"koucha / kocha"},
+  {es:"leche",                           kana:"ぎゅうにゅう",      accepted:["gyuunyuu","gyunyuu"],               l:6, note:"gyuunyuu / gyunyuu"},
+  {es:"jugo / zumo",                     kana:"ジュース",          accepted:["juusu","jyuusu"],                   l:6, note:"juusu / jyuusu"},
+  {es:"cerveza",                         kana:"ビール",            accepted:["biiru","biru"],                     l:6, note:"biiru / biru"},
+  {es:"sake / bebida alcohólica",        kana:"さけ",              accepted:["sake"],                             l:6},
+  {es:"cigarrillo",                      kana:"たばこ",            accepted:["tabako"],                           l:6},
+  {es:"carta / correspondencia",         kana:"てがみ",            accepted:["tegami"],                           l:6},
+  {es:"informe / reporte",               kana:"レポート",          accepted:["repooto","repoto"],                 l:6, note:"repooto / repoto"},
+  {es:"fotografía",                      kana:"しゃしん",          accepted:["shashin"],                          l:6},
+  {es:"vídeo",                           kana:"ビデオ",            accepted:["bideo"],                            l:6},
+  {es:"tienda / negocio",                kana:"みせ",              accepted:["mise"],                             l:6},
+  {es:"jardín",                          kana:"にわ",              accepted:["niwa"],                             l:6},
+  {es:"deberes / tarea",                 kana:"しゅくだい",        accepted:["shukudai"],                         l:6},
+  {es:"tenis",                           kana:"テニス",            accepted:["tenisu"],                           l:6},
+  {es:"fútbol",                          kana:"サッカー",          accepted:["sakkaa","sakka"],                   l:6, note:"sakkaa / sakka"},
+  {es:"hanami",                          kana:"はなみ",            accepted:["hanami"],                           l:6},
+  {es:"qué",                             kana:"なに",              accepted:["nani"],                             l:6},
+  {es:"junto(s)",                        kana:"いっしょに",        accepted:["issho ni","isshoni"],               l:6, note:"issho ni / isshoni"},
+  {es:"un poco",                         kana:"ちょっと",          accepted:["chotto"],                           l:6},
+  {es:"siempre / normalmente",           kana:"いつも",            accepted:["itsumo"],                           l:6},
+  {es:"de vez en cuando",                kana:"ときどき",          accepted:["tokidoki"],                         l:6},
+  {es:"y luego / después",               kana:"それから",          accepted:["sorekara"],                         l:6},
+  {es:"sí",                              kana:"ええ",              accepted:["ee"],                               l:6},
+  {es:"Es una buena idea.",              kana:"いいですね。",      accepted:["ii desu ne","iidesu ne"],           l:6, note:"ii desu ne"},
+  {es:"Entendido.",                      kana:"わかりました。",    accepted:["wakarimashita"],                    l:6},
+  {es:"¿Qué deseaba?",                   kana:"なんですか。",      accepted:["nan desu ka","nandesuka"],          l:6, note:"nan desu ka"},
+  {es:"Hasta mañana.",                   kana:"じゃ、また。",      accepted:["ja mata","jya mata"],               l:6, note:"ja mata / jya mata"},
 ];
 
 // ── STATE ─────────────────────────────────────────────────────────
 let deck=[], idx=0, cardStates=[];
-let activeLessons=new Set([1,2,3,4,5]);
+let activeLessons=new Set([1,2,3,4,5,6]);
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
 
@@ -505,10 +557,7 @@ function render(){
   input.value=done?st.typed:'';
   input.disabled=done;
   input.className='romaji-input'+(done?' state-'+st.phase:'');
-  if(!done) setTimeout(()=>{
-    if(!input.dataset.wk){ wanakana.bind(input,{IMEMode:true}); input.dataset.wk='1'; }
-    input.focus();
-  },50);
+  if(!done) setTimeout(()=>{ if(!input.dataset.wk){ wanakana.bind(input,{IMEMode:true}); input.dataset.wk="1"; } input.focus(); },50);
 
   // variants
   renderVariants(card, st);
@@ -562,14 +611,12 @@ function handleKey(e){
 
 function normalize(s){
   let v=s.trim();
-  // if input is kana, convert to romaji for comparison
-  if(wanakana.isKana(v)) v=wanakana.toRomaji(v);
+  if(typeof wanakana!=="undefined"&&wanakana.isKana(v)) v=wanakana.toRomaji(v);
   return v.toLowerCase()
-    .replace(/\s+/g,'')
-    .replace(/[ー]/g,'')
-    .replace(/oo/g,'o')
-    .replace(/uu/g,'u')
-    .replace(/chi/g,'chi').replace(/tchi/g,'cchi');
+    .replace(/\s+/g,'')       // remove spaces
+    .replace(/[ー]/g,'')      // ignore long vowel mark if typed
+    .replace(/oo/g,'o')       // oo → o tolerance
+    .replace(/uu/g,'u');      // uu → u tolerance
 }
 
 function verifyAnswer(){
@@ -663,6 +710,6 @@ function reviewAll(){
 }
 </script>
 
-
+<div class="watermark">Powered by Ferdi</div>
 </body>
 </html>

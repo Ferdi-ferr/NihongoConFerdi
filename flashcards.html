@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flashcards Nihongo — L1, L2, L3, L4, L5</title>
+<title>Flashcards Nihongo — L1 a L6</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:sans-serif;background:#f5f5f0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem}
@@ -91,10 +91,11 @@ h1{font-size:16px;font-weight:600;color:#444;margin-bottom:1.25rem;text-align:ce
       <button class="lbtn active" onclick="toggleLesson(3,this)">L3</button>
       <button class="lbtn active" onclick="toggleLesson(4,this)">L4</button>
       <button class="lbtn active" onclick="toggleLesson(5,this)">L5</button>
+      <button class="lbtn active" onclick="toggleLesson(6,this)">L6</button>
     </div>
     <div style="display:flex;gap:6px">
       <button class="shuffle-btn" onclick="shuffleDeck()">⇄ Barajar</button>
-      <button class="dir-toggle" id="dirBtn" onclick="toggleDir()">ES → JP</button>
+      <button class="dir-toggle" id="dirBtn" onclick="toggleDir()">JP → ES</button>
     </div>
   </div>
   <div class="prog-bar-wrap"><div class="prog-bar-fill" id="progBar" style="width:0%"></div></div>
@@ -311,7 +312,7 @@ const ALL=[
   // L5
   {es:"ir",jp:"いきます",rom:"ikimasu",l:5},
   {es:"venir",jp:"きます",rom:"kimasu",l:5},
-  {es:"volver / regresar / irse a casa",jp:"かえります",rom:"kaerimasu",l:5},
+  {es:"volver / regresar",jp:"かえります",rom:"kaerimasu",l:5},
   {es:"escuela",jp:"がっこう",rom:"gakkou",l:5},
   {es:"supermercado",jp:"スーパー",rom:"suupaa",l:5},
   {es:"estación",jp:"えき",rom:"eki",l:5},
@@ -339,10 +340,8 @@ const ALL=[
   {es:"el año pasado",jp:"きょねん",rom:"kyonen",l:5},
   {es:"este año",jp:"ことし",rom:"kotoshi",l:5},
   {es:"el año que viene",jp:"らいねん",rom:"rainen",l:5},
-  {es:"~ año(s)",jp:"〜ねん",rom:"~nen",l:5},
-  {es:"¿qué año?",jp:"なんねん",rom:"nannen",l:5},
-  {es:"~ mes",jp:"〜がつ",rom:"~gatsu",l:5},
-  {es:"¿qué mes?",jp:"なんがつ",rom:"nangatsu",l:5},
+  {es:"¿cuándo?",jp:"いつ",rom:"itsu",l:5},
+  {es:"cumpleaños",jp:"たんじょうび",rom:"tanjoubi",l:5},
   {es:"día 1 del mes",jp:"ついたち",rom:"tsuitachi",l:5},
   {es:"día 2",jp:"ふつか",rom:"futsuka",l:5},
   {es:"día 3",jp:"みっか",rom:"mikka",l:5},
@@ -356,23 +355,70 @@ const ALL=[
   {es:"día 14",jp:"じゅうよっか",rom:"juuyokka",l:5},
   {es:"día 20",jp:"はつか",rom:"hatsuka",l:5},
   {es:"día 24",jp:"にじゅうよっか",rom:"nijuuyokka",l:5},
-  {es:"~ día(s)",jp:"〜にち",rom:"~nichi",l:5},
   {es:"¿qué día del mes?",jp:"なんにち",rom:"nannichi",l:5},
-  {es:"¿cuándo?",jp:"いつ",rom:"itsu",l:5},
-  {es:"cumpleaños",jp:"たんじょうび",rom:"tanjoubi",l:5},
   {es:"Estoy de acuerdo.",jp:"そうですね。",rom:"sou desu ne",l:5},
-  {es:"[Muchas] gracias.",jp:"[どうも]ありがとうございました。",rom:"[doumo] arigatou gozaimashita",l:5},
+  {es:"[Muchas] gracias.",jp:"ありがとうございました。",rom:"arigatou gozaimashita",l:5},
   {es:"De nada.",jp:"どういたしまして。",rom:"dou itashimashite",l:5},
-  {es:"andén ~",jp:"〜ばんせん",rom:"~bansen",l:5},
   {es:"próximo / siguiente",jp:"つぎの",rom:"tsugi no",l:5},
-  {es:"(tren) ordinario / local",jp:"ふつう",rom:"futsuu",l:5},
+  {es:"(tren) ordinario",jp:"ふつう",rom:"futsuu",l:5},
   {es:"(tren) expreso",jp:"きゅうこう",rom:"kyuukou",l:5},
   {es:"(tren) superexpreso",jp:"とっきゅう",rom:"tokkyuu",l:5},
+  // L6
+  {es:"comer",jp:"たべます",rom:"tabemasu",l:6},
+  {es:"beber / tomar",jp:"のみます",rom:"nomimasu",l:6},
+  {es:"fumar",jp:"すいます",rom:"suimasu",l:6},
+  {es:"ver / mirar",jp:"みます",rom:"mimasu",l:6},
+  {es:"oír / escuchar",jp:"ききます",rom:"kikimasu",l:6},
+  {es:"leer",jp:"よみます",rom:"yomimasu",l:6},
+  {es:"escribir",jp:"かきます",rom:"kakimasu",l:6},
+  {es:"comprar",jp:"かいます",rom:"kaimasu",l:6},
+  {es:"sacar fotos",jp:"とります",rom:"torimasu",l:6},
+  {es:"hacer",jp:"します",rom:"shimasu",l:6},
+  {es:"ver a / encontrarse con",jp:"あいます",rom:"aimasu",l:6},
+  {es:"comida / arroz cocido",jp:"ごはん",rom:"gohan",l:6},
+  {es:"desayuno",jp:"あさごはん",rom:"asagohan",l:6},
+  {es:"almuerzo",jp:"ひるごはん",rom:"hirugohan",l:6},
+  {es:"cena",jp:"ばんごはん",rom:"bangohan",l:6},
+  {es:"pan",jp:"パン",rom:"pan",l:6},
+  {es:"huevo",jp:"たまご",rom:"tamago",l:6},
+  {es:"carne",jp:"にく",rom:"niku",l:6},
+  {es:"pescado / pez",jp:"さかな",rom:"sakana",l:6},
+  {es:"verduras",jp:"やさい",rom:"yasai",l:6},
+  {es:"frutas",jp:"くだもの",rom:"kudamono",l:6},
+  {es:"agua",jp:"みず",rom:"mizu",l:6},
+  {es:"té verde",jp:"おちゃ",rom:"ocha",l:6},
+  {es:"té negro",jp:"こうちゃ",rom:"koucha",l:6},
+  {es:"leche",jp:"ぎゅうにゅう",rom:"gyuunyuu",l:6},
+  {es:"jugo / zumo",jp:"ジュース",rom:"juusu",l:6},
+  {es:"cerveza",jp:"ビール",rom:"biiru",l:6},
+  {es:"sake / bebida alcohólica",jp:"[お]さけ",rom:"[o]sake",l:6},
+  {es:"cigarrillo",jp:"たばこ",rom:"tabako",l:6},
+  {es:"carta / correspondencia",jp:"てがみ",rom:"tegami",l:6},
+  {es:"informe / reporte",jp:"レポート",rom:"repooto",l:6},
+  {es:"fotografía",jp:"しゃしん",rom:"shashin",l:6},
+  {es:"vídeo",jp:"ビデオ",rom:"bideo",l:6},
+  {es:"tienda / negocio",jp:"みせ",rom:"mise",l:6},
+  {es:"jardín",jp:"にわ",rom:"niwa",l:6},
+  {es:"deberes / tarea",jp:"しゅくだい",rom:"shukudai",l:6},
+  {es:"tenis",jp:"テニス",rom:"tenisu",l:6},
+  {es:"fútbol",jp:"サッカー",rom:"sakkaa",l:6},
+  {es:"hanami",jp:"[お]はなみ",rom:"[o]hanami",l:6},
+  {es:"qué",jp:"なに",rom:"nani",l:6},
+  {es:"junto(s)",jp:"いっしょに",rom:"issho ni",l:6},
+  {es:"un poco",jp:"ちょっと",rom:"chotto",l:6},
+  {es:"siempre / normalmente",jp:"いつも",rom:"itsumo",l:6},
+  {es:"de vez en cuando",jp:"ときどき",rom:"tokidoki",l:6},
+  {es:"y luego / después",jp:"それから",rom:"sorekara",l:6},
+  {es:"sí",jp:"ええ",rom:"ee",l:6},
+  {es:"Es una buena idea.",jp:"いいですね。",rom:"ii desu ne",l:6},
+  {es:"Entendido.",jp:"わかりました。",rom:"wakarimashita",l:6},
+  {es:"¿Qué deseaba?",jp:"なんですか。",rom:"nan desu ka",l:6},
+  {es:"Hasta mañana.",jp:"じゃ、また [あした]。",rom:"ja mata ashita",l:6},
 ];
 
 let deck=[],idx=0,flipped=false,known=0,skipped=0;
-let activeLessons=new Set([1,2,3,4,5]);
-let dirEsJp=true;
+let activeLessons=new Set([1,2,3,4,5,6]);
+let dirEsJp=false;
 
 function buildDeck(){
   deck=ALL.filter(c=>activeLessons.has(c.l));
