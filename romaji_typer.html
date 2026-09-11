@@ -156,7 +156,7 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
   </div>
 
   <div class="filters-wrap">
-    <button class="filters-toggle" onclick="toggleFilters()">🔍 Filtros ▾</button>
+    <button class="filters-toggle" onclick="toggleFilters()">🔍 Filtra por lecciones y temas ▾</button>
     <div class="filters-body" id="filtersBody">
       <div class="filter-row">
         <span class="filter-label">Lección</span>
@@ -605,7 +605,7 @@ function toggleFilters(){
   const body=document.getElementById('filtersBody');
   body.classList.toggle('open');
   const btn=document.querySelector('.filters-toggle');
-  btn.textContent=body.classList.contains('open')?'🔍 Filtros ▴':'🔍 Filtros ▾';
+  btn.textContent=body.classList.contains('open')?'🔍 Filtra por lecciones y temas ▴':'🔍 Filtra por lecciones y temas ▾';
 }
 
 // Tag all cards on load
