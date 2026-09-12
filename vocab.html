@@ -57,8 +57,22 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:.25rem;text-align:cen
 }
 .vocab-row:last-child{border-bottom:none}
 .vocab-es{color:#555;flex:1}
+
+/* search bar */
+.search-bar{display:flex;gap:8px;margin-bottom:1rem;width:100%;max-width:1400px;}
+.search-input{flex:1;font-size:.95rem;padding:8px 14px;border-radius:10px;border:1.5px solid #e0d8d0;background:#fff;outline:none;font-family:inherit;transition:border-color .15s;}
+.search-input:focus{border-color:#3b72d4;}
+.search-results{display:none;background:#fff;border:1px solid #e0d8d0;border-radius:16px;padding:1rem 1.5rem;width:100%;max-width:1400px;margin-bottom:.75rem;}
+.search-results.active{display:block;}
+.result-row{display:flex;gap:1rem;padding:6px 0;border-bottom:1px solid #f0ede8;font-size:.88rem;align-items:baseline;}
+.result-row:last-child{border-bottom:none;}
+.result-l{font-size:.65rem;font-weight:700;color:#3b72d4;background:#eef3ff;padding:2px 7px;border-radius:99px;align-self:center;white-space:nowrap;flex-shrink:0;}
+.result-es{color:#555;flex:0 1 auto;}
+.result-jp{color:#1a1209;font-size:.95rem;flex:0 1 auto;}
+.no-results{color:#aaa;font-style:italic;font-size:.85rem;text-align:center;padding:.5rem;}
 .vocab-jp{color:#1a1209;font-size:.95rem;text-align:right;white-space:nowrap}
 </style>
+<script src="https://unpkg.com/wanakana"></script>
 </head>
 <body>
 
@@ -80,6 +94,10 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:.25rem;text-align:cen
 <h1>Vocabulario</h1>
 <p class="subtitle">Lecciones 1 — 6</p>
 
+<div class="search-bar">
+  <input class="search-input" id="searchInput" type="text" placeholder="🔍 Buscar en español o japonés..." oninput="doSearch()" autocomplete="off">
+</div>
+<div class="search-results" id="searchResults"></div>
 <div class="panel">
   <div class="vocab-grid" id="vocabGrid"></div>
 </div>
@@ -95,6 +113,34 @@ const VOCAB = {
 };
 
 const isMobile = () => window.innerWidth <= 600;
+function doSearch(){
+  const raw = document.getElementById('searchInput').value.trim();
+  const q = raw.toLowerCase().replace(/\s+/g,'');
+  const res = document.getElementById('searchResults');
+  if(!q){ res.classList.remove('active'); return; }
+  const hits = [];
+  [1,2,3,4,5,6].forEach(l=>{
+    if(!VOCAB[l]) return;
+    VOCAB[l].forEach(([es,jp])=>{
+      const esMatch = es.toLowerCase().includes(raw.toLowerCase());
+      const jpRom = wanakana.toRomaji(jp).toLowerCase().replace(/\s+/g,'');
+      const jpMatch = jpRom.includes(q) || jp.includes(raw);
+      if(esMatch || jpMatch) hits.push({l,es,jp});
+    });
+  });
+  if(hits.length===0){
+    res.innerHTML='<div class="no-results">Sin resultados</div>';
+  } else {
+    res.innerHTML = hits.map(h=>
+      `<div class="result-row">
+        <span class="result-l">L${h.l}</span>
+        <span class="result-es">${h.es}</span>
+        <span class="result-jp">${h.jp}</span>
+      </div>`
+    ).join('');
+  }
+  res.classList.add('active');
+}
 
 function build(){
   const grid = document.getElementById('vocabGrid');
