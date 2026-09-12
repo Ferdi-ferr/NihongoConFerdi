@@ -122,9 +122,9 @@ function doSearch(){
   [1,2,3,4,5,6].forEach(l=>{
     if(!VOCAB[l]) return;
     VOCAB[l].forEach(([es,jp])=>{
-      const esMatch = es.toLowerCase().includes(raw.toLowerCase());
-      const jpRom = wanakana.toRomaji(jp).toLowerCase().replace(/\s+/g,'');
-      const jpMatch = jpRom.includes(q) || jp.includes(raw);
+      const esMatch = es.toLowerCase().split(/[\s\/,]+/).some(w=>w.startsWith(raw.toLowerCase()));
+      const jpRom = wanakana.toRomaji(jp).toLowerCase().replace(/[\s\[\]()（）「」]/g,'');
+      const jpMatch = jpRom.startsWith(q) || jp.startsWith(raw);
       if(esMatch || jpMatch) hits.push({l,es,jp});
     });
   });
