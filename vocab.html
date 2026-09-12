@@ -153,17 +153,18 @@ function build(){
     col.innerHTML =
       `<div class="vcol-title" id="title-${l}" onclick="toggleCol(${l})">` +
         `Lección ${l}` +
-        `<span class="vcol-toggle">ocultar <span class="vcol-arrow">▼</span></span>` +
+        `<span class="vcol-toggle">mostrar <span class="vcol-arrow" style="transform:rotate(-90deg);display:inline-block">▼</span></span>` +
       `</div>` +
-      `<div class="vcol-rows" id="rows-${l}">${rows}</div>`;
+      `<div class="vcol-rows collapsed" id="rows-${l}" style="max-height:0">${rows}</div>`;
     grid.appendChild(col);
   });
-  // set max-height once after render, only used on mobile for animation
-  requestAnimationFrame(()=>{
-    document.querySelectorAll('.vcol-rows').forEach(r => {
-      r.style.maxHeight = r.scrollHeight + 'px';
+  // on desktop, remove collapsed class (CSS handles grid)
+  if(window.innerWidth > 600){
+    document.querySelectorAll('.vcol-rows').forEach(r=>{
+      r.classList.remove('collapsed');
+      r.style.maxHeight='';
     });
-  });
+  }
 }
 
 function toggleCol(l){
