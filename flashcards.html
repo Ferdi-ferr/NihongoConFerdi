@@ -17,6 +17,7 @@ h1{font-size:16px;font-weight:600;color:#444;margin-bottom:1.25rem;text-align:ce
 .filter-label{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#bbb;min-width:52px;}
 .tbtn{font-size:12px;padding:4px 12px;border-radius:99px;border:1px solid #ccc;background:#fff;color:#888;cursor:pointer;transition:all .15s;font-family:inherit;}
 .tbtn.active{background:#c0392b;color:#fff;border-color:transparent;}
+.tbtn.disabled{opacity:.35;}
 @media(max-width:600px){
   .filters-toggle{display:block;}
   .filters-body{display:none;}
@@ -116,15 +117,15 @@ h1{font-size:16px;font-weight:600;color:#444;margin-bottom:1.25rem;text-align:ce
       </div>
       <div class="filter-row">
         <span class="filter-label">Tema</span>
-        <button class="tbtn" onclick="selectTheme('verbos')">🔤 Verbos</button>
-        <button class="tbtn" onclick="selectTheme('tiempo')">🕐 Tiempo</button>
-        <button class="tbtn" onclick="selectTheme('lugares')">📍 Lugares</button>
-        <button class="tbtn" onclick="selectTheme('transporte')">🚃 Transporte</button>
-        <button class="tbtn" onclick="selectTheme('comida')">🍱 Comida</button>
-        <button class="tbtn" onclick="selectTheme('personas')">👥 Personas</button>
-        <button class="tbtn" onclick="selectTheme('objetos')">📦 Objetos</button>
-        <button class="tbtn" onclick="selectTheme('frases')">💬 Frases</button>
-        <button class="tbtn" onclick="selectTheme('paises')">🌍 Países</button>
+        <button class="tbtn" data-theme="verbos" onclick="selectTheme('verbos')">🔤 Verbos</button>
+        <button class="tbtn" data-theme="tiempo" onclick="selectTheme('tiempo')">🕐 Tiempo</button>
+        <button class="tbtn" data-theme="lugares" onclick="selectTheme('lugares')">📍 Lugares</button>
+        <button class="tbtn" data-theme="transporte" onclick="selectTheme('transporte')">🚃 Transporte</button>
+        <button class="tbtn" data-theme="comida" onclick="selectTheme('comida')">🍱 Comida</button>
+        <button class="tbtn" data-theme="personas" onclick="selectTheme('personas')">👥 Personas</button>
+        <button class="tbtn" data-theme="objetos" onclick="selectTheme('objetos')">📦 Objetos</button>
+        <button class="tbtn" data-theme="frases" onclick="selectTheme('frases')">💬 Frases</button>
+        <button class="tbtn" data-theme="paises" onclick="selectTheme('paises')">🌍 Países</button>
       </div>
     </div>
   </div>
@@ -165,6 +166,302 @@ h1{font-size:16px;font-weight:600;color:#444;margin-bottom:1.25rem;text-align:ce
   </div>
 </div>
 <script>
+// Tags per word — each entry in ALL gets a 'themes' array
+// We tag by matching patterns in es/jp fields
+const WORD_THEMES={
+  "1|わたし":['personas'],
+  "1|あなた":['personas'],
+  "1|あのひと (あのかた)":['personas'],
+  "1|〜さん":['personas'],
+  "1|〜くん":['personas'],
+  "1|〜じん (〜人)":['personas','paises'],
+  "1|せんせい":['personas'],
+  "1|きょうし":['personas'],
+  "1|がくせい":['personas'],
+  "1|かいしゃいん":['personas'],
+  "1|〜しゃいん":['personas'],
+  "1|ぎんこういん":['personas'],
+  "1|いしゃ":['personas'],
+  "1|けんきゅうしゃ":['personas'],
+  "1|だいがく":['lugares'],
+  "1|びょういん":['lugares'],
+  "1|だれ (どなた)":['frases'],
+  "1|〜さい":['frases'],
+  "1|なんさい":['frases'],
+  "1|はい":['frases'],
+  "1|いいえ":['frases'],
+  "1|はじめまして":['frases'],
+  "1|〜からきました":['frases'],
+  "1|どうぞよろしく [おねがいします]":['frases'],
+  "1|しつれいですが":['frases'],
+  "1|おなまえは？":['frases'],
+  "1|こちらは〜さんです":['frases'],
+  "1|アメリカ":['paises'],
+  "1|イギリス":['paises'],
+  "1|インド":['paises'],
+  "1|インドネシア":['paises'],
+  "1|かんこく":['paises'],
+  "1|タイ":['paises'],
+  "1|ちゅうごく":['paises'],
+  "1|ドイツ":['paises'],
+  "1|にほん (日本)":['paises'],
+  "1|ブラジル":['paises'],
+  "2|ほん":['objetos'],
+  "2|じしょ":['objetos'],
+  "2|ざっし":['objetos'],
+  "2|しんぶん":['objetos'],
+  "2|ノート":['objetos'],
+  "2|てちょう":['objetos'],
+  "2|めいし":['objetos'],
+  "2|カード":['objetos'],
+  "2|えんぴつ":['objetos'],
+  "2|ボールペン":['objetos'],
+  "2|シャープペンシル":['objetos'],
+  "2|ペン":['objetos'],
+  "2|かぎ":['objetos'],
+  "2|とけい":['objetos'],
+  "2|うでどけい":['objetos'],
+  "2|かさ":['objetos'],
+  "2|かばん":['objetos'],
+  "2|シーディー":['objetos'],
+  "2|イヤホン":['objetos'],
+  "2|ヘッドホン":['objetos'],
+  "2|テレビ":['objetos'],
+  "2|ラジオ":['objetos'],
+  "2|カメラ":['objetos'],
+  "2|コンピューター":['objetos'],
+  "2|パソコン":['objetos'],
+  "2|タブレット":['objetos'],
+  "2|けいたい／スマホ":['objetos'],
+  "2|くるま":['objetos'],
+  "2|つくえ":['objetos'],
+  "2|いす":['objetos'],
+  "2|[お]みやげ":['objetos'],
+  "2|チョコレート":['comida'],
+  "2|コーヒー":['comida'],
+  "2|なん":['frases'],
+  "2|そう":['frases'],
+  "2|あのう":['frases'],
+  "2|えっ":['frases'],
+  "2|ちがいます":['verbos','frases'],
+  "3|ここ":['lugares'],
+  "3|そこ":['lugares'],
+  "3|あそこ":['lugares'],
+  "3|どこ":['lugares'],
+  "3|こちら":['lugares'],
+  "3|そちら":['lugares'],
+  "3|あちら":['lugares'],
+  "3|どちら":['lugares'],
+  "3|きょうしつ":['lugares'],
+  "3|しょくどう":['lugares'],
+  "3|じむしょ":['lugares'],
+  "3|かいぎしつ":['lugares'],
+  "3|うけつけ":['lugares'],
+  "3|ロビー":['lugares'],
+  "3|へや":['lugares'],
+  "3|トイレ (おてあらい)":['lugares'],
+  "3|かいだん":['lugares'],
+  "3|エレベーター":['lugares'],
+  "3|エスカレーター":['lugares'],
+  "3|じどうはんばいき／じはんき":['lugares'],
+  "3|かいしゃ":['lugares'],
+  "3|うち":['lugares'],
+  "3|いえ":['lugares'],
+  "3|うりば":['lugares'],
+  "3|ちか":['lugares'],
+  "3|〜かい (〜がい)":['lugares'],
+  "3|なんがい":['lugares'],
+  "3|でんわ":['objetos'],
+  "3|くつ":['objetos'],
+  "3|ネクタイ":['objetos'],
+  "3|ワイン":['comida'],
+  "3|[お]くに":['paises'],
+  "3|〜えん":['frases'],
+  "3|いくら":['frases'],
+  "3|ひゃく":['frases'],
+  "3|せん":['frases'],
+  "3|まん":['frases'],
+  "3|いらっしゃいませ":['frases'],
+  "3|[〜を]みせてください":['frases'],
+  "3|[〜を]ください":['frases'],
+  "3|じゃ":['frases'],
+  "4|おきます":['verbos'],
+  "4|ねます":['verbos'],
+  "4|はたらきます":['verbos'],
+  "4|やすみます":['verbos'],
+  "4|べんきょうします":['verbos'],
+  "4|おわります":['verbos'],
+  "4|デパート":['lugares'],
+  "4|ぎんこう":['lugares'],
+  "4|ゆうびんきょく":['lugares'],
+  "4|としょかん":['lugares'],
+  "4|びじゅつかん":['lugares'],
+  "4|いま":['tiempo'],
+  "4|〜じ":['tiempo'],
+  "4|〜ふん (〜ぷん)":['tiempo'],
+  "4|はん":['tiempo'],
+  "4|なんじ":['tiempo'],
+  "4|なんぷん":['tiempo'],
+  "4|ごぜん":['tiempo'],
+  "4|ごご":['tiempo'],
+  "4|あさ":['tiempo'],
+  "4|ひる":['tiempo'],
+  "4|ばん (よる)":['tiempo'],
+  "4|おととい":['tiempo'],
+  "4|きのう":['tiempo'],
+  "4|きょう":['tiempo'],
+  "4|あした":['tiempo'],
+  "4|あさって":['tiempo'],
+  "4|けさ":['tiempo'],
+  "4|こんばん":['tiempo'],
+  "4|やすみ":['tiempo'],
+  "4|ひるやすみ":['tiempo'],
+  "4|しけん":['tiempo'],
+  "4|かいぎ":['tiempo'],
+  "4|えいが":['tiempo'],
+  "4|まいあさ":['tiempo'],
+  "4|まいばん":['tiempo'],
+  "4|まいにち":['tiempo'],
+  "4|げつようび":['tiempo'],
+  "4|かようび":['tiempo'],
+  "4|すいようび":['tiempo'],
+  "4|もくようび":['tiempo'],
+  "4|きんようび":['tiempo'],
+  "4|どようび":['tiempo'],
+  "4|にちようび":['tiempo'],
+  "4|なんようび":['tiempo'],
+  "4|〜から":['frases'],
+  "4|〜まで":['frases'],
+  "4|〜と〜":['frases'],
+  "4|たいへんですね。":['frases'],
+  "4|ばんごう":['frases'],
+  "4|なんばん":['frases'],
+  "4|そちら":['lugares'],
+  "4|ニューヨーク":['paises'],
+  "4|ペキン":['paises'],
+  "4|ロサンゼルス":['paises'],
+  "4|ロンドン":['paises'],
+  "5|いきます":['verbos'],
+  "5|きます":['verbos'],
+  "5|かえります":['verbos'],
+  "5|がっこう":['lugares'],
+  "5|スーパー":['lugares'],
+  "5|えき":['lugares','transporte'],
+  "5|ひこうき":['transporte'],
+  "5|ふね":['transporte'],
+  "5|でんしゃ":['transporte'],
+  "5|ちかてつ":['transporte'],
+  "5|しんかんせん":['transporte'],
+  "5|バス":['transporte'],
+  "5|タクシー":['transporte'],
+  "5|じてんしゃ":['transporte'],
+  "5|あるいて":['transporte'],
+  "5|ふつう":['transporte'],
+  "5|きゅうこう":['transporte'],
+  "5|とっきゅう":['transporte'],
+  "5|ひと":['personas'],
+  "5|ともだち":['personas'],
+  "5|かれ":['personas'],
+  "5|かのじょ":['personas'],
+  "5|かぞく":['personas'],
+  "5|ひとりで":['personas'],
+  "5|せんしゅう":['tiempo'],
+  "5|こんしゅう":['tiempo'],
+  "5|らいしゅう":['tiempo'],
+  "5|せんげつ":['tiempo'],
+  "5|こんげつ":['tiempo'],
+  "5|らいげつ":['tiempo'],
+  "5|きょねん":['tiempo'],
+  "5|ことし":['tiempo'],
+  "5|らいねん":['tiempo'],
+  "5|いつ":['tiempo'],
+  "5|たんじょうび":['tiempo'],
+  "5|ついたち":['tiempo'],
+  "5|ふつか":['tiempo'],
+  "5|みっか":['tiempo'],
+  "5|よっか":['tiempo'],
+  "5|いつか":['tiempo'],
+  "5|むいか":['tiempo'],
+  "5|なのか":['tiempo'],
+  "5|ようか":['tiempo'],
+  "5|ここのか":['tiempo'],
+  "5|とおか":['tiempo'],
+  "5|じゅうよっか":['tiempo'],
+  "5|はつか":['tiempo'],
+  "5|にじゅうよっか":['tiempo'],
+  "5|なんにち":['tiempo'],
+  "5|そうですね。":['frases'],
+  "5|ありがとうございました。":['frases'],
+  "5|どういたしまして。":['frases'],
+  "5|つぎの":['frases'],
+  "6|たべます":['verbos'],
+  "6|のみます":['verbos'],
+  "6|すいます":['verbos'],
+  "6|みます":['verbos'],
+  "6|ききます":['verbos'],
+  "6|よみます":['verbos'],
+  "6|かきます":['verbos'],
+  "6|かいます":['verbos'],
+  "6|とります":['verbos'],
+  "6|します":['verbos'],
+  "6|あいます":['verbos'],
+  "6|ごはん":['comida'],
+  "6|あさごはん":['comida'],
+  "6|ひるごはん":['comida'],
+  "6|ばんごはん":['comida'],
+  "6|パン":['comida'],
+  "6|たまご":['comida'],
+  "6|にく":['comida'],
+  "6|さかな":['comida'],
+  "6|やさい":['comida'],
+  "6|くだもの":['comida'],
+  "6|みず":['comida'],
+  "6|おちゃ":['comida'],
+  "6|こうちゃ":['comida'],
+  "6|ぎゅうにゅう":['comida'],
+  "6|ジュース":['comida'],
+  "6|ビール":['comida'],
+  "6|[お]さけ":['comida'],
+  "6|たばこ":['objetos'],
+  "6|てがみ":['objetos'],
+  "6|レポート":['objetos'],
+  "6|しゃしん":['objetos'],
+  "6|ビデオ":['objetos'],
+  "6|みせ":['lugares'],
+  "6|にわ":['lugares'],
+  "6|しゅくだい":['frases'],
+  "6|テニス":['frases'],
+  "6|サッカー":['frases'],
+  "6|[お]はなみ":['frases'],
+  "6|なに":['frases'],
+  "6|いっしょに":['frases'],
+  "6|ちょっと":['frases'],
+  "6|いつも":['frases'],
+  "6|ときどき":['frases'],
+  "6|それから":['frases'],
+  "6|ええ":['frases'],
+  "6|いいですね。":['frases'],
+  "6|わかりました。":['frases'],
+  "6|なんですか。":['frases'],
+  "6|じゃ、また [あした]。":['frases'],
+  "1|あのひと":['personas'],
+  "1|あのかた":['personas'],
+  "1|〜じん":['personas','paises'],
+  "1|だれ":['frases'],
+  "1|どなた":['frases'],
+  "1|おなまえは":['frases'],
+  "1|にほん":['paises'],
+  "2|スマホ":['objetos'],
+  "2|みやげ":['objetos'],
+  "3|トイレ":['lugares'],
+  "3|みせてください":['frases'],
+  "3|ください":['frases'],
+  "4|ばん":['tiempo'],
+  "6|さけ":['comida'],
+  "6|はなみ":['frases'],
+  "6|じゃ、また。":['frases'],
+};
+
 const ALL=[
   {es:"yo",jp:"わたし",rom:"watashi",l:1},
   {es:"usted",jp:"あなた",rom:"anata",l:1},
@@ -473,38 +770,19 @@ const THEME_LESSONS = {
   paises:    [1,4],
 };
 
-// Tags per word — each entry in ALL gets a 'themes' array
-// We tag by matching patterns in es/jp fields
+
 function tagThemes(card){
-  const e=card.es.toLowerCase(), k=card.jp||'';
-  const tags=[];
-  // verbos — ends in ます
-  if(k.endsWith('ます')||k.endsWith('ません')) tags.push('verbos');
-  // tiempo
-  const tiempoWords=['じ','ぷん','ふん','はん','ごぜん','ごご','よる','あさ','ひる','ばん','きのう','きょう','あした','まいにち','まいあさ','まいばん','おととい','あさって','けさ','こんばん','やすみ','ひるやすみ','しけん','かいぎ','えいが','せんしゅう','こんしゅう','らいしゅう','せんげつ','こんげつ','らいげつ','きょねん','ことし','らいねん','ついたち','ふつか','みっか','よっか','いつか','むいか','なのか','ようか','ここのか','とおか','じゅうよっか','はつか','にじゅうよっか','いつ','たんじょうび','げつようび','かようび','すいようび','もくようび','きんようび','どようび','にちようび','なんようび'];
-  if(tiempoWords.some(w=>k.includes(w))) tags.push('tiempo');
-  // lugares
-  const lugarWords=['きょうしつ','しょくどう','じむしょ','かいぎしつ','うけつけ','ロビー','へや','トイレ','かいだん','エレベーター','エスカレーター','じどうはんばいき','デパート','ぎんこう','ゆうびんきょく','としょかん','びじゅつかん','がっこう','スーパー','えき','みせ','にわ','ここ','そこ','あそこ','どこ','こちら','そちら','あちら','どちら'];
-  if(lugarWords.some(w=>k.includes(w))) tags.push('lugares');
-  // transporte
-  const transWords=['ひこうき','ふね','でんしゃ','ちかてつ','しんかんせん','バス','タクシー','じてんしゃ','あるいて','ふつう','きゅうこう','とっきゅう','えき'];
-  if(transWords.some(w=>k.includes(w))) tags.push('transporte');
-  // comida
-  const comidaWords=['ごはん','あさごはん','ひるごはん','ばんごはん','パン','たまご','にく','さかな','やさい','くだもの','みず','おちゃ','こうちゃ','ぎゅうにゅう','ジュース','ビール','さけ','たばこ'];
-  if(comidaWords.some(w=>k.includes(w))) tags.push('comida');
-  // personas
-  const personasWords=['わたし','あなた','ひと','ともだち','かれ','かのじょ','かぞく','ひとりで','がくせい','かいしゃいん','せんせい','いしゃ','だれ','どなた'];
-  if(personasWords.some(w=>k.includes(w))) tags.push('personas');
-  // objetos
-  const objetosWords=['ほん','じしょ','ざっし','しんぶん','ノート','てちょう','めいし','カード','えんぴつ','ボールペン','シャープ','ペン','かぎ','とけい','かさ','かばん','テレビ','ラジオ','カメラ','コンピューター','パソコン','タブレット','けいたい','スマホ','くるま','チョコレート','コーヒー','てがみ','レポート','しゃしん','ビデオ','ネクタイ','ワイン','くつ'];
-  if(objetosWords.some(w=>k.includes(w))) tags.push('objetos');
-  // paises/ciudades
-  const paisesWords=['アメリカ','イギリス','インド','インドネシア','かんこく','タイ','ちゅうごく','ドイツ','にほん','ブラジル','ニューヨーク','ペキン','ロサンゼルス','ロンドン','おくに'];
-  if(paisesWords.some(w=>k.includes(w))) tags.push('paises');
-  // frases — anything not tagged elsewhere, o explícitamente
-  const frasesWords=['はじめまして','よろしく','しつれい','おなまえ','こちら','そうです','ちがいます','いらっしゃいませ','みせてください','ください','じゃ','そうですね','ありがとう','どういたしまして','わかりました','いいですね','なんですか','またあした','いっしょに','ちょっと','いつも','ときどき','それから','ええ','はい','いいえ','すみません','どうぞ','だいじょうぶ'];
-  if(frasesWords.some(w=>k.includes(w))) tags.push('frases');
-  card.themes = tags.length>0 ? tags : ['frases'];
+  const key=card.l+'|'+card.jp;
+  card.themes = WORD_THEMES[key] || ['frases'];
+}
+
+// ── THEME AVAILABILITY (opacar temas sin tarjetas en las lecciones activas) ──
+function updateThemeAvailability(){
+  document.querySelectorAll('.tbtn').forEach(btn=>{
+    const theme=btn.dataset.theme;
+    const hasAny=ALL.some(c=>activeLessons.has(c.l)&&c.themes.includes(theme));
+    btn.classList.toggle('disabled', !hasAny);
+  });
 }
 
 function selectTheme(theme){
@@ -516,6 +794,7 @@ function selectTheme(theme){
       const btn=document.getElementById('lb'+n);
       if(btn) btn.classList.add('active');
     });
+    updateThemeAvailability();
     buildDeck(); return;
   }
   activeTheme=theme;
@@ -532,6 +811,7 @@ function selectTheme(theme){
       if(btn) btn.classList.remove('active');
     }
   });
+  updateThemeAvailability();
   buildDeck();
 }
 
@@ -557,6 +837,7 @@ function toggleLesson(n,btn){
   }else{
     activeLessons.add(n);btn.classList.add('active');
   }
+  updateThemeAvailability();
   buildDeck();
 }
 
@@ -627,6 +908,7 @@ function restart(onlySkipped){
 
 buildDeck();
 shuffleDeck();
+updateThemeAvailability();
 </script>
 </body>
 </html>
