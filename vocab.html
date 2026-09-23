@@ -113,16 +113,21 @@ const VOCAB = {
 };
 
 const isMobile = () => window.innerWidth <= 600;
+function stripAccents(s){
+  return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+}
+
 function doSearch(){
   const raw = document.getElementById('searchInput').value.trim();
   const q = raw.toLowerCase().replace(/\s+/g,'');
+  const qEs = stripAccents(raw.toLowerCase());
   const res = document.getElementById('searchResults');
   if(!q){ res.classList.remove('active'); return; }
   const hits = [];
   [1,2,3,4,5,6].forEach(l=>{
     if(!VOCAB[l]) return;
     VOCAB[l].forEach(([es,jp])=>{
-      const esMatch = es.toLowerCase().split(/[\s\/,]+/).some(w=>w.startsWith(raw.toLowerCase()));
+      const esMatch = es.toLowerCase().split(/[\s\/,]+/).some(w=>stripAccents(w).startsWith(qEs));
       const jpRomWords = wanakana.toRomaji(jp).toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
       const jpKanaWords = jp.split(/[\s\/\uFF0F,\u3001()\uFF08\uFF09\u300C\u300D\u301C~]+/).filter(Boolean);
       const jpMatch = jpRomWords.some(w=>w.startsWith(q)) || jpKanaWords.some(w=>w.startsWith(raw));
