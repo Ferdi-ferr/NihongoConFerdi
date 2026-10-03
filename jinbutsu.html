@@ -23,7 +23,6 @@ h1{text-align:center;font-size:1.1rem;font-weight:400;color:#3a2e28;margin-botto
 .fbtn{font-size:11px;padding:3px 10px;border-radius:99px;border:1px solid #ccc;background:#fff;color:#888;cursor:pointer;transition:all .15s}
 .fbtn.active{background:#c0392b;color:#fff;border-color:transparent}
 .shuffle-btn{font-size:12px;padding:4px 12px;border-radius:99px;border:1px solid #ccc;background:#fff;color:#555;cursor:pointer}
-.mode-group{display:flex;gap:6px}
 
 /* progress */
 .prog-wrap{max-width:640px;margin:0 auto .5rem}
@@ -63,41 +62,7 @@ h1{text-align:center;font-size:1.1rem;font-weight:400;color:#3a2e28;margin-botto
 
 /* answer builder */
 .answer-builder{margin-bottom:.75rem}
-.answer-slots{
-  min-height:48px;background:#faf7f2;border:2px dashed #d8d0c8;
-  border-radius:12px;padding:.5rem .75rem;
-  display:flex;flex-wrap:wrap;gap:6px;align-items:center;
-  margin-bottom:.6rem;
-}
-.answer-slots.has-content{border-style:solid;border-color:#c0392b;background:#fff}
-.answer-slots.state-ok{border-color:#2d7a3e;background:#f0faf2}
-.answer-slots.state-err{border-color:#c03030;background:#fdf0f0;animation:shake .35s ease}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-6px)}50%{transform:translateX(6px)}75%{transform:translateX(-4px)}}
-
-.ans-slot{
-  font-size:1rem;padding:4px 10px;border-radius:8px;
-  background:#c0392b;color:#fff;cursor:pointer;
-  border:none;font-family:inherit;
-  transition:transform .1s,opacity .15s;
-  white-space:nowrap;
-}
-.ans-slot:hover{opacity:.85;transform:scale(.97)}
-.ans-slot.punct{background:#888;padding:4px 6px}
-.ans-slot.state-ok{background:#2d7a3e}
-.ans-slot.state-err{background:#c03030}
-
-.block-pool{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:.5rem}
-.block-btn{
-  font-size:1rem;padding:7px 13px;border-radius:10px;
-  border:1.5px solid #d8d0c8;background:#fff;color:#222;
-  cursor:pointer;font-family:inherit;
-  transition:transform .1s,background .15s,opacity .15s;
-  white-space:nowrap;
-}
-.block-btn:hover:not(:disabled){background:#f5ede8;border-color:#c0392b}
-.block-btn:active:not(:disabled){transform:scale(.93)}
-.block-btn:disabled{opacity:.2;cursor:default}
-.block-btn.punct{color:#888;border-color:#e0d8d0}
 
 /* typing answer (romaji -> kana) */
 .type-wrap{display:flex;gap:8px;align-items:center;margin-bottom:.6rem;flex-wrap:wrap;justify-content:center}
@@ -193,10 +158,6 @@ h1{text-align:center;font-size:1.1rem;font-weight:400;color:#3a2e28;margin-botto
     <button class="fbtn active" data-q="age" onclick="toggleQ('age',this)">Edad</button>
     <button class="fbtn active" data-q="possess" onclick="toggleQ('possess',this)">Posesión</button>
   </div>
-  <div class="mode-group">
-    <button class="fbtn active" id="modeBtnBlocks" onclick="setAnswerMode('blocks')">🧩 Bloques</button>
-    <button class="fbtn" id="modeBtnType" onclick="setAnswerMode('type')">⌨️ Escribir</button>
-  </div>
   <button class="shuffle-btn" onclick="buildDeck()">⇄ Barajar</button>
 </div>
 
@@ -221,7 +182,6 @@ h1{text-align:center;font-size:1.1rem;font-weight:400;color:#3a2e28;margin-botto
     <div id="answerArea"></div>
     <div class="feedback" id="feedback"></div>
     <div class="action-row" id="actionRow"></div>
-    <div class="block-pool" id="blockPool"></div>
   </div>
 </div>
 
@@ -590,16 +550,6 @@ function makeAvatar(c,size=80){
 let deck=[],idx=0,cardStates=[];
 let activeQTypes=new Set(['obj','country','prof','age','possess']);
 let esVisible=false;
-let answerMode='blocks'; // 'blocks' | 'type'
-
-function setAnswerMode(mode){
-  if(answerMode===mode)return;
-  answerMode=mode;
-  document.getElementById('modeBtnBlocks').classList.toggle('active', mode==='blocks');
-  document.getElementById('modeBtnType').classList.toggle('active', mode==='type');
-  render();
-}
-
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
 
 function buildDeck(){
@@ -622,21 +572,8 @@ function toggleQ(type,btn){
 
 function initState(i){
   if(!cardStates[i]){
-    const q=deck[i];
-    const pool=makeBlockPool(q);
-    cardStates[i]={phase:'input',answer:[],buttons:pool,hadError:false,typed:''};
+    cardStates[i]={phase:'input',hadError:false,typed:''};
   }
-}
-
-function makeBlockPool(q){
-  // correct tokens (unique, preserving needed repeats)
-  const needed=[...q.answer];
-  // distractors — pick up to fill to ~10 total unique additions
-  const usedSet=new Set(needed);
-  const extras=q.distractors.filter(d=>!usedSet.has(d));
-  const all=[...needed,...extras];
-  shuffle(all);
-  return all;
 }
 
 // ── NAVIGATION ────────────────────────────────────────────────────
@@ -705,13 +642,7 @@ function render(){
   document.getElementById('progBar').style.width=pct+'%';
   document.getElementById('progText').textContent=(idx+1)+' / '+deck.length;
 
-  if(answerMode==='type'){
-    renderTypeArea();
-    document.getElementById('blockPool').innerHTML='';
-  } else {
-    renderSlots();
-    renderBlocks();
-  }
+  renderTypeArea();
   setFeedback('','');
   renderActions();
 
@@ -749,23 +680,6 @@ function renderAvatars(q){
        <div class="avatar-prof">${c.prof}</div>
        <div class="avatar-age">${c.age}さい</div>`;
     row.appendChild(box);
-  });
-}
-
-function renderSlots(){
-  const area=document.getElementById('answerArea');
-  const st=cardStates[idx];
-  const cls='answer-slots'+(st.answer.length?' has-content':'')+(st.phase==='correct'?' state-ok':st.phase==='wrong'?' state-err':'');
-  area.innerHTML=`<div class="${cls}" id="answerSlots"></div>`;
-  const container=document.getElementById('answerSlots');
-  st.answer.forEach((tok,i)=>{
-    const btn=document.createElement('button');
-    const isPunct=tok==='、'||tok==='。';
-    btn.className='ans-slot'+(isPunct?' punct':'')+(st.phase==='correct'?' state-ok':st.phase==='wrong'?' state-err':'');
-    btn.textContent=tok;
-    if(st.phase==='input') btn.onclick=()=>removeSlotAt(i);
-    else btn.onclick=null;
-    container.appendChild(btn);
   });
 }
 
@@ -866,90 +780,17 @@ function renderActions(){
   }
 }
 
-function renderBlocks(){
-  const pool=document.getElementById('blockPool');
-  pool.innerHTML='';
-  const st=cardStates[idx];
-  const locked=st.phase!=='input';
-  const usedIdx=getUsed(st.answer,st.buttons);
-  st.buttons.forEach((k,i)=>{
-    const btn=document.createElement('button');
-    btn.className='block-btn'+(k==='、'||k==='。'?' punct':'');
-    btn.textContent=k;btn.disabled=locked||usedIdx.has(i);
-    btn.onclick=locked?null:()=>handleBlock(k,i);
-    pool.appendChild(btn);
-  });
-}
-
-function getUsed(answer,buttons){
-  const used=new Set();
-  for(const t of answer){
-    for(let i=0;i<buttons.length;i++){
-      if(buttons[i]===t&&!used.has(i)){used.add(i);break;}
-    }
-  }
-  return used;
-}
-
-// ── INTERACTION ───────────────────────────────────────────────────
-function handleBlock(k,btnIdx){
-  const st=cardStates[idx];
-  if(st.phase!=='input')return;
-  const q=deck[idx];
-  const pos=st.answer.length;
-  if(pos>=q.answer.length)return;
-
-  st.answer.push(k);
-  document.querySelectorAll('#blockPool .block-btn')[btnIdx].disabled=true;
-  renderSlots();
-  setFeedback('','');
-
-  if(st.answer.length===q.answer.length) setTimeout(verifyAnswer,120);
-}
-
-function verifyAnswer(){
-  const st=cardStates[idx];
-  const q=deck[idx];
-  const correct=st.answer.every((k,i)=>k===q.answer[i]);
-  st.phase=correct?'correct':'wrong';
-  if(!correct)st.hadError=true;
-  updateStats();
-  render();
-  if(!correct){
-    const slots=document.getElementById('answerSlots');
-    slots.classList.remove('state-err');void slots.offsetWidth;slots.classList.add('state-err');
-  }
-}
-
 function retryCard(){
   cardStates[idx].phase='input';
-  cardStates[idx].answer=[];
   cardStates[idx].typed='';
   render();setFeedback('','');
 }
 
 function revealAnswer(){
   const st=cardStates[idx];
-  st.answer=[...deck[idx].answer];
   st.typed=deck[idx].answer.join('');
   st.phase='revealed';
   updateStats();render();
-}
-
-function removeSlotAt(pos){
-  const st=cardStates[idx];
-  if(st.phase!=='input')return;
-  const token=st.answer[pos];
-  const usedBefore=getUsed(st.answer.slice(0,pos),st.buttons);
-  for(let i=0;i<st.buttons.length;i++){
-    if(st.buttons[i]===token&&!usedBefore.has(i)){
-      const btns=document.querySelectorAll('#blockPool .block-btn');
-      if(btns[i])btns[i].disabled=false;
-      break;
-    }
-  }
-  st.answer.splice(pos,1);
-  renderSlots();renderBlocks();setFeedback('','');
 }
 
 // ── STATS ─────────────────────────────────────────────────────────
