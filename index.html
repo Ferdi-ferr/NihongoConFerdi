@@ -174,11 +174,23 @@ body.weather-clear .sky{filter:saturate(1.08)}
   text-transform:uppercase;
   color:#a08070;
 }
+.tokyo-stack{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:.05rem;
+}
 .tokyo-time{
   font-size:1.05rem;
   font-weight:600;
   color:var(--ink);
   letter-spacing:.03em;
+  font-variant-numeric:tabular-nums;
+}
+.tokyo-date{
+  font-size:.7rem;
+  color:#8a7a6e;
+  letter-spacing:.04em;
   font-variant-numeric:tabular-nums;
 }
 .tokyo-weather{
@@ -436,7 +448,10 @@ footer{
   <div class="subtitle">Nihongo con Ferdi</div>
   <div class="tokyo-widget" id="tokyoWidget">
     <span class="tokyo-label">東京 Tokyo</span>
-    <span class="tokyo-time" id="tokyoTime">--:--</span>
+    <div class="tokyo-stack">
+      <span class="tokyo-time" id="tokyoTime">--:--</span>
+      <span class="tokyo-date" id="tokyoDate">--月--日</span>
+    </div>
     <span class="tokyo-weather" id="tokyoWeather" style="display:none">
       <span class="weather-icon" id="weatherIcon">🌤️</span>
       <span class="weather-temp" id="weatherTemp">--°C</span>
@@ -640,8 +655,18 @@ function updateTokyoClock(){
   const el = document.getElementById('tokyoTime');
   if(el) el.textContent = timeStr;
 }
+function updateTokyoDate(){
+  const now = new Date();
+  const parts = new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric'}).formatToParts(now);
+  const month = parts.find(p=>p.type==='month').value;
+  const day = parts.find(p=>p.type==='day').value;
+  const el = document.getElementById('tokyoDate');
+  if(el) el.textContent = `${month}月${day}日`;
+}
 updateTokyoClock();
+updateTokyoDate();
 setInterval(updateTokyoClock, 15000);
+setInterval(updateTokyoDate, 15000);
 
 // ── Tokyo weather (Open-Meteo, free, no API key) ──
 const WMO_ICON = {
