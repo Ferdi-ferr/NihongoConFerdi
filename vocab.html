@@ -21,9 +21,8 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:.25rem;text-align:cen
 .panel{background:#fff;border-radius:20px;width:100%;max-width:1400px;padding:1.5rem;border:1px solid #e0d8d0;overflow-x:auto;}
 
 /* grid */
-.vocab-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1.1rem;min-width:1040px;padding-right:.9rem;}
-.vcol{min-width:0;}
-@media(max-width:600px){.vocab-grid{grid-template-columns:1fr;min-width:0;padding-right:0;}}
+.vocab-grid{display:grid;grid-template-columns:repeat(7,1fr) 14px;gap:1.1rem;min-width:1040px;}
+@media(max-width:600px){.vocab-grid{grid-template-columns:1fr;min-width:0;}}
 
 /* column title */
 .vcol-title{
@@ -71,7 +70,7 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:.25rem;text-align:cen
 .result-es{color:#555;flex:0 1 auto;}
 .result-jp{color:#1a1209;font-size:.95rem;flex:0 1 auto;}
 .no-results{color:#aaa;font-style:italic;font-size:.85rem;text-align:center;padding:.5rem;}
-.vocab-jp{color:#1a1209;font-size:.95rem;text-align:right;}
+.vocab-jp{color:#1a1209;font-size:.95rem;text-align:right;white-space:nowrap}
 </style>
 <script src="https://unpkg.com/wanakana"></script>
 </head>
@@ -173,6 +172,8 @@ function build(){
       r.classList.remove('collapsed');
       r.style.maxHeight='';
     });
+    // trailing spacer column so the last lesson's kana isn't flush against the edge
+    grid.appendChild(document.createElement('div'));
   }
 }
 
