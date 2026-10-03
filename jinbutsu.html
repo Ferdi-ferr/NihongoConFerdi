@@ -23,6 +23,7 @@ h1{text-align:center;font-size:1.1rem;font-weight:400;color:#3a2e28;margin-botto
 .fbtn{font-size:11px;padding:3px 10px;border-radius:99px;border:1px solid #ccc;background:#fff;color:#888;cursor:pointer;transition:all .15s}
 .fbtn.active{background:#c0392b;color:#fff;border-color:transparent}
 .shuffle-btn{font-size:12px;padding:4px 12px;border-radius:99px;border:1px solid #ccc;background:#fff;color:#555;cursor:pointer}
+.mode-group{display:flex;gap:6px}
 
 /* progress */
 .prog-wrap{max-width:640px;margin:0 auto .5rem}
@@ -58,6 +59,7 @@ h1{text-align:center;font-size:1.1rem;font-weight:400;color:#3a2e28;margin-botto
 .q-text{font-size:1.3rem;font-weight:500;color:#1a1209;margin-bottom:.25rem;line-height:1.5}
 .q-hint{font-size:.75rem;color:#c0392b;background:#fdf0ee;padding:3px 10px;border-radius:8px;display:inline-block;margin-top:.3rem}
 .q-hint-note{font-size:.72rem;color:#888;font-style:italic;margin-top:.3rem}
+.q-struct-hint{font-size:.7rem;color:#9a8a78;font-style:italic;margin-top:.35rem}
 
 /* answer builder */
 .answer-builder{margin-bottom:.75rem}
@@ -96,6 +98,27 @@ h1{text-align:center;font-size:1.1rem;font-weight:400;color:#3a2e28;margin-botto
 .block-btn:active:not(:disabled){transform:scale(.93)}
 .block-btn:disabled{opacity:.2;cursor:default}
 .block-btn.punct{color:#888;border-color:#e0d8d0}
+
+/* typing answer (romaji -> kana) */
+.type-wrap{display:flex;gap:8px;align-items:center;margin-bottom:.6rem;flex-wrap:wrap;justify-content:center}
+.type-input{
+  font-family:'Noto Sans JP',sans-serif;font-size:1.1rem;
+  padding:10px 14px;border-radius:10px;border:2px solid #d8d0c8;
+  background:#faf7f2;color:#1a1209;min-width:240px;flex:1;max-width:420px;
+  transition:border-color .2s,background .2s;
+}
+.type-input:focus{outline:none;border-color:#c0392b;background:#fff}
+.type-input.state-ok{border-color:#2d7a3e;background:#f0faf2}
+.type-input.state-err{border-color:#c03030;background:#fdf0f0;animation:shake .35s ease}
+.type-input:disabled{opacity:.75}
+.type-verify-btn{
+  font-size:14px;padding:10px 18px;border-radius:10px;border:none;
+  background:#c0392b;color:#fff;cursor:pointer;font-family:inherit;font-weight:500;
+  transition:background .15s;
+}
+.type-verify-btn:hover:not(:disabled){background:#a93226}
+.type-verify-btn:disabled{opacity:.3;cursor:default}
+.type-revealed-text{font-size:1.05rem;color:#8a6800;background:#fdf6e3;padding:10px 14px;border-radius:10px;text-align:center;margin-bottom:.6rem}
 
 /* feedback */
 .feedback{min-height:22px;font-size:.85rem;font-weight:500;text-align:center;margin-bottom:.5rem}
@@ -170,6 +193,10 @@ h1{text-align:center;font-size:1.1rem;font-weight:400;color:#3a2e28;margin-botto
     <button class="fbtn active" data-q="age" onclick="toggleQ('age',this)">Edad</button>
     <button class="fbtn active" data-q="possess" onclick="toggleQ('possess',this)">Posesión</button>
   </div>
+  <div class="mode-group">
+    <button class="fbtn active" id="modeBtnBlocks" onclick="setAnswerMode('blocks')">🧩 Bloques</button>
+    <button class="fbtn" id="modeBtnType" onclick="setAnswerMode('type')">⌨️ Escribir</button>
+  </div>
   <button class="shuffle-btn" onclick="buildDeck()">⇄ Barajar</button>
 </div>
 
@@ -187,10 +214,11 @@ h1{text-align:center;font-size:1.1rem;font-weight:400;color:#3a2e28;margin-botto
     <div class="q-text" id="qText"></div>
     <div id="qHint"></div>
     <div id="qHintNote"></div>
+    <div id="qStructHint"></div>
   </div>
   <div class="es-translation" id="esTranslation"></div>
   <div class="answer-builder">
-    <div class="answer-slots" id="answerSlots"></div>
+    <div id="answerArea"></div>
     <div class="feedback" id="feedback"></div>
     <div class="action-row" id="actionRow"></div>
     <div class="block-pool" id="blockPool"></div>
@@ -218,6 +246,7 @@ h1{text-align:center;font-size:1.1rem;font-weight:400;color:#3a2e28;margin-botto
   </div>
 </div>
 
+<script src="https://unpkg.com/wanakana"></script>
 <script>
 // ── CHARACTER DATA ─────────────────────────────────────────────────
 const CHARS=[
@@ -561,6 +590,15 @@ function makeAvatar(c,size=80){
 let deck=[],idx=0,cardStates=[];
 let activeQTypes=new Set(['obj','country','prof','age','possess']);
 let esVisible=false;
+let answerMode='blocks'; // 'blocks' | 'type'
+
+function setAnswerMode(mode){
+  if(answerMode===mode)return;
+  answerMode=mode;
+  document.getElementById('modeBtnBlocks').classList.toggle('active', mode==='blocks');
+  document.getElementById('modeBtnType').classList.toggle('active', mode==='type');
+  render();
+}
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
 
@@ -586,7 +624,7 @@ function initState(i){
   if(!cardStates[i]){
     const q=deck[i];
     const pool=makeBlockPool(q);
-    cardStates[i]={phase:'input',answer:[],buttons:pool,hadError:false};
+    cardStates[i]={phase:'input',answer:[],buttons:pool,hadError:false,typed:''};
   }
 }
 
@@ -653,6 +691,11 @@ function render(){
   if(q.hintNote){hintNoteEl.innerHTML=`<div class="q-hint-note">${q.hintNote}</div>`;hintNoteEl.style.display='';}
   else hintNoteEl.innerHTML='';
 
+  // structural guide note (which pieces the answer must include, without giving the words away)
+  const structEl=document.getElementById('qStructHint');
+  const sh=structHint(q);
+  structEl.innerHTML=sh?`<div class="q-struct-hint">🧭 ${sh}</div>`:'';
+
   // ES translation
   const esEl=document.getElementById('esTranslation');
   esEl.textContent=esVisible?(q.qES||''):'';
@@ -662,10 +705,15 @@ function render(){
   document.getElementById('progBar').style.width=pct+'%';
   document.getElementById('progText').textContent=(idx+1)+' / '+deck.length;
 
-  renderSlots();
+  if(answerMode==='type'){
+    renderTypeArea();
+    document.getElementById('blockPool').innerHTML='';
+  } else {
+    renderSlots();
+    renderBlocks();
+  }
   setFeedback('','');
   renderActions();
-  renderBlocks();
 
   document.getElementById('btnPrev').disabled=(idx===0);
   const done=st.phase!=='input';
@@ -705,11 +753,11 @@ function renderAvatars(q){
 }
 
 function renderSlots(){
-  const container=document.getElementById('answerSlots');
-  container.innerHTML='';
+  const area=document.getElementById('answerArea');
   const st=cardStates[idx];
-  if(st.answer.length===0){container.className='answer-slots';return;}
-  container.className='answer-slots has-content'+(st.phase==='correct'?' state-ok':st.phase==='wrong'?' state-err':'');
+  const cls='answer-slots'+(st.answer.length?' has-content':'')+(st.phase==='correct'?' state-ok':st.phase==='wrong'?' state-err':'');
+  area.innerHTML=`<div class="${cls}" id="answerSlots"></div>`;
+  const container=document.getElementById('answerSlots');
   st.answer.forEach((tok,i)=>{
     const btn=document.createElement('button');
     const isPunct=tok==='、'||tok==='。';
@@ -719,6 +767,74 @@ function renderSlots(){
     else btn.onclick=null;
     container.appendChild(btn);
   });
+}
+
+// ── TYPE MODE (romaji -> kana, via wanakana) ─────────────────────────
+function escAttr(s){
+  return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+
+function normalizeTyped(s){
+  return s.trim().replace(/[\s\u3000]+/g,'');
+}
+
+function structHint(q){
+  const t=q.type, s=q.subtype, two=' (2 oraciones)';
+  if(t==='obj_closed')     return s==='pos'?'incluye: はい + そうです':'incluye: いいえ + objeto correcto + です'+two;
+  if(t==='obj_open')       return 'incluye: objeto + です';
+  if(t==='country_closed') return s==='pos'?'incluye: はい + そうです':'incluye: いいえ + persona + país correcto + です'+two;
+  if(t==='country_open')   return 'incluye: persona + país + です';
+  if(t==='prof_closed')    return s==='pos'?'incluye: はい + そうです':'incluye: いいえ + persona + profesión correcta + です'+two;
+  if(t==='prof_open')      return 'incluye: persona + profesión + です';
+  if(t==='age_closed')     return s==='pos'?'incluye: はい + そうです':'incluye: いいえ + persona + edad correcta + さい + です'+two;
+  if(t==='age_open')       return 'incluye: persona + edad + さい + です';
+  if(t==='possess_closed') return s==='pos'?'incluye: はい + そうです':'incluye: いいえ + dueño correcto + の + objeto + です'+two;
+  if(t==='possess_open')   return 'incluye: dueño + の + objeto + です';
+  return '';
+}
+
+function renderTypeArea(){
+  const area=document.getElementById('answerArea');
+  const st=cardStates[idx];
+  if(st.phase==='revealed'){
+    area.innerHTML=`<div class="type-revealed-text">${deck[idx].answer.join('')}</div>`;
+    return;
+  }
+  const locked=st.phase!=='input';
+  const stateCls=st.phase==='correct'?' state-ok':st.phase==='wrong'?' state-err':'';
+  area.innerHTML=`
+    <div class="type-wrap">
+      <input class="type-input${stateCls}" id="typeInput" type="text"
+        placeholder="escribe en romaji..." autocomplete="off" autocapitalize="off" spellcheck="false"
+        ${locked?'disabled':''} value="${escAttr(st.typed||'')}">
+      <button class="type-verify-btn" id="typeVerifyBtn" ${locked?'disabled':''} onclick="verifyTyped()">Verificar →</button>
+    </div>`;
+  const input=document.getElementById('typeInput');
+  if(typeof wanakana!=='undefined'){
+    wanakana.bind(input,{IMEMode:true});
+  }
+  input.addEventListener('keydown',(e)=>{ if(e.key==='Enter'){ e.preventDefault(); verifyTyped(); } });
+  if(!locked) input.focus();
+}
+
+function verifyTyped(){
+  const st=cardStates[idx];
+  if(st.phase!=='input')return;
+  const input=document.getElementById('typeInput');
+  if(!input)return;
+  const typed=input.value.trim();
+  if(!typed){input.focus();return;}
+  st.typed=typed;
+  const q=deck[idx];
+  const correct=normalizeTyped(typed)===q.answer.join('');
+  st.phase=correct?'correct':'wrong';
+  if(!correct)st.hadError=true;
+  updateStats();
+  render();
+  if(!correct){
+    const el=document.getElementById('typeInput');
+    if(el){ el.classList.remove('state-err'); void el.offsetWidth; el.classList.add('state-err'); }
+  }
 }
 
 function renderActions(){
@@ -808,12 +924,14 @@ function verifyAnswer(){
 function retryCard(){
   cardStates[idx].phase='input';
   cardStates[idx].answer=[];
+  cardStates[idx].typed='';
   render();setFeedback('','');
 }
 
 function revealAnswer(){
   const st=cardStates[idx];
   st.answer=[...deck[idx].answer];
+  st.typed=deck[idx].answer.join('');
   st.phase='revealed';
   updateStats();render();
 }
