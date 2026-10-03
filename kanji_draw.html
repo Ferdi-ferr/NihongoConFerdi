@@ -110,24 +110,24 @@ h1{font-size:1rem;font-weight:500;color:#555;margin-bottom:.25rem;letter-spacing
 .cbtn.clear:hover{background:#f9d6d4}
 
 
-/* combined canvas — wider rectangle, 70% height */
+/* combined canvas — wider rectangle, 70% height; width/height vary with char count via CSS vars */
 .canvas-wrap.combined{
-  width:320px;height:154px;
+  width:var(--comb-w,320px);height:var(--comb-h,154px);
 }
 .canvas-wrap.combined::before{
-  background-size:320px 154px,320px 154px,20px 20px,20px 20px;
+  background-size:var(--comb-w,320px) var(--comb-h,154px),var(--comb-w,320px) var(--comb-h,154px),20px 20px,20px 20px;
 }
-/* strong center divider for combined */
+/* divider(s) between characters for combined (2+ chars) — position set inline per divider */
 .combined-divider{
-  position:absolute;left:50%;top:0;width:2px;height:100%;
+  position:absolute;top:0;width:2px;height:100%;
   background:#bbb;pointer-events:none;z-index:4;
   transform:translateX(-50%);
 }
 .ref-wrap.combined{
-  width:320px;height:154px;
+  width:var(--comb-w,320px);height:var(--comb-h,154px);
 }
 .ref-wrap.combined::before{
-  background-size:320px 154px,320px 154px,20px 20px,20px 20px;
+  background-size:var(--comb-w,320px) var(--comb-h,154px),var(--comb-w,320px) var(--comb-h,154px),20px 20px,20px 20px;
 }
 
 /* nav */
@@ -295,6 +295,121 @@ const ALL_KANJIS = [
     meanings:['compañía','empresa','asociación','sociedad','templo sintoísta'],
     strokes:'7 trazos',
   },
+  // ── NUEVOS (números grandes, tiempo, elementos, días de la semana) ──
+  {
+    type:'single', char:'百',
+    on:['ヒャク'], kun:[],
+    meanings:['cien','100'],
+    strokes:'6 trazos',
+  },
+  {
+    type:'single', char:'千',
+    on:['セン'], kun:[],
+    meanings:['mil','1000'],
+    strokes:'3 trazos',
+  },
+  {
+    type:'single', char:'万',
+    on:['マン','バン'], kun:[],
+    meanings:['diez mil','10,000'],
+    strokes:'3 trazos',
+  },
+  {
+    type:'single', char:'円',
+    on:['エン'], kun:['まる(い)'],
+    meanings:['yen','círculo','redondo'],
+    strokes:'4 trazos',
+  },
+  {
+    type:'single', char:'毎',
+    on:['マイ'], kun:[],
+    meanings:['cada','siempre','todos los'],
+    strokes:'6 trazos',
+  },
+  {
+    type:'single', char:'時',
+    on:['ジ'], kun:['とき'],
+    meanings:['tiempo','hora','ocasión'],
+    strokes:'10 trazos',
+  },
+  {
+    type:'single', char:'分',
+    on:['フン','ブン','プン'], kun:['わ(かる)','わ(ける)'],
+    meanings:['minuto','parte','entender','dividir'],
+    strokes:'4 trazos',
+  },
+  {
+    type:'single', char:'半',
+    on:['ハン'], kun:['なか(ば)'],
+    meanings:['mitad','medio'],
+    strokes:'5 trazos',
+  },
+  {
+    type:'single', char:'国',
+    on:['コク'], kun:['くに'],
+    meanings:['país','nación','país natal'],
+    strokes:'8 trazos',
+  },
+  {
+    type:'single', char:'玉',
+    on:['ギョク'], kun:['たま'],
+    meanings:['joya','bola','esfera','precioso'],
+    strokes:'5 trazos',
+  },
+  {
+    type:'single', char:'王',
+    on:['オウ'], kun:[],
+    meanings:['rey','monarca','soberano'],
+    strokes:'4 trazos',
+  },
+  {
+    type:'single', char:'月',
+    on:['ゲツ','ガツ'], kun:['つき'],
+    meanings:['mes','luna'],
+    strokes:'4 trazos',
+  },
+  {
+    type:'single', char:'火',
+    on:['カ'], kun:['ひ','ほ'],
+    meanings:['fuego','llama'],
+    strokes:'4 trazos',
+  },
+  {
+    type:'single', char:'水',
+    on:['スイ'], kun:['みず'],
+    meanings:['agua'],
+    strokes:'4 trazos',
+  },
+  {
+    type:'single', char:'木',
+    on:['ボク','モク'], kun:['き','こ'],
+    meanings:['árbol','madera'],
+    strokes:'4 trazos',
+  },
+  {
+    type:'single', char:'金',
+    on:['キン','コン'], kun:['かね','かな'],
+    meanings:['oro','dinero','metal'],
+    strokes:'8 trazos',
+  },
+  {
+    type:'single', char:'土',
+    on:['ド','ト'], kun:['つち'],
+    meanings:['suelo','tierra'],
+    strokes:'3 trazos',
+  },
+  {
+    type:'single', char:'書',
+    on:['ショ'], kun:['か(く)'],
+    meanings:['escritura','escrito','escribir'],
+    strokes:'10 trazos',
+  },
+  {
+    type:'single', char:'星',
+    on:['セイ'], kun:['ほし'],
+    meanings:['estrella','astro'],
+    strokes:'9 trazos',
+  },
   // ── COMBINADOS ───────────────────────────────────────────────
   {
     type:'combined', char:'大学',
@@ -326,6 +441,50 @@ const ALL_KANJIS = [
     readingNote:'kun+kun',
     meanings:['nombre','nombre propio','nombre completo'],
     strokes:'6 + 9 trazos',
+  },
+
+  {
+    type:'combined', char:'九時',
+    reading:'クジ',
+    meanings:['las nueve (en punto)'],
+    strokes:'2 + 10 trazos',
+  },
+  {
+    type:'combined', char:'毎月',
+    reading:'まいつき',
+    readingNote:'on+kun',
+    meanings:['cada mes'],
+    strokes:'6 + 4 trazos',
+  },
+  {
+    type:'combined', char:'火星',
+    reading:'カセイ',
+    meanings:['Marte (planeta)'],
+    strokes:'4 + 9 trazos',
+  },
+  {
+    type:'combined', char:'水星',
+    reading:'スイセイ',
+    meanings:['Mercurio (planeta)'],
+    strokes:'4 + 9 trazos',
+  },
+  {
+    type:'combined', char:'火曜日',
+    reading:'かようび',
+    meanings:['martes'],
+    strokes:'4 + 18 + 4 trazos',
+  },
+  {
+    type:'combined', char:'水曜日',
+    reading:'すいようび',
+    meanings:['miércoles'],
+    strokes:'4 + 18 + 4 trazos',
+  },
+  {
+    type:'combined', char:'金曜日',
+    reading:'きんようび',
+    meanings:['viernes'],
+    strokes:'8 + 18 + 4 trazos',
   },
 
   // ── NÚMEROS ──────────────────────────────────────────────────
@@ -472,14 +631,21 @@ function renderCard(){
 
   // drawing area
   const area=document.getElementById('drawingArea');
-  const isComb=k.type==='combined'&&k.char.length>1;
-  const cW=isComb?320:220, cH=isComb?154:220;
+  const charCount=[...k.char].length;
+  const isComb=k.type==='combined'&&charCount>1;
+  const cW=isComb?(charCount<=2?320:150*charCount):220, cH=isComb?154:220;
   const combClass=isComb?' combined':'';
-  const divider=isComb?'<div class="combined-divider"></div>':'';
+  const combStyle=isComb?` style="--comb-w:${cW}px;--comb-h:${cH}px"`:'';
+  let divider='';
+  if(isComb){
+    for(let i=1;i<charCount;i++){
+      divider+=`<div class="combined-divider" style="left:${(i*100/charCount).toFixed(3)}%"></div>`;
+    }
+  }
   area.innerHTML=`
     <div class="canvas-section">
       <div class="canvas-label">${guideMode?'Con guía':'Tu trazo'}</div>
-      <div class="canvas-wrap${combClass}" id="canvasWrap">
+      <div class="canvas-wrap${combClass}" id="canvasWrap"${combStyle}>
         ${divider}
         <canvas class="guide-canvas" id="guideCanvas" width="${cW}" height="${cH}" style="opacity:0"></canvas>
         <canvas class="draw-canvas"  id="drawCanvas"  width="${cW}" height="${cH}"></canvas>
@@ -487,7 +653,7 @@ function renderCard(){
     </div>
     <div class="canvas-section" id="refSection" style="display:none">
       <div class="canvas-label blue">Modelo</div>
-      <div class="ref-wrap${combClass}">
+      <div class="ref-wrap${combClass}"${combStyle}>
         <canvas class="ref-canvas" id="refCanvas" width="${cW}" height="${cH}"></canvas>
       </div>
     </div>
@@ -513,19 +679,21 @@ function drawGuide(char, opacity){
   canvas.style.opacity=opacity;
   const ctx=canvas.getContext('2d');
   const k=deck[idx];
-  const isCombined=k.type==='combined'&&k.char.length>1;
-  const W=isCombined?320:220, H=isCombined?154:220;
+  const chars=[...char];
+  const n=chars.length;
+  const isCombined=k.type==='combined'&&n>1;
+  const W=isCombined?(n<=2?320:150*n):220, H=isCombined?154:220;
   canvas.width=W; canvas.height=H;
   ctx.clearRect(0,0,W,H);
   ctx.fillStyle='#1a1209';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
   if(isCombined){
-    // draw each kanji in its own half
-    const chars=[...k.char];
-    ctx.font='110px "Noto Sans JP",serif';
-    ctx.fillText(chars[0], W/4, H/2 - H*0.06);
-    ctx.fillText(chars[1], W*3/4, H/2 - H*0.06);
+    // draw each kanji in its own evenly-spaced slot
+    const fontSize=n<=2?110:85;
+    ctx.font=`${fontSize}px "Noto Sans JP",serif`;
+    const slot=W/n;
+    chars.forEach((c,i)=>{ ctx.fillText(c, slot*(i+0.5), H/2 - H*0.06); });
   } else {
     ctx.font='180px "Noto Sans JP",serif';
     ctx.fillText(char,110,105);
@@ -536,18 +704,20 @@ function drawRef(char){
   const canvas=document.getElementById('refCanvas');
   const ctx=canvas.getContext('2d');
   const k=deck[idx];
-  const isCombined=k.type==='combined'&&char.length>1;
-  const W=isCombined?320:220, H=isCombined?154:220;
+  const chars=[...char];
+  const n=chars.length;
+  const isCombined=k.type==='combined'&&n>1;
+  const W=isCombined?(n<=2?320:150*n):220, H=isCombined?154:220;
   canvas.width=W; canvas.height=H;
   ctx.clearRect(0,0,W,H);
   ctx.fillStyle='#1a4a9a';
   ctx.textAlign='center';
   ctx.textBaseline='middle';
   if(isCombined){
-    const chars=[...char];
-    ctx.font='110px "Noto Sans JP",serif';
-    ctx.fillText(chars[0], W/4, H/2 - H*0.06);
-    ctx.fillText(chars[1], W*3/4, H/2 - H*0.06);
+    const fontSize=n<=2?110:85;
+    ctx.font=`${fontSize}px "Noto Sans JP",serif`;
+    const slot=W/n;
+    chars.forEach((c,i)=>{ ctx.fillText(c, slot*(i+0.5), H/2 - H*0.06); });
   } else {
     ctx.font='180px "Noto Sans JP",serif';
     ctx.fillText(char,110,105);
@@ -599,7 +769,8 @@ function setupDrawing(){
   ctx.strokeStyle='#1a1209'; ctx.lineWidth=6;
   ctx.lineCap='round'; ctx.lineJoin='round';
   let drawing=false, lx=0, ly=0;
-  ctx.lineWidth=deck[idx].type==='combined'?5:6;
+  const _dn=[...deck[idx].char].length;
+  ctx.lineWidth=deck[idx].type==='combined'?(_dn>=3?4:5):6;
 
   function getPos(e){
     const r=canvas.getBoundingClientRect();
