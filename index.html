@@ -50,11 +50,26 @@ body{
   );
   transition:filter 1.2s ease;
 }
-body.weather-cloudy .sky{filter:saturate(.75) brightness(.97)}
-body.weather-rain .sky,body.weather-storm .sky{filter:saturate(.6) brightness(.88)}
-body.weather-snow .sky{filter:saturate(.8) brightness(1.03)}
-body.weather-fog .sky{filter:saturate(.7) brightness(1.02)}
-body.weather-clear .sky{filter:saturate(1.08)}
+.sky-night{
+  position:absolute;inset:0;
+  opacity:0;
+  background:linear-gradient(
+    180deg,
+    #0b1026 0%,
+    #141b3d 25%,
+    #202a52 50%,
+    #2e3360 72%,
+    #3b3758 86%,
+    #46394f 100%
+  );
+  transition:opacity 3s ease, filter 1.2s ease;
+  pointer-events:none;
+}
+body.weather-cloudy .sky,body.weather-cloudy .sky-night{filter:saturate(.75) brightness(.97)}
+body.weather-rain .sky,body.weather-rain .sky-night,body.weather-storm .sky,body.weather-storm .sky-night{filter:saturate(.6) brightness(.88)}
+body.weather-snow .sky,body.weather-snow .sky-night{filter:saturate(.8) brightness(1.03)}
+body.weather-fog .sky,body.weather-fog .sky-night{filter:saturate(.7) brightness(1.02)}
+body.weather-clear .sky,body.weather-clear .sky-night{filter:saturate(1.08)}
 
 /* Fuji SVG */
 .fuji{
@@ -178,7 +193,12 @@ body.weather-clear .sky{filter:saturate(1.08)}
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:.05rem;
+  gap:.1rem;
+}
+.tokyo-line1{
+  display:flex;
+  align-items:baseline;
+  gap:.5rem;
 }
 .tokyo-time{
   font-size:1.05rem;
@@ -392,6 +412,7 @@ footer{
 <!-- Fixed background scene (sky + Fuji), behind all content -->
 <section class="scene">
   <div class="sky"></div>
+  <div class="sky-night" id="skyNight"></div>
 
   <!-- Mt Fuji SVG -->
   <svg class="fuji" viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg">
@@ -447,10 +468,12 @@ footer{
   <div class="jp-title">日本語<span>と</span>Ferdi</div>
   <div class="subtitle">Nihongo con Ferdi</div>
   <div class="tokyo-widget" id="tokyoWidget">
-    <span class="tokyo-label">東京 Tokyo</span>
     <div class="tokyo-stack">
-      <span class="tokyo-time" id="tokyoTime">--:--</span>
-      <span class="tokyo-date" id="tokyoDate">--月--日</span>
+      <div class="tokyo-line1">
+        <span class="tokyo-label">東京 Tokyo</span>
+        <span class="tokyo-time" id="tokyoTime">--:--</span>
+      </div>
+      <span class="tokyo-date" id="tokyoDate">----年--月--日</span>
     </div>
     <span class="tokyo-weather" id="tokyoWeather" style="display:none">
       <span class="weather-icon" id="weatherIcon">🌤️</span>
@@ -648,6 +671,42 @@ function spawnRain(active){
   }
 }
 
+// ── Day/night sky (gradual, based on real Tokyo sunrise/sunset) ──
+let tokyoSunriseMin = 360;  // 06:00 fallback until the real value loads
+let tokyoSunsetMin = 1080;  // 18:00 fallback
+
+function getTokyoMinutesNow(){
+  const parts = new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Tokyo',hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date());
+  const h = parseInt(parts.find(p=>p.type==='hour').value,10);
+  const m = parseInt(parts.find(p=>p.type==='minute').value,10);
+  return h*60+m;
+}
+
+function parseHHMMtoMinutes(isoLocal){
+  // Open-Meteo returns e.g. "2026-10-04T05:52" already in the requested timezone
+  const hhmm = isoLocal.slice(11,16);
+  const [h,m] = hhmm.split(':').map(Number);
+  return h*60+m;
+}
+
+function smoothstep(edge0,edge1,x){
+  const t = Math.min(1,Math.max(0,(x-edge0)/(edge1-edge0)));
+  return t*t*(3-2*t);
+}
+
+function computeDayness(nowMin,srMin,ssMin,twilight){
+  const riseFactor = smoothstep(srMin-twilight, srMin+twilight, nowMin);
+  const setFactor = 1 - smoothstep(ssMin-twilight, ssMin+twilight, nowMin);
+  return Math.min(riseFactor, setFactor);
+}
+
+function updateSkyDayNight(){
+  const nowMin = getTokyoMinutesNow();
+  const dayness = computeDayness(nowMin, tokyoSunriseMin, tokyoSunsetMin, 70);
+  const el = document.getElementById('skyNight');
+  if(el) el.style.opacity = (1-dayness).toFixed(3);
+}
+
 // ── Tokyo clock ──
 function updateTokyoClock(){
   const now = new Date();
@@ -657,16 +716,19 @@ function updateTokyoClock(){
 }
 function updateTokyoDate(){
   const now = new Date();
-  const parts = new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Tokyo',month:'numeric',day:'numeric'}).formatToParts(now);
+  const parts = new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Tokyo',year:'numeric',month:'numeric',day:'numeric'}).formatToParts(now);
+  const year = parts.find(p=>p.type==='year').value;
   const month = parts.find(p=>p.type==='month').value;
   const day = parts.find(p=>p.type==='day').value;
   const el = document.getElementById('tokyoDate');
-  if(el) el.textContent = `${month}月${day}日`;
+  if(el) el.textContent = `${year}年${month}月${day}日`;
 }
 updateTokyoClock();
 updateTokyoDate();
+updateSkyDayNight();
 setInterval(updateTokyoClock, 15000);
 setInterval(updateTokyoDate, 15000);
+setInterval(updateSkyDayNight, 60000);
 
 // ── Tokyo weather (Open-Meteo, free, no API key) ──
 const WMO_ICON = {
@@ -682,7 +744,7 @@ const WMO_ICON = {
 
 async function fetchTokyoWeather(){
   try{
-    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=35.6762&longitude=139.6503&current=temperature_2m,weather_code&timezone=Asia%2FTokyo');
+    const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=35.6762&longitude=139.6503&current=temperature_2m,weather_code&daily=sunrise,sunset&timezone=Asia%2FTokyo');
     if(!res.ok) throw new Error('weather fetch failed');
     const data = await res.json();
     const temp = Math.round(data.current.temperature_2m);
@@ -698,8 +760,15 @@ async function fetchTokyoWeather(){
 
     spawnClouds(mood);
     spawnRain(mood==='rain'||mood==='storm');
+
+    if(data.daily && data.daily.sunrise && data.daily.sunrise[0]){
+      tokyoSunriseMin = parseHHMMtoMinutes(data.daily.sunrise[0]);
+      tokyoSunsetMin = parseHHMMtoMinutes(data.daily.sunset[0]);
+      updateSkyDayNight();
+    }
   }catch(e){
     // offline / blocked — clock still works, just no weather line shown
+    // (sunrise/sunset fall back to the 06:00/18:00 defaults set above)
     spawnClouds('partly');
   }
 }
