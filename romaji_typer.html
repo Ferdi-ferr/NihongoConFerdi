@@ -166,6 +166,7 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
         <button class="lbtn active" id="lb4" onclick="toggleLesson(4,this)">L4</button>
         <button class="lbtn active" id="lb5" onclick="toggleLesson(5,this)">L5</button>
         <button class="lbtn active" id="lb6" onclick="toggleLesson(6,this)">L6</button>
+        <button class="lbtn active" id="lb7" onclick="toggleLesson(7,this)">L7</button>
       </div>
       <div class="filter-row">
         <span class="filter-label">Tema</span>
@@ -537,6 +538,52 @@ const WORD_THEMES={
   "6|さけ":['comida'],
   "6|はなみ":['frases'],
   "6|じゃ、また。":['frases'],
+  "7|きります":['verbos'],
+  "7|おくります":['verbos'],
+  "7|あげます":['verbos'],
+  "7|もらいます":['verbos'],
+  "7|かします":['verbos'],
+  "7|かります":['verbos'],
+  "7|おしえます":['verbos'],
+  "7|ならいます":['verbos'],
+  "7|かけます":['verbos'],
+  "7|て":['objetos'],
+  "7|はし":['objetos'],
+  "7|スプーン":['objetos'],
+  "7|ナイフ":['objetos'],
+  "7|フォーク":['objetos'],
+  "7|はさみ":['objetos'],
+  "7|パソコン":['objetos'],
+  "7|ケータイ":['objetos'],
+  "7|メール":['objetos'],
+  "7|ねんがじょう":['objetos'],
+  "7|パンチ":['objetos'],
+  "7|ホッチキス":['objetos'],
+  "7|セロテープ":['objetos'],
+  "7|けしゴム":['objetos'],
+  "7|かみ":['objetos'],
+  "7|はな":['objetos'],
+  "7|シャツ":['objetos'],
+  "7|プレゼント":['objetos'],
+  "7|にもつ":['objetos'],
+  "7|おかね":['objetos'],
+  "7|きっぷ":['objetos'],
+  "7|クリスマス":['frases'],
+  "7|ちち":['personas'],
+  "7|はは":['personas'],
+  "7|おとうさん":['personas'],
+  "7|おかあさん":['personas'],
+  "7|もう":['frases'],
+  "7|まだ":['frases'],
+  "7|これから":['frases'],
+  "7|すてきですね。":['frases'],
+  "7|いらっしゃい。":['frases'],
+  "7|どうぞ おあがりください。":['frases'],
+  "7|しつれいします。":['frases'],
+  "7|いかがですか。":['frases'],
+  "7|いただきます。":['frases'],
+  "7|ごちそうさま。":['frases'],
+  "7|スペイン":['paises'],
 };
 
 const ALL = [
@@ -817,6 +864,52 @@ const ALL = [
   {es:"Entendido.",                      kana:"わかりました。",    accepted:["wakarimashita"],                    l:6},
   {es:"¿Qué deseaba?",                   kana:"なんですか。",      accepted:["nan desu ka","nandesuka"],          l:6, note:"nan desu ka"},
   {es:"Hasta mañana.",                   kana:"じゃ、また。",      accepted:["ja mata","jya mata"],               l:6, note:"ja mata / jya mata"},
+  {es:"cortar", kana:"きります", accepted:["kirimasu"], l:7},
+  {es:"enviar", kana:"おくります", accepted:["okurimasu"], l:7},
+  {es:"dar", kana:"あげます", accepted:["agemasu"], l:7},
+  {es:"recibir (regalos, etc.)", kana:"もらいます", accepted:["moraimasu"], l:7},
+  {es:"prestar", kana:"かします", accepted:["kashimasu"], l:7},
+  {es:"tomar prestado", kana:"かります", accepted:["karimasu"], l:7},
+  {es:"enseñar", kana:"おしえます", accepted:["oshiemasu"], l:7},
+  {es:"aprender", kana:"ならいます", accepted:["naraimasu"], l:7},
+  {es:"hacer [una llamada telefónica]", kana:"かけます", accepted:["kakemasu"], l:7},
+  {es:"mano", kana:"て", accepted:["te"], l:7},
+  {es:"palillos", kana:"はし", accepted:["hashi"], l:7},
+  {es:"cuchara, cucharilla", kana:"スプーン", accepted:["supun","supuun"], l:7},
+  {es:"cuchillo", kana:"ナイフ", accepted:["naifu"], l:7},
+  {es:"tenedor", kana:"フォーク", accepted:["foku","fooku","fuoku"], l:7},
+  {es:"tijeras", kana:"はさみ", accepted:["hasami"], l:7},
+  {es:"ordenador, computadora", kana:"パソコン", accepted:["pasokon"], l:7},
+  {es:"teléfono móvil, celular", kana:"ケータイ", accepted:["ketai","keetai"], l:7},
+  {es:"e-mail, correo electrónico", kana:"メール", accepted:["meru","meeru"], l:7},
+  {es:"tarjeta (de felicitación) de año nuevo", kana:"ねんがじょう", accepted:["nengajou","nengajo"], l:7},
+  {es:"perforadora (artículo de papelería)", kana:"パンチ", accepted:["panchi"], l:7},
+  {es:"grapadora", kana:"ホッチキス", accepted:["hocchikisu","hotchikisu"], l:7},
+  {es:"cinta adhesiva", kana:"セロテープ", accepted:["serotepu","seroteepu"], l:7},
+  {es:"goma de borrar", kana:"けしゴム", accepted:["keshigomu"], l:7},
+  {es:"papel", kana:"かみ", accepted:["kami"], l:7},
+  {es:"flor", kana:"はな", accepted:["hana"], l:7},
+  {es:"camisa", kana:"シャツ", accepted:["shatsu"], l:7},
+  {es:"regalo", kana:"プレゼント", accepted:["purezento"], l:7},
+  {es:"equipaje, paquete", kana:"にもつ", accepted:["nimotsu"], l:7},
+  {es:"dinero", kana:"おかね", accepted:["okane"], l:7},
+  {es:"billete (de medios de transporte)", kana:"きっぷ", accepted:["kippu"], l:7},
+  {es:"Navidad", kana:"クリスマス", accepted:["kurisumasu"], l:7},
+  {es:"(mi) padre", kana:"ちち", accepted:["chichi"], l:7},
+  {es:"(mi) madre", kana:"はは", accepted:["haha"], l:7},
+  {es:"(tu/su) padre", kana:"おとうさん", accepted:["otousan","otosan"], l:7},
+  {es:"(tu/su) madre", kana:"おかあさん", accepted:["okaasan","okasan"], l:7},
+  {es:"ya", kana:"もう", accepted:["mou","mo"], l:7},
+  {es:"todavía", kana:"まだ", accepted:["mada"], l:7},
+  {es:"desde ahora, dentro de poco", kana:"これから", accepted:["korekara"], l:7},
+  {es:"¡Qué bonito es [~]!/Es bonito [~].", kana:"すてきですね。", accepted:["suteki desu ne","sutekidesune"], l:7},
+  {es:"Bienvenido.", kana:"いらっしゃい。", accepted:["irasshai"], l:7},
+  {es:"Pase, por favor.", kana:"どうぞ おあがりください。", accepted:["douzo oagari kudasai","dozo oagari kudasai"], l:7},
+  {es:"Con su permiso.", kana:"しつれいします。", accepted:["shitsurei shimasu","shitsureishimasu"], l:7},
+  {es:"¿Le apetece [~]?", kana:"いかがですか。", accepted:["ikaga desu ka","ikagadesuka"], l:7},
+  {es:"Muchas gracias. (al empezar a comer/beber)", kana:"いただきます。", accepted:["itadakimasu"], l:7},
+  {es:"Muchas gracias. (después de comer/beber)", kana:"ごちそうさま。", accepted:["gochisousama","gochisoosama"], l:7},
+  {es:"España", kana:"スペイン", accepted:["supein"], l:7},
 ];
 
 // Tag themes
@@ -824,7 +917,7 @@ ALL.forEach(tagThemes);
 
 // ── STATE ─────────────────────────────────────────────────────────
 let deck=[], idx=0, cardStates=[];
-let activeLessons=new Set([1,2,3,4,5,6]);
+let activeLessons=new Set([1,2,3,4,5,6,7]);
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
 
@@ -842,15 +935,15 @@ function buildDeck(){
 
 // ── THEME FILTER ──────────────────────────────────────────────────
 const THEME_LESSONS = {
-  verbos:    [4,5,6],
+  verbos:    [4,5,6,7],
   tiempo:    [4,5],
   lugares:   [3,4,5],
   transporte:[5],
   comida:    [6],
-  personas:  [1,5],
-  objetos:   [2],
-  frases:    [1,2,3,5,6],
-  paises:    [1,4],
+  personas:  [1,5,7],
+  objetos:   [2,7],
+  frases:    [1,2,3,5,6,7],
+  paises:    [1,4,7],
 };
 
 
@@ -867,7 +960,7 @@ function selectTheme(theme){
     activeTheme=null;
     document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
     // restore all lessons
-    [1,2,3,4,5,6].forEach(n=>{
+    [1,2,3,4,5,6,7].forEach(n=>{
       activeLessons.add(n);
       const btn=document.getElementById('lb'+n);
       if(btn) btn.classList.add('active');
@@ -881,7 +974,7 @@ function selectTheme(theme){
   // activate only relevant lessons, deactivate others
   const relevant=new Set(THEME_LESSONS[theme]||[]);
   activeLessons.clear();
-  [1,2,3,4,5,6].forEach(n=>{
+  [1,2,3,4,5,6,7].forEach(n=>{
     const btn=document.getElementById('lb'+n);
     if(relevant.has(n)){
       activeLessons.add(n);

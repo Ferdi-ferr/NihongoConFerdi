@@ -114,6 +114,7 @@ h1{font-size:16px;font-weight:600;color:#444;margin-bottom:1.25rem;text-align:ce
         <button class="lbtn active" id="lb4" onclick="toggleLesson(4,this)">L4</button>
         <button class="lbtn active" id="lb5" onclick="toggleLesson(5,this)">L5</button>
         <button class="lbtn active" id="lb6" onclick="toggleLesson(6,this)">L6</button>
+        <button class="lbtn active" id="lb7" onclick="toggleLesson(7,this)">L7</button>
       </div>
       <div class="filter-row">
         <span class="filter-label">Tema</span>
@@ -472,6 +473,52 @@ const WORD_THEMES={
   "6|さけ":['comida'],
   "6|はなみ":['frases'],
   "6|じゃ、また。":['frases'],
+  "7|きります":['verbos'],
+  "7|おくります":['verbos'],
+  "7|あげます":['verbos'],
+  "7|もらいます":['verbos'],
+  "7|かします":['verbos'],
+  "7|かります":['verbos'],
+  "7|おしえます":['verbos'],
+  "7|ならいます":['verbos'],
+  "7|かけます (でんわを〜)":['verbos'],
+  "7|て":['objetos'],
+  "7|はし":['objetos'],
+  "7|スプーン":['objetos'],
+  "7|ナイフ":['objetos'],
+  "7|フォーク":['objetos'],
+  "7|はさみ":['objetos'],
+  "7|パソコン":['objetos'],
+  "7|ケータイ":['objetos'],
+  "7|メール":['objetos'],
+  "7|ねんがじょう":['objetos'],
+  "7|パンチ":['objetos'],
+  "7|ホッチキス":['objetos'],
+  "7|セロテープ":['objetos'],
+  "7|けしゴム":['objetos'],
+  "7|かみ":['objetos'],
+  "7|はな":['objetos'],
+  "7|シャツ":['objetos'],
+  "7|プレゼント":['objetos'],
+  "7|にもつ":['objetos'],
+  "7|おかね":['objetos'],
+  "7|きっぷ":['objetos'],
+  "7|クリスマス":['frases'],
+  "7|ちち":['personas'],
+  "7|はは":['personas'],
+  "7|おとうさん":['personas'],
+  "7|おかあさん":['personas'],
+  "7|もう":['frases'],
+  "7|まだ":['frases'],
+  "7|これから":['frases'],
+  "7|[〜、]すてきですね。":['frases'],
+  "7|いらっしゃい。":['frases'],
+  "7|どうぞ おあがりください。":['frases'],
+  "7|しつれいします。":['frases'],
+  "7|[〜は] いかがですか。":['frases'],
+  "7|いただきます。":['frases'],
+  "7|ごちそうさま[でした]。":['frases'],
+  "7|スペイン":['paises'],
 };
 
 const ALL=[
@@ -765,13 +812,59 @@ const ALL=[
   {es:"Entendido.",jp:"わかりました。",rom:"wakarimashita",l:6},
   {es:"¿Qué deseaba?",jp:"なんですか。",rom:"nan desu ka",l:6},
   {es:"Hasta mañana.",jp:"じゃ、また [あした]。",rom:"ja mata ashita",l:6},
+  {es:"cortar",jp:"きります",rom:"kirimasu",l:7},
+  {es:"enviar",jp:"おくります",rom:"okurimasu",l:7},
+  {es:"dar",jp:"あげます",rom:"agemasu",l:7},
+  {es:"recibir (regalos, etc.)",jp:"もらいます",rom:"moraimasu",l:7},
+  {es:"prestar",jp:"かします",rom:"kashimasu",l:7},
+  {es:"tomar prestado",jp:"かります",rom:"karimasu",l:7},
+  {es:"enseñar",jp:"おしえます",rom:"oshiemasu",l:7},
+  {es:"aprender",jp:"ならいます",rom:"naraimasu",l:7},
+  {es:"hacer [una llamada telefónica]",jp:"かけます (でんわを〜)",rom:"kakemasu (denwa wo ~)",l:7},
+  {es:"mano",jp:"て",rom:"te",l:7},
+  {es:"palillos",jp:"はし",rom:"hashi",l:7},
+  {es:"cuchara, cucharilla",jp:"スプーン",rom:"supuun",l:7},
+  {es:"cuchillo",jp:"ナイフ",rom:"naifu",l:7},
+  {es:"tenedor",jp:"フォーク",rom:"fooku",l:7},
+  {es:"tijeras",jp:"はさみ",rom:"hasami",l:7},
+  {es:"ordenador, computadora",jp:"パソコン",rom:"pasokon",l:7},
+  {es:"teléfono móvil, celular",jp:"ケータイ",rom:"keetai",l:7},
+  {es:"e-mail, correo electrónico",jp:"メール",rom:"meeru",l:7},
+  {es:"tarjeta (de felicitación) de año nuevo",jp:"ねんがじょう",rom:"nengajou",l:7},
+  {es:"perforadora (artículo de papelería)",jp:"パンチ",rom:"panchi",l:7},
+  {es:"grapadora",jp:"ホッチキス",rom:"hotchikisu",l:7},
+  {es:"cinta adhesiva",jp:"セロテープ",rom:"serotepu",l:7},
+  {es:"goma de borrar",jp:"けしゴム",rom:"keshigomu",l:7},
+  {es:"papel",jp:"かみ",rom:"kami",l:7},
+  {es:"flor",jp:"はな",rom:"hana",l:7},
+  {es:"camisa",jp:"シャツ",rom:"shatsu",l:7},
+  {es:"regalo",jp:"プレゼント",rom:"purezento",l:7},
+  {es:"equipaje, paquete",jp:"にもつ",rom:"nimotsu",l:7},
+  {es:"dinero",jp:"おかね",rom:"okane",l:7},
+  {es:"billete (de medios de transporte)",jp:"きっぷ",rom:"kippu",l:7},
+  {es:"Navidad",jp:"クリスマス",rom:"kurisumasu",l:7},
+  {es:"(mi) padre",jp:"ちち",rom:"chichi",l:7},
+  {es:"(mi) madre",jp:"はは",rom:"haha",l:7},
+  {es:"(tu/su) padre",jp:"おとうさん",rom:"otousan",l:7},
+  {es:"(tu/su) madre",jp:"おかあさん",rom:"okaasan",l:7},
+  {es:"ya",jp:"もう",rom:"mou",l:7},
+  {es:"todavía",jp:"まだ",rom:"mada",l:7},
+  {es:"desde ahora, dentro de poco",jp:"これから",rom:"korekara",l:7},
+  {es:"¡Qué bonito es [~]!/Es bonito [~].",jp:"[〜、]すてきですね。",rom:"[~,] suteki desu ne.",l:7},
+  {es:"Bienvenido.",jp:"いらっしゃい。",rom:"irasshai",l:7},
+  {es:"Pase, por favor.",jp:"どうぞ おあがりください。",rom:"douzo oagari kudasai",l:7},
+  {es:"Con su permiso.",jp:"しつれいします。",rom:"shitsurei shimasu",l:7},
+  {es:"¿Le apetece [~]?",jp:"[〜は] いかがですか。",rom:"[~wa] ikaga desu ka.",l:7},
+  {es:"Muchas gracias. (al empezar a comer/beber)",jp:"いただきます。",rom:"itadakimasu",l:7},
+  {es:"Muchas gracias. (después de comer/beber)",jp:"ごちそうさま[でした]。",rom:"gochisousama [deshita].",l:7},
+  {es:"España",jp:"スペイン",rom:"supein",l:7},
 ];
 
 // Tag themes
 ALL.forEach(tagThemes);
 
 let deck=[],idx=0,flipped=false,known=0,skipped=0;
-let activeLessons=new Set([1,2,3,4,5,6]);
+let activeLessons=new Set([1,2,3,4,5,6,7]);
 let dirEsJp=false;
 let activeTheme=null;
 
@@ -783,15 +876,15 @@ function buildDeck(){
 
 // ── THEME FILTER ──────────────────────────────────────────────────
 const THEME_LESSONS = {
-  verbos:    [4,5,6],
+  verbos:    [4,5,6,7],
   tiempo:    [4,5],
   lugares:   [3,4,5],
   transporte:[5],
   comida:    [6],
-  personas:  [1,5],
-  objetos:   [2],
-  frases:    [1,2,3,5,6],
-  paises:    [1,4],
+  personas:  [1,5,7],
+  objetos:   [2,7],
+  frases:    [1,2,3,5,6,7],
+  paises:    [1,4,7],
 };
 
 
@@ -813,7 +906,7 @@ function selectTheme(theme){
   if(activeTheme===theme){
     activeTheme=null;
     document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
-    [1,2,3,4,5,6].forEach(n=>{
+    [1,2,3,4,5,6,7].forEach(n=>{
       activeLessons.add(n);
       const btn=document.getElementById('lb'+n);
       if(btn) btn.classList.add('active');
@@ -826,7 +919,7 @@ function selectTheme(theme){
   event.target.classList.add('active');
   const relevant=new Set(THEME_LESSONS[theme]||[]);
   activeLessons.clear();
-  [1,2,3,4,5,6].forEach(n=>{
+  [1,2,3,4,5,6,7].forEach(n=>{
     const btn=document.getElementById('lb'+n);
     if(relevant.has(n)){
       activeLessons.add(n);
