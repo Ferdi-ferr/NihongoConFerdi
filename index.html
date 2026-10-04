@@ -15,6 +15,17 @@
   --sage:#7a9e7e;
   --gold:#c9a84c;
   --mist:#e8e4dc;
+
+  /* 1 = full day, 0 = full night — driven by updateSkyDayNight() */
+  --dayness:1;
+  --float-ink-day:#1a1209;
+  --float-ink-night:#f5efe2;
+  --float-muted-day:#6b5a4e;
+  --float-muted-night:#cdbfae;
+  --float-faint-day:#a08070;
+  --float-faint-night:#b8a894;
+  --float-accent-day:#c0392b;
+  --float-accent-night:#e8897e;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -155,21 +166,23 @@ body.weather-clear .sky,body.weather-clear .sky-night{filter:saturate(1.08)}
   font-size:clamp(2.8rem,8vw,5.5rem);
   font-weight:300;
   letter-spacing:.15em;
-  color:var(--ink);
+  color:color-mix(in oklab, var(--float-ink-day) calc(var(--dayness)*100%), var(--float-ink-night));
   line-height:1;
   margin-bottom:.3rem;
-  text-shadow:0 2px 20px rgba(255,255,255,.8);
+  text-shadow:0 2px 20px color-mix(in oklab, rgba(255,255,255,.8) calc(var(--dayness)*100%), rgba(10,10,30,.55));
+  transition:color 1.5s ease, text-shadow 1.5s ease;
 }
-.jp-title span{color:var(--red);}
+.jp-title span{color:color-mix(in oklab, var(--float-accent-day) calc(var(--dayness)*100%), var(--float-accent-night));transition:color 1.5s ease;}
 
 .subtitle{
   font-size:clamp(1.1rem,3vw,1.5rem);
   font-weight:300;
   font-style:italic;
-  color:#6b5a4e;
+  color:color-mix(in oklab, var(--float-muted-day) calc(var(--dayness)*100%), var(--float-muted-night));
   letter-spacing:.06em;
   margin-bottom:0;
-  text-shadow:0 1px 8px rgba(255,255,255,.9);
+  text-shadow:0 1px 8px color-mix(in oklab, rgba(255,255,255,.9) calc(var(--dayness)*100%), rgba(10,10,30,.5));
+  transition:color 1.5s ease, text-shadow 1.5s ease;
 }
 
 /* ── TOKYO CLOCK & WEATHER ── */
@@ -187,7 +200,8 @@ body.weather-clear .sky,body.weather-clear .sky-night{filter:saturate(1.08)}
   font-size:.65rem;
   letter-spacing:.14em;
   text-transform:uppercase;
-  color:#a08070;
+  color:color-mix(in oklab, var(--float-faint-day) calc(var(--dayness)*100%), var(--float-faint-night));
+  transition:color 1.5s ease;
 }
 .tokyo-stack{
   display:flex;
@@ -203,22 +217,25 @@ body.weather-clear .sky,body.weather-clear .sky-night{filter:saturate(1.08)}
 .tokyo-time{
   font-size:1.05rem;
   font-weight:600;
-  color:var(--ink);
+  color:color-mix(in oklab, var(--float-ink-day) calc(var(--dayness)*100%), var(--float-ink-night));
   letter-spacing:.03em;
   font-variant-numeric:tabular-nums;
+  transition:color 1.5s ease;
 }
 .tokyo-date{
   font-size:.7rem;
-  color:#8a7a6e;
+  color:color-mix(in oklab, var(--float-muted-day) calc(var(--dayness)*100%), var(--float-muted-night));
   letter-spacing:.04em;
   font-variant-numeric:tabular-nums;
+  transition:color 1.5s ease;
 }
 .tokyo-weather{
   display:flex;align-items:center;gap:.3rem;
   font-size:.9rem;
-  color:#6b5a4e;
+  color:color-mix(in oklab, var(--float-muted-day) calc(var(--dayness)*100%), var(--float-muted-night));
   padding-left:.6rem;
   border-left:1px solid rgba(160,128,112,.3);
+  transition:color 1.5s ease;
 }
 .weather-icon{font-size:1.05rem;line-height:1}
 .weather-temp{font-variant-numeric:tabular-nums}
@@ -235,7 +252,9 @@ body.weather-clear .sky,body.weather-clear .sky-night{filter:saturate(1.08)}
 .divider-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--pink),transparent)}
 .divider-mark{
   font-family:'Noto Serif JP',serif;
-  font-size:1.4rem;color:var(--red);
+  font-size:1.4rem;
+  color:color-mix(in oklab, var(--float-accent-day) calc(var(--dayness)*100%), var(--float-accent-night));
+  transition:color 1.5s ease;
 }
 
 /* ── CARDS SECTION ── */
@@ -250,8 +269,9 @@ body.weather-clear .sky,body.weather-clear .sky-night{filter:saturate(1.08)}
   font-size:13px;
   letter-spacing:.2em;
   text-transform:uppercase;
-  color:#a08070;
+  color:color-mix(in oklab, var(--float-faint-day) calc(var(--dayness)*100%), var(--float-faint-night));
   margin-bottom:1.25rem;
+  transition:color 1.5s ease;
 }
 
 .cards-grid{
@@ -362,9 +382,10 @@ footer{
   text-align:center;
   padding:2rem;
   font-size:.85rem;
-  color:#b0a090;
+  color:color-mix(in oklab, var(--float-faint-day) calc(var(--dayness)*100%), var(--float-faint-night));
   font-style:italic;
   letter-spacing:.05em;
+  transition:color 1.5s ease;
 }
 
 }
@@ -705,6 +726,7 @@ function updateSkyDayNight(){
   const dayness = computeDayness(nowMin, tokyoSunriseMin, tokyoSunsetMin, 70);
   const el = document.getElementById('skyNight');
   if(el) el.style.opacity = (1-dayness).toFixed(3);
+  document.documentElement.style.setProperty('--dayness', dayness.toFixed(3));
 }
 
 // ── Tokyo clock ──
