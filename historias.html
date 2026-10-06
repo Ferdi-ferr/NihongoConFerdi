@@ -34,7 +34,7 @@ body{
 }
 /* Todo escala con el ancho de la ventana: la tarjeta se ensancha o se estrecha
    y la letra crece o se encoge con ella (también al girar el teléfono). */
-.page{--fs:clamp(1.15rem,.8rem + 1.8vw,2.2rem);max-width:min(100%,62rem);margin-inline:auto;display:grid;gap:1.1rem}
+.page{--fs:clamp(1.25rem,.9rem + 1.8vw,2.2rem);max-width:min(100%,62rem);margin-inline:auto;display:grid;gap:1.1rem}
 
 .site-h1{margin:.5rem 0 0;text-align:center;font-size:1rem;font-weight:500;color:#555;letter-spacing:.05em}
 .subtitle{margin:0;text-align:center;font-size:.8rem;color:var(--muted);font-style:italic;line-height:1.5}
@@ -107,6 +107,36 @@ footer{text-align:center;font-size:.75rem;color:var(--muted);font-style:italic;l
 @keyframes pop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){ .tip{animation:none} .w{transition:none} }
 
+/* ---- selección de personajes ---- */
+.back{
+  justify-self:start;display:inline-flex;align-items:center;gap:.4rem;
+  font-size:.8rem;font-weight:500;color:var(--blue);background:var(--blue-bg);
+  text-decoration:none;border-radius:99px;padding:.4rem 1rem;
+}
+.back:hover{background:#dfe8ff}
+.back:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.cast{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(.6rem,1.8vw,1.1rem);margin-top:.4rem}
+.person{
+  --h:clamp(10rem,44vw,16rem);
+  position:relative;display:block;height:var(--h);padding:0;border:0;background:none;
+  border-radius:16px;cursor:pointer;font:inherit;
+  transition:transform .25s ease,box-shadow .25s ease;-webkit-tap-highlight-color:transparent;
+}
+.person img{display:block;height:100%;width:auto;border-radius:16px}
+@media (hover:hover){ .person:hover{transform:translateY(-4px);box-shadow:0 10px 24px rgba(26,18,9,.15)} }
+.person:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.person.soon img{filter:saturate(.55) opacity(.74)}
+.person .chip{
+  position:absolute;top:8px;right:8px;font-size:.62rem;font-weight:700;letter-spacing:.04em;
+  color:var(--blue);background:#fff;border:1px solid var(--rule);border-radius:99px;padding:2px 8px;
+}
+.avatar{display:block;margin:0 auto .4rem;height:clamp(7rem,16vw,11rem);width:auto;border-radius:14px}
+.toast{
+  position:fixed;left:50%;bottom:calc(1.25rem + env(safe-area-inset-bottom,0px));
+  transform:translateX(-50%);z-index:50;max-width:calc(100vw - 32px);
+  background:var(--fg);color:#fff;font-size:.85rem;line-height:1.4;text-align:center;
+  padding:.65rem 1.1rem;border-radius:99px;box-shadow:0 8px 24px rgba(26,18,9,.25);
+}
 /* ---- torii (igual que en las otras páginas) ---- */
 .torii-home{position:fixed;top:14px;left:14px;z-index:999;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:3px;opacity:.85;transition:opacity .2s,transform .2s}
 .torii-home:hover{opacity:1;transform:scale(1.08)}
@@ -133,12 +163,22 @@ footer{text-align:center;font-size:.75rem;color:var(--muted);font-style:italic;l
 
 <main class="page">
   <h1 class="site-h1">おはなし · Mini historias</h1>
-  <p class="subtitle">Toca una palabra para ver qué significa. Toca en cualquier otro lugar para cerrarlo.</p>
-  <section class="card">
-    <h2 id="title" lang="ja"></h2>
-    <p class="byline">Una historia con el vocabulario y la gramática de las lecciones 1 a 7.</p>
-    <article class="story" id="story" lang="ja"></article>
+  <p class="subtitle" id="subtitle"></p>
+
+  <section id="hubView" aria-label="Elige una historia">
+    <div class="cast" id="cast"></div>
   </section>
+
+  <section id="storyView" hidden>
+    <a class="back" href="#">← Todas las historias</a>
+    <section class="card" style="margin-top:1.1rem">
+      <img class="avatar" id="avatar" alt="" width="200" height="300">
+      <h2 id="title" lang="ja"></h2>
+      <p class="byline">Una historia con el vocabulario y la gramática de las lecciones 1 a 7.</p>
+      <article class="story" id="story" lang="ja"></article>
+    </section>
+  </section>
+
   <footer>Los nombres propios van en katakana. Las lecciones (L1 a L7) coinciden con tu página de vocabulario.</footer>
 </main>
 
@@ -147,6 +187,7 @@ footer{text-align:center;font-size:.75rem;color:var(--muted);font-style:italic;l
   <div class="tip-es"></div>
   <div class="tip-meta"><span class="tip-l"></span><span class="tip-note"></span></div>
 </div>
+<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
 
 <script>
 /* ---------- Datos de la historia ----------
@@ -232,7 +273,7 @@ const TSUKUE     = "{机:つくえ}¦escritorio¦sustantivo · L2";
 const SHUKUDAI   = "{宿題:しゅくだい}¦tarea¦sustantivo · L6";
 const SHIMASU    = "します¦hacer¦verbo · L6";
 
-const STORY = {
+const STORIES = { itzel: {
   title: [N_ITZEL, SAN, NO, KYO],
   paragraphs: [
     // Mañana
@@ -264,7 +305,17 @@ const STORY = {
      UCHI, NO, _, TSUKUE, DE_PL, _, SHUKUDAI, WO, _, SHIMASU, "。", _,
      GOGO, _, JUUJI, NI_T, _, NEMASU, "。"]
   ]
-};
+} };
+
+/* Personajes, en el orden de la plantilla. Una historia está lista cuando existe en STORIES. */
+const PEOPLE = [
+  {id:"luis", name:"Luis"}, {id:"itzel", name:"Itzel"}, {id:"lupita", name:"Lupita"}, {id:"gris", name:"Gris"},
+  {id:"claudia", name:"Claudia"}, {id:"santiago", name:"Santiago"}, {id:"ireri", name:"Ireri"}, {id:"jairo", name:"Jairo"},
+  {id:"naomi", name:"Naomi"}, {id:"david", name:"David"}, {id:"jesus", name:"Jesús"}, {id:"joab", name:"Joab"},
+  {id:"yuri", name:"Yuri"}, {id:"homero", name:"Homero"}, {id:"fernando", name:"Fernando"},
+  {id:"paty", name:"Paty (profesora)"}, {id:"andres", name:"Andrés (profesor)"}
+];
+const IMG_SIZE = {luis:[289,333],itzel:[289,331],lupita:[290,332],gris:[290,332],claudia:[288,332],santiago:[289,321],ireri:[288,321],jairo:[289,322],naomi:[290,321],david:[288,321],jesus:[223,299],joab:[210,299],yuri:[209,299],homero:[205,298],fernando:[202,298],paty:[196,298],andres:[184,298]};
 
 /* ---------- Dibujo ---------- */
 function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
@@ -297,12 +348,75 @@ function fill(container, tokens){
   });
 }
 
-fill(document.getElementById("title"), STORY.title);
-STORY.paragraphs.forEach(function(tokens){
-  var p = document.createElement("p");
-  fill(p, tokens);
-  document.getElementById("story").appendChild(p);
-});
+var hubView = document.getElementById("hubView");
+var storyView = document.getElementById("storyView");
+var subtitle = document.getElementById("subtitle");
+var toast = document.getElementById("toast");
+var toastTimer = null;
+
+function buildHub(){
+  var cast = document.getElementById("cast");
+  PEOPLE.forEach(function(pr){
+    var ready = !!STORIES[pr.id];
+    var el = document.createElement(ready ? "a" : "button");
+    el.className = "person" + (ready ? "" : " soon");
+    el.setAttribute("aria-label", "Historia de " + pr.name + (ready ? "" : " (próximamente)"));
+    if(ready){ el.href = "#" + pr.id; } else { el.type = "button"; el.dataset.name = pr.name; }
+    var img = document.createElement("img");
+    img.src = "historias_img/" + pr.id + ".webp";
+    img.alt = "";
+    img.width = IMG_SIZE[pr.id][0]; img.height = IMG_SIZE[pr.id][1];
+    img.decoding = "async";
+    el.appendChild(img);
+    if(!ready){ var chip = document.createElement("span"); chip.className = "chip"; chip.textContent = "pronto"; el.appendChild(chip); }
+    cast.appendChild(el);
+  });
+  cast.addEventListener("click", function(e){
+    var b = e.target.closest(".person.soon");
+    if(!b) return;
+    toast.textContent = "La historia de " + b.dataset.name + " viene pronto.";
+    toast.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.hidden = true; }, 2200);
+  });
+}
+
+var renderedId = null;
+function renderStory(id){
+  if(renderedId === id) return;
+  var st = STORIES[id];
+  var t = document.getElementById("title"), body = document.getElementById("story");
+  t.textContent = ""; body.textContent = "";
+  fill(t, st.title);
+  st.paragraphs.forEach(function(tokens){
+    var p = document.createElement("p");
+    fill(p, tokens);
+    body.appendChild(p);
+  });
+  var av = document.getElementById("avatar");
+  av.src = "historias_img/" + id + ".webp";
+  av.width = IMG_SIZE[id][0]; av.height = IMG_SIZE[id][1];
+  renderedId = id;
+}
+
+function route(){
+  hideTip();
+  var id = decodeURIComponent(location.hash.replace(/^#/, ""));
+  if(STORIES[id]){
+    renderStory(id);
+    hubView.hidden = true; storyView.hidden = false;
+    subtitle.textContent = "Toca una palabra para ver qué significa. Toca en cualquier otro lugar para cerrarlo.";
+    var who = PEOPLE.filter(function(x){ return x.id === id; })[0];
+    document.title = (who ? who.name : "Historia") + " · Mini historias";
+  } else {
+    hubView.hidden = false; storyView.hidden = true;
+    subtitle.textContent = "Elige a un compañero para leer su historia.";
+    document.title = "Mini historias";
+  }
+  window.scrollTo(0, 0);
+}
+
+buildHub();
 
 /* ---------- Globito ---------- */
 var tip = document.getElementById("tip");
@@ -363,6 +477,8 @@ document.addEventListener("keydown", function(e){
   }
 });
 window.addEventListener("resize", hideTip);
+window.addEventListener("hashchange", route);
+route();
 </script>
 </body>
 </html>
