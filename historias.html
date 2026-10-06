@@ -130,7 +130,7 @@ footer{text-align:center;font-size:.75rem;color:var(--muted);font-style:italic;l
 /* Compu / tableta: 5 por fila (15 alumnos en 3 filas) y los dos profesores juntos al final */
 @media (min-width:760px) and (min-height:501px){
   .cast{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:1rem;justify-items:center;align-items:center}
-  .person{--h:min(15rem,calc((100cqw - 4rem) / 5 * 1.1));grid-column:span 2}
+  .person{--h:min(15rem,calc((100cqw - 4rem) / 5 * 1.2));grid-column:span 2}
   .person:nth-child(16){grid-column:4 / span 2}
   .person:nth-child(17){grid-column:6 / span 2}
 }
@@ -673,7 +673,7 @@ const PEOPLE = [
   {id:"naomi", name:"Naomi"}, {id:"santiago", name:"Santiago"}, {id:"yuri", name:"Yuri"},
   {id:"andres", name:"Andrés (profesor)"}, {id:"paty", name:"Paty (profesora)"}
 ];
-const IMG_SIZE = {luis:[289,333],itzel:[289,331],lupita:[290,332],gris:[290,332],claudia:[288,332],santiago:[289,321],ireri:[288,321],jairo:[289,322],naomi:[290,321],david:[288,321],jesus:[223,299],joab:[210,299],yuri:[209,299],homero:[205,298],fernando:[202,298],paty:[196,298],andres:[184,298]};
+const IMG_SIZE = {luis:[296,380],itzel:[296,380],lupita:[296,380],gris:[296,380],claudia:[296,380],santiago:[296,380],ireri:[296,380],jairo:[296,380],naomi:[296,380],david:[296,380],jesus:[296,380],joab:[296,380],yuri:[296,380],homero:[296,380],fernando:[296,380],paty:[296,380],andres:[296,380]};
 
 /* ---------- Dibujo ---------- */
 function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
