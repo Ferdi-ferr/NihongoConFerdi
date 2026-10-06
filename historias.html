@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini historias</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&family=Noto+Serif+JP:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Layout: una sola columna de lectura (~40rem), letra grande con furigana,
+   interlineado amplio y un globito que se ancla a la palabra tocada. */
+:root{
+  --bg:#faf7f2;
+  --fg:#1a1209;
+  --muted:#7a6454;
+  --accent:#c0392b;
+  --hl:rgba(192,57,43,.15);
+  --hl-soft:rgba(192,57,43,.07);
+  --rule:#e0d8d0;
+  --tip-bg:#1a1209;
+  --tip-fg:#faf7f2;
+  --tip-muted:#cdbfae;
+  --serif:'Noto Serif JP','Hiragino Mincho ProN','Yu Mincho',serif;
+  --sans:'Noto Sans JP',system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16110d;
+    --fg:#f2ebe0;
+    --muted:#b9a995;
+    --accent:#e8897e;
+    --hl:rgba(232,137,126,.22);
+    --hl-soft:rgba(232,137,126,.11);
+    --rule:#33291f;
+    --tip-bg:#f2ebe0;
+    --tip-fg:#1a1209;
+    --tip-muted:#6b5a4e;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#16110d;
+  --fg:#f2ebe0;
+  --muted:#b9a995;
+  --accent:#e8897e;
+  --hl:rgba(232,137,126,.22);
+  --hl-soft:rgba(232,137,126,.11);
+  --rule:#33291f;
+  --tip-bg:#f2ebe0;
+  --tip-fg:#1a1209;
+  --tip-muted:#6b5a4e;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{
+  background:var(--bg);
+  color:var(--fg);
+  font-family:var(--sans);
+  padding-block:2.5rem 4.5rem;
+  padding-inline:16px;
+}
+.page{max-width:40rem;margin-inline:auto;display:grid;gap:2rem}
+
+header{display:grid;gap:.9rem;padding-bottom:1.5rem;border-bottom:1px solid var(--rule)}
+.eyebrow{
+  margin:0;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);font-weight:500;
+}
+h1{
+  margin:0;font-family:var(--serif);font-weight:500;
+  font-size:clamp(1.7rem,7vw,2.9rem);line-height:2;letter-spacing:.06em;
+}
+.byline{margin:0;font-size:.9rem;color:var(--muted);line-height:1.5;max-width:34rem}
+.hint{margin:0;font-size:.82rem;color:var(--muted);line-height:1.5;max-width:34rem}
+
+.story{display:grid;gap:1.6rem}
+.story p{
+  margin:0;
+  font-family:var(--serif);font-weight:400;
+  font-size:clamp(1.2rem,5.6vw,1.85rem);
+  line-height:2.75;
+  letter-spacing:.05em;
+  word-spacing:.12em;
+  line-break:strict;
+}
+ruby{ruby-align:center}
+.bun{white-space:nowrap}
+rt{
+  font-family:var(--sans);font-weight:400;
+  font-size:.44em;letter-spacing:.02em;line-height:1;color:var(--muted);
+}
+
+.w{
+  white-space:nowrap;cursor:pointer;border-radius:.25em;
+  transition:background .15s;-webkit-tap-highlight-color:transparent;
+}
+@media (hover:hover){ .w:hover{background:var(--hl-soft)} }
+.w.on{background:var(--hl)}
+.w:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+footer{
+  font-size:.8rem;color:var(--muted);line-height:1.5;
+  padding-top:1.25rem;border-top:1px solid var(--rule);
+}
+
+.tip{
+  position:absolute;z-index:20;
+  width:max-content;max-width:min(19rem,calc(100vw - 16px));
+  background:var(--tip-bg);color:var(--tip-fg);
+  border-radius:.7rem;padding:.7rem .95rem .75rem;
+  box-shadow:0 8px 28px rgba(0,0,0,.28);
+  display:grid;gap:.2rem;
+  animation:pop .14s ease-out;
+}
+.tip::after{
+  content:"";position:absolute;left:var(--ax,50%);
+  width:11px;height:11px;background:var(--tip-bg);
+  transform:translateX(-50%) rotate(45deg);border-radius:2px;
+}
+.tip[data-pos="above"]::after{bottom:-5px}
+.tip[data-pos="below"]::after{top:-5px}
+.tip-jp{font-family:var(--serif);font-size:1.45rem;line-height:2;letter-spacing:.05em}
+.tip rt{color:var(--tip-muted)}
+.tip-es{font-size:1.02rem;font-weight:500;line-height:1.35}
+.tip-note{font-size:.76rem;line-height:1.4;color:var(--tip-muted)}
+@keyframes pop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){ .tip{animation:none} .w{transition:none} }
+
+/* ---- página dentro del sitio ---- */
+body{margin:0;padding-block:5.5rem 4.5rem}
+.torii-home{position:fixed;top:14px;left:14px;z-index:999;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:3px;opacity:.85;transition:opacity .2s,transform .2s}
+.torii-home:hover{opacity:1;transform:scale(1.08)}
+.torii-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#c0392b;font-family:sans-serif;font-weight:600}
+</style>
+
+
+</head>
+<body>
+<a class="torii-home" href="./" title="Inicio">
+  <svg width="44" height="38" viewBox="0 0 44 38" xmlns="http://www.w3.org/2000/svg">
+    <defs><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feBlend in="SourceGraphic" mode="multiply" result="blend"/><feComposite in="blend" in2="SourceGraphic" operator="in"/></filter></defs>
+    <ellipse cx="22" cy="37" rx="14" ry="2.5" fill="rgba(0,0,0,.13)"/>
+    <rect x="6" y="14" width="5" height="22" rx="1.5" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="33" y="14" width="5" height="22" rx="1.5" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="4" y="19" width="36" height="3.5" rx="1.5" fill="#a93226" filter="url(#grain)"/>
+    <path d="M1,8 Q3,4 22,5.5 Q41,4 43,8 L40,11 Q22,9.5 4,11 Z" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="5" y="11" width="34" height="3" rx="1" fill="#b03020" filter="url(#grain)"/>
+    <path d="M4,8.5 Q22,7 40,8.5" stroke="rgba(255,255,255,.18)" stroke-width="1" fill="none"/>
+    <rect x="16" y="11.5" width="12" height="2" rx=".5" fill="#7a1f18" opacity=".7"/>
+  </svg>
+  <span class="torii-label">inicio</span>
+</a>
+
+<main class="page">
+  <header>
+    <p class="eyebrow">おはなし · Mini historias</p>
+    <h1 id="title" lang="ja"></h1>
+    <p class="byline">Una historia con el vocabulario y la gramática de las lecciones 1 a 7.</p>
+    <p class="hint">Toca una palabra para ver qué significa. Toca en cualquier otro lugar para cerrarlo.</p>
+  </header>
+  <article class="story" id="story" lang="ja"></article>
+  <footer>Los nombres propios van en katakana. Las lecciones (L1 a L7) coinciden con tu página de vocabulario.</footer>
+</main>
+
+<div id="tip" class="tip" role="tooltip" hidden>
+  <div class="tip-jp" lang="ja"></div>
+  <div class="tip-es"></div>
+  <div class="tip-note"></div>
+</div>
+
+<script>
+/* ---------- Datos de la historia ----------
+   Cada palabra es "texto ¦ español ¦ nota". Los kanji llevan furigana con {漢字:かんじ}.
+   Un texto sin ¦ (puntuación, espacios) no se puede tocar. */
+const _ = " ";
+
+// partículas y piezas gramaticales que se repiten
+const WA    = "は¦(tema)¦partícula · marca de qué se habla · L1";
+const WO    = "を¦(objeto)¦partícula · marca lo que recibe la acción · L6";
+const NI_T  = "に¦a las / en (tiempo)¦partícula · marca la hora exacta · L4";
+const NI_P  = "に¦a (la persona)¦partícula · marca a quien recibe o con quien te ves · L6–L7";
+const DE_PL = "で¦en (lugar de la acción)¦partícula · L6";
+const DE_V  = "で¦en / por (medio de transporte)¦partícula · L5";
+const NO    = "の¦de¦partícula · une dos sustantivos · L1";
+const TO_Y  = "と¦y¦partícula · une sustantivos · L4";
+const TO_C  = "と¦con (acompañante)¦partícula · L5";
+const KARA  = "から¦desde¦partícula · L4";
+const MADE  = "まで¦hasta¦partícula · L4";
+const HE    = "へ¦hacia / a (destino)¦partícula · se pronuncia “e” · L5";
+const MO    = "も¦también¦partícula · L1";
+const DESU  = "です¦es¦cópula · L1";
+const KA    = "か¦(pregunta)¦partícula final · convierte la frase en pregunta · L1";
+const YO    = "よ¦¡te digo!¦partícula final · informa algo al otro · L5";
+const NE    = "ね¦¿verdad?¦partícula final · busca acuerdo · L4";
+const SAN   = "さん¦Sr. / Sra. / Srta.¦sufijo de cortesía · L1";
+
+// nombres
+const N_ITZEL = "イツェル¦Itzel¦nombre propio";
+const N_LUIS  = "ルイス¦Luis¦nombre propio";
+const N_GRIS  = "グリス¦Gris¦nombre propio";
+
+// vocabulario
+const KYO        = "{今日:きょう}¦hoy¦sustantivo · L4";
+const KAYOUBI    = "{火曜日:かようび}¦martes¦sustantivo · L4";
+const GOZEN      = "{午前:ごぜん}¦de la mañana (a.m.)¦L4";
+const GOGO       = "{午後:ごご}¦de la tarde (p.m.)¦L4";
+const ROKUJIHAN  = "{六時半:ろくじはん}¦las seis y media¦hora · L4";
+const ROKUJI     = "{六時:ろくじ}¦las seis¦hora · L4";
+const SHICHIJI   = "{七時:しちじ}¦las siete¦hora · L4";
+const KUJI       = "{九時:くじ}¦las nueve¦hora · L4";
+const JUUJI      = "{十時:じゅうじ}¦las diez¦hora · L4";
+const JUUNIJI    = "{十二時:じゅうにじ}¦las doce¦hora · L4";
+const ICHIJI     = "{一時:いちじ}¦la una¦hora · L4";
+const SANJI      = "{三時:さんじ}¦las tres¦hora · L4";
+const OKIMASU    = "{起:お}きます¦levantarse¦verbo · L4";
+const NEMASU     = "{寝:ね}ます¦acostarse / dormir¦verbo · L4";
+const ASAGOHAN   = "{朝:あさ}ご{飯:はん}¦desayuno¦sustantivo · L6";
+const PAN        = "パン¦pan¦sustantivo · L6";
+const TAMAGO     = "{卵:たまご}¦huevo¦sustantivo · L6";
+const SOREKARA   = "それから¦y luego / después¦L6";
+const GYUNYU     = "{牛乳:ぎゅうにゅう}¦leche¦sustantivo · L6";
+const NOMIMASU   = "{飲:の}みます¦beber / tomar¦verbo · L6";
+const UCHI       = "{家:うち}¦casa (propia)¦sustantivo · L3";
+const EKI        = "{駅:えき}¦estación¦sustantivo · L5";
+const ARUITE     = "{歩:ある}いて¦a pie / andando¦L5";
+const IKIMASU    = "{行:い}きます¦ir¦verbo · L5";
+const DAIGAKU    = "{大学:だいがく}¦universidad¦sustantivo · L1";
+const DENSHA     = "{電車:でんしゃ}¦tren eléctrico¦sustantivo · L5";
+const KYOSHITSU  = "{教室:きょうしつ}¦aula / salón de clases¦sustantivo · L3";
+const TOMODACHI  = "{友達:ともだち}¦amigo(s)¦sustantivo · L5";
+const AIMASU     = "{会:あ}います¦ver a / encontrarse con¦verbo · L6";
+const BOORUPEN   = "ボールペン¦bolígrafo¦sustantivo · L2";
+const KASHIMASU  = "{貸:か}します¦prestar¦verbo · L7";
+const BENKYOU    = "{勉強:べんきょう}します¦estudiar¦verbo · L4";
+const ASHITA     = "{明日:あした}¦mañana¦sustantivo · L4";
+const TANJOUBI   = "{誕生日:たんじょうび}¦cumpleaños¦sustantivo · L5";
+const ISSHONI    = "いっしょに¦junto(s)¦L6";
+const PUREZENTO  = "プレゼント¦regalo¦sustantivo · L7";
+const KAIMASENKA = "{買:か}いませんか¦¿compramos? / ¿quiere comprar?¦invitación: Vませんか · L6";
+const KAIMASHOU  = "{買:か}いましょう¦¡compremos!¦propuesta: Vましょう · L6";
+const EE         = "ええ¦sí¦L6";
+const HIRUYASUMI = "{昼休:ひるやす}み¦descanso del mediodía¦sustantivo · L4";
+const HIRUGOHAN  = "{昼:ひる}ご{飯:はん}¦almuerzo¦sustantivo · L6";
+const TABEMASU   = "{食:た}べます¦comer¦verbo · L6";
+const SAKANA     = "{魚:さかな}¦pescado¦sustantivo · L6";
+const YASAI      = "{野菜:やさい}¦verduras¦sustantivo · L6";
+const NIKU       = "{肉:にく}¦carne¦sustantivo · L6";
+const DEPAATO    = "デパート¦gran almacén¦sustantivo · L4";
+const NIKAI      = "{二階:にかい}¦segundo piso¦〜かい · L3";
+const URIBA      = "{売:う}り{場:ば}¦sección / piso de venta¦sustantivo · L3";
+const KASA       = "{傘:かさ}¦sombrilla / paraguas¦sustantivo · L2";
+const MIMASU     = "{見:み}ます¦ver / mirar¦verbo · L6";
+const KONO       = "この¦este (+ sustantivo)¦L2";
+const SONO       = "その¦ese (+ sustantivo)¦L2";
+const IKURA      = "いくら¦¿cuánto cuesta?¦L3";
+const MISE       = "{店:みせ}¦tienda¦sustantivo · L6";
+const HITO       = "{人:ひと}¦persona¦sustantivo · L5";
+const GOSENEN    = "{五千円:ごせんえん}¦cinco mil yenes¦L3";
+const KAADO      = "カード¦tarjeta¦sustantivo · L2";
+const KAIMASU    = "{買:か}います¦comprar¦verbo · L6";
+const HANA       = "{花:はな}¦flor¦sustantivo · L7";
+const AGEMASU    = "あげます¦dar¦verbo · L7";
+const TOKEI      = "{時計:とけい}¦reloj¦sustantivo · L2";
+const YUUBINKYOKU= "{郵便局:ゆうびんきょく}¦oficina de correos¦sustantivo · L4";
+const DOKO       = "どこ¦¿dónde?¦L3";
+const ASOKO      = "あそこ¦allá¦L3";
+const OKAASAN    = "お{母:かあ}さん¦(su / tu) madre¦sustantivo · L7";
+const TEGAMI     = "{手紙:てがみ}¦carta¦sustantivo · L6";
+const OKURIMASU  = "{送:おく}ります¦enviar¦verbo · L7";
+const KAERIMASU  = "{帰:かえ}ります¦volver / regresar a casa¦verbo · L5";
+const TSUKUE     = "{机:つくえ}¦escritorio¦sustantivo · L2";
+const SHUKUDAI   = "{宿題:しゅくだい}¦tarea¦sustantivo · L6";
+const SHIMASU    = "します¦hacer¦verbo · L6";
+const SUIYOUBI   = "{水曜日:すいようび}¦miércoles¦sustantivo · L4";
+
+const STORY = {
+  title: [N_ITZEL, SAN, NO, KYO],
+  paragraphs: [
+    // Mañana
+    [KYO, WA, _, KAYOUBI, DESU, "。", _,
+     N_ITZEL, SAN, WA, _, GOZEN, _, ROKUJIHAN, NI_T, _, OKIMASU, "。", _,
+     ASAGOHAN, WA, _, PAN, TO_Y, TAMAGO, DESU, "。", _,
+     SOREKARA, _, GYUNYU, WO, _, NOMIMASU, "。", _,
+     SHICHIJI, NI_T, _, UCHI, KARA, _, EKI, MADE, _, ARUITE, _, IKIMASU, "。", _,
+     EKI, KARA, _, DAIGAKU, MADE, _, DENSHA, DE_V, _, IKIMASU, "。"],
+    // Salón de clases
+    [DAIGAKU, NO, KYOSHITSU, DE_PL, _, TOMODACHI, NO, _, N_LUIS, SAN, NI_P, _, AIMASU, "。", _,
+     N_LUIS, SAN, WA, _, N_ITZEL, SAN, NI_P, _, BOORUPEN, WO, _, KASHIMASU, "。", _,
+     N_ITZEL, SAN, TO_Y, N_LUIS, SAN, WA, _, GOZEN, _, KUJI, KARA, _, JUUNIJI, MADE, _, BENKYOU, "。", _,
+     N_ITZEL, SAN, "：", "「", N_LUIS, SAN, "、", ASHITA, WA, _, N_GRIS, SAN, NO, _, TANJOUBI, DESU, NE, "。", _,
+     ISSHONI, _, PUREZENTO, WO, _, KAIMASENKA, "。", "」", _,
+     N_LUIS, SAN, "：", "「", EE, "、", KAIMASHOU, "。", "」"],
+    // Almuerzo
+    [HIRUYASUMI, NI_T, _, N_LUIS, SAN, TO_C, _, ISSHONI, _, HIRUGOHAN, WO, _, TABEMASU, "。", _,
+     N_ITZEL, SAN, WA, _, SAKANA, TO_Y, YASAI, WO, _, TABEMASU, "。", _,
+     N_LUIS, SAN, WA, _, NIKU, WO, _, TABEMASU, "。", _,
+     GOGO, _, ICHIJI, NI_T, _, DEPAATO, HE, _, IKIMASU, "。"],
+    // Tienda
+    [DEPAATO, NO, _, NIKAI, NO, _, URIBA, DE_PL, _, KASA, WO, _, MIMASU, "。", _,
+     N_ITZEL, SAN, "：", "「", KONO, _, KASA, WA, _, IKURA, DESU, KA, "。", "」", _,
+     MISE, NO, HITO, "：", "「", GOSENEN, DESU, "。", "」", _,
+     N_ITZEL, SAN, WA, _, SONO, _, KASA, TO_Y, KAADO, WO, _, KAIMASU, "。", _,
+     N_LUIS, SAN, WA, _, HANA, WO, _, KAIMASU, "。", _,
+     N_ITZEL, SAN, TO_Y, N_LUIS, SAN, WA, _, ASHITA, _, N_GRIS, SAN, NI_P, _, PUREZENTO, WO, _, AGEMASU, "。"],
+    // Correo
+    [N_LUIS, SAN, WA, _, TOKEI, WO, _, MIMASU, "。", _,
+     GOGO, _, SANJI, DESU, "。", _,
+     N_LUIS, SAN, "：", "「", N_ITZEL, SAN, "、", YUUBINKYOKU, WA, _, DOKO, DESU, KA, "。", "」", _,
+     N_ITZEL, SAN, "：", "「", ASOKO, DESU, YO, "。", "」", _,
+     N_LUIS, SAN, WA, _, YUUBINKYOKU, DE_PL, _, OKAASAN, NI_P, _, TEGAMI, WO, _, OKURIMASU, "。"],
+    // Noche
+    [N_ITZEL, SAN, WA, _, GOGO, _, ROKUJI, NI_T, _, UCHI, HE, _, KAERIMASU, "。", _,
+     UCHI, NO, _, TSUKUE, DE_PL, _, SHUKUDAI, WO, _, SHIMASU, "。", _,
+     GOGO, _, JUUJI, NI_T, _, NEMASU, "。", _,
+     ASHITA, WA, _, SUIYOUBI, DESU, "。", _,
+     N_GRIS, SAN, NO, _, TANJOUBI, DESU, "。"]
+  ]
+};
+
+/* ---------- Dibujo ---------- */
+function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+function rubyHTML(s){ return esc(s).replace(/\{([^:}]+):([^}]+)\}/g,"<ruby>$1<rt>$2</rt></ruby>"); }
+
+/* Las palabras se agrupan en "frases" que no se parten entre renglones:
+   el renglón sólo puede cortarse en un espacio, o después de “、” y “：”. */
+function fill(container, tokens){
+  var group = null;
+  function open(){ if(!group){ group = document.createElement("span"); group.className = "bun"; container.appendChild(group); } return group; }
+  function close(){ group = null; }
+  tokens.forEach(function(t){
+    if(t === _){ close(); container.appendChild(document.createTextNode(" ")); return; }
+    var parts = t.split("¦");
+    if(parts.length === 1){
+      open().appendChild(document.createTextNode(t));
+      if(t === "、" || t === "："){ close(); container.appendChild(document.createElement("wbr")); }
+      return;
+    }
+    var span = document.createElement("span");
+    span.className = "w";
+    span.tabIndex = 0;
+    span.setAttribute("role","button");
+    span.dataset.jp = parts[0];
+    span.dataset.es = parts[1];
+    span.dataset.note = parts[2] || "";
+    span.innerHTML = rubyHTML(parts[0]);
+    open().appendChild(span);
+  });
+}
+
+fill(document.getElementById("title"), STORY.title);
+STORY.paragraphs.forEach(function(tokens){
+  var p = document.createElement("p");
+  fill(p, tokens);
+  document.getElementById("story").appendChild(p);
+});
+
+/* ---------- Globito ---------- */
+var tip = document.getElementById("tip");
+var current = null;
+
+function hideTip(){
+  tip.hidden = true;
+  if(current){ current.classList.remove("on"); current.removeAttribute("aria-describedby"); current = null; }
+}
+
+function showTip(el, ev){
+  if(current) current.classList.remove("on");
+  current = el;
+  el.classList.add("on");
+  el.setAttribute("aria-describedby","tip");
+  tip.querySelector(".tip-jp").innerHTML = rubyHTML(el.dataset.jp);
+  tip.querySelector(".tip-es").textContent = el.dataset.es;
+  var note = tip.querySelector(".tip-note");
+  note.textContent = el.dataset.note;
+  note.hidden = !el.dataset.note;
+  tip.hidden = false;
+
+  var rects = Array.prototype.slice.call(el.getClientRects());
+  var r = rects[0];
+  if(ev && ev.detail !== 0 && rects.length > 1){
+    r = rects.filter(function(q){ return ev.clientY >= q.top && ev.clientY <= q.bottom; })[0] || rects[0];
+  }
+  var tw = tip.offsetWidth, th = tip.offsetHeight;
+  var vw = document.documentElement.clientWidth;
+  var cx = r.left + r.width/2;
+  var left = Math.min(Math.max(cx - tw/2, 8), vw - tw - 8);
+  var above = (r.top - th - 12) >= 8;
+  var top = above ? (r.top - th - 10) : (r.bottom + 10);
+  tip.style.left = (left + window.scrollX) + "px";
+  tip.style.top  = (top + window.scrollY) + "px";
+  tip.style.setProperty("--ax", Math.min(Math.max(cx - left, 16), tw - 16) + "px");
+  tip.dataset.pos = above ? "above" : "below";
+}
+
+document.addEventListener("click", function(e){
+  var w = e.target.closest(".w");
+  if(w){
+    if(w === current && !tip.hidden){ hideTip(); } else { showTip(w, e); }
+    return;
+  }
+  if(e.target.closest("#tip")) return;
+  hideTip();
+});
+document.addEventListener("keydown", function(e){
+  if(e.key === "Escape"){ hideTip(); return; }
+  if((e.key === "Enter" || e.key === " ") && e.target.classList && e.target.classList.contains("w")){
+    e.preventDefault();
+    e.target.click();
+  }
+});
+window.addEventListener("resize", hideTip);
+</script>
+</body>
+</html>
