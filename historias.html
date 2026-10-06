@@ -8,73 +8,47 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500&family=Noto+Serif+JP:wght@400;500&display=swap" rel="stylesheet">
 <style>
-/* Layout: una sola columna de lectura (~40rem), letra grande con furigana,
-   interlineado amplio y un globito que se ancla a la palabra tocada. */
+/* Paleta del sitio: fondo #f5f0eb, tarjeta blanca con borde #e0d8d0, tinta #1a1209,
+   rojo #c0392b (torii) y azul #3b72d4 (etiquetas de lección, como en vocab.html).
+   Layout: título pequeño centrado, una tarjeta con la historia, globito anclado a la palabra. */
 :root{
-  --bg:#faf7f2;
+  --bg:#f5f0eb;
+  --card:#ffffff;
   --fg:#1a1209;
-  --muted:#7a6454;
-  --accent:#c0392b;
-  --hl:rgba(192,57,43,.15);
-  --hl-soft:rgba(192,57,43,.07);
+  --muted:#a08070;
+  --rt:#8a6a58;
+  --red:#c0392b;
+  --blue:#3b72d4;
+  --blue-bg:#eef3ff;
+  --hl:rgba(59,114,212,.17);
+  --hl-soft:rgba(59,114,212,.08);
   --rule:#e0d8d0;
-  --tip-bg:#1a1209;
-  --tip-fg:#faf7f2;
-  --tip-muted:#cdbfae;
   --serif:'Noto Serif JP','Hiragino Mincho ProN','Yu Mincho',serif;
   --sans:'Noto Sans JP',system-ui,-apple-system,'Segoe UI',sans-serif;
 }
-@media (prefers-color-scheme: dark){
-  :root:not([data-theme="light"]){
-    --bg:#16110d;
-    --fg:#f2ebe0;
-    --muted:#b9a995;
-    --accent:#e8897e;
-    --hl:rgba(232,137,126,.22);
-    --hl-soft:rgba(232,137,126,.11);
-    --rule:#33291f;
-    --tip-bg:#f2ebe0;
-    --tip-fg:#1a1209;
-    --tip-muted:#6b5a4e;
-    color-scheme:dark;
-  }
-}
-:root[data-theme="dark"]{
-  --bg:#16110d;
-  --fg:#f2ebe0;
-  --muted:#b9a995;
-  --accent:#e8897e;
-  --hl:rgba(232,137,126,.22);
-  --hl-soft:rgba(232,137,126,.11);
-  --rule:#33291f;
-  --tip-bg:#f2ebe0;
-  --tip-fg:#1a1209;
-  --tip-muted:#6b5a4e;
-  color-scheme:dark;
-}
-
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 body{
-  background:var(--bg);
-  color:var(--fg);
-  font-family:var(--sans);
-  padding-block:2.5rem 4.5rem;
-  padding-inline:16px;
+  margin:0;background:var(--bg);color:var(--fg);font-family:var(--sans);
+  min-height:100vh;padding:1.5rem 16px 3rem;
 }
-.page{max-width:40rem;margin-inline:auto;display:grid;gap:2rem}
+.page{max-width:40rem;margin-inline:auto;display:grid;gap:1.1rem}
 
-header{display:grid;gap:.9rem;padding-bottom:1.5rem;border-bottom:1px solid var(--rule)}
-.eyebrow{
-  margin:0;font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
-  color:var(--accent);font-weight:500;
+.site-h1{margin:.5rem 0 0;text-align:center;font-size:1rem;font-weight:500;color:#555;letter-spacing:.05em}
+.subtitle{margin:0;text-align:center;font-size:.8rem;color:var(--muted);font-style:italic;line-height:1.5}
+
+.card{
+  background:var(--card);border:1px solid var(--rule);border-radius:20px;
+  padding:1.5rem 1.25rem 1.75rem;
 }
-h1{
-  margin:0;font-family:var(--serif);font-weight:500;
-  font-size:clamp(1.7rem,7vw,2.9rem);line-height:2;letter-spacing:.06em;
+#title{
+  margin:0;text-align:center;font-family:var(--serif);font-weight:500;
+  font-size:clamp(1.5rem,6vw,2.4rem);line-height:2;letter-spacing:.06em;
 }
-.byline{margin:0;font-size:.9rem;color:var(--muted);line-height:1.5;max-width:34rem}
-.hint{margin:0;font-size:.82rem;color:var(--muted);line-height:1.5;max-width:34rem}
+.byline{
+  margin:0 0 1.25rem;padding-bottom:1rem;border-bottom:1px solid var(--rule);
+  text-align:center;font-size:.8rem;color:var(--muted);line-height:1.5;
+}
 
 .story{display:grid;gap:1.6rem}
 .story p{
@@ -90,7 +64,7 @@ ruby{ruby-align:center}
 .bun{white-space:nowrap}
 rt{
   font-family:var(--sans);font-weight:400;
-  font-size:.44em;letter-spacing:.02em;line-height:1;color:var(--muted);
+  font-size:.44em;letter-spacing:.02em;line-height:1;color:var(--rt);
 }
 
 .w{
@@ -99,38 +73,39 @@ rt{
 }
 @media (hover:hover){ .w:hover{background:var(--hl-soft)} }
 .w.on{background:var(--hl)}
-.w:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.w:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
 
-footer{
-  font-size:.8rem;color:var(--muted);line-height:1.5;
-  padding-top:1.25rem;border-top:1px solid var(--rule);
-}
+footer{text-align:center;font-size:.75rem;color:var(--muted);font-style:italic;line-height:1.5}
 
 .tip{
   position:absolute;z-index:20;
   width:max-content;max-width:min(19rem,calc(100vw - 16px));
-  background:var(--tip-bg);color:var(--tip-fg);
-  border-radius:.7rem;padding:.7rem .95rem .75rem;
-  box-shadow:0 8px 28px rgba(0,0,0,.28);
-  display:grid;gap:.2rem;
+  background:var(--card);color:var(--fg);
+  border:1px solid var(--rule);border-radius:14px;padding:.7rem .95rem .8rem;
+  box-shadow:0 8px 28px rgba(26,18,9,.18);
+  display:grid;gap:.25rem;
   animation:pop .14s ease-out;
 }
 .tip::after{
   content:"";position:absolute;left:var(--ax,50%);
-  width:11px;height:11px;background:var(--tip-bg);
-  transform:translateX(-50%) rotate(45deg);border-radius:2px;
+  width:11px;height:11px;background:var(--card);
+  transform:translateX(-50%) rotate(45deg);
 }
-.tip[data-pos="above"]::after{bottom:-5px}
-.tip[data-pos="below"]::after{top:-5px}
+.tip[data-pos="above"]::after{bottom:-6px;border-right:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.tip[data-pos="below"]::after{top:-6px;border-left:1px solid var(--rule);border-top:1px solid var(--rule)}
 .tip-jp{font-family:var(--serif);font-size:1.45rem;line-height:2;letter-spacing:.05em}
-.tip rt{color:var(--tip-muted)}
+.tip rt{color:var(--rt)}
 .tip-es{font-size:1.02rem;font-weight:500;line-height:1.35}
-.tip-note{font-size:.76rem;line-height:1.4;color:var(--tip-muted)}
+.tip-meta{display:flex;flex-wrap:wrap;align-items:center;gap:.5rem;margin-top:.15rem}
+.tip-l{
+  font-size:.65rem;font-weight:700;color:var(--blue);background:var(--blue-bg);
+  padding:2px 8px;border-radius:99px;white-space:nowrap;
+}
+.tip-note{font-size:.76rem;line-height:1.4;color:var(--muted)}
 @keyframes pop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){ .tip{animation:none} .w{transition:none} }
 
-/* ---- página dentro del sitio ---- */
-body{margin:0;padding-block:5.5rem 4.5rem}
+/* ---- torii (igual que en las otras páginas) ---- */
 .torii-home{position:fixed;top:14px;left:14px;z-index:999;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:3px;opacity:.85;transition:opacity .2s,transform .2s}
 .torii-home:hover{opacity:1;transform:scale(1.08)}
 .torii-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#c0392b;font-family:sans-serif;font-weight:600}
@@ -155,20 +130,20 @@ body{margin:0;padding-block:5.5rem 4.5rem}
 </a>
 
 <main class="page">
-  <header>
-    <p class="eyebrow">おはなし · Mini historias</p>
-    <h1 id="title" lang="ja"></h1>
+  <h1 class="site-h1">おはなし · Mini historias</h1>
+  <p class="subtitle">Toca una palabra para ver qué significa. Toca en cualquier otro lugar para cerrarlo.</p>
+  <section class="card">
+    <h2 id="title" lang="ja"></h2>
     <p class="byline">Una historia con el vocabulario y la gramática de las lecciones 1 a 7.</p>
-    <p class="hint">Toca una palabra para ver qué significa. Toca en cualquier otro lugar para cerrarlo.</p>
-  </header>
-  <article class="story" id="story" lang="ja"></article>
+    <article class="story" id="story" lang="ja"></article>
+  </section>
   <footer>Los nombres propios van en katakana. Las lecciones (L1 a L7) coinciden con tu página de vocabulario.</footer>
 </main>
 
 <div id="tip" class="tip" role="tooltip" hidden>
   <div class="tip-jp" lang="ja"></div>
   <div class="tip-es"></div>
-  <div class="tip-note"></div>
+  <div class="tip-meta"><span class="tip-l"></span><span class="tip-note"></span></div>
 </div>
 
 <script>
@@ -347,6 +322,7 @@ function fill(container, tokens){
     span.dataset.note = parts[2] || "";
     span.innerHTML = rubyHTML(parts[0]);
     open().appendChild(span);
+    if(parts[0] === "と"){ close(); container.appendChild(document.createElement("wbr")); }
   });
 }
 
@@ -373,9 +349,13 @@ function showTip(el, ev){
   el.setAttribute("aria-describedby","tip");
   tip.querySelector(".tip-jp").innerHTML = rubyHTML(el.dataset.jp);
   tip.querySelector(".tip-es").textContent = el.dataset.es;
-  var note = tip.querySelector(".tip-note");
-  note.textContent = el.dataset.note;
-  note.hidden = !el.dataset.note;
+  var n = el.dataset.note || "", lesson = "", rest = n;
+  var lm = n.match(/(?:^|\s·\s)(L\d(?:–L\d)?)$/);
+  if(lm){ lesson = lm[1]; rest = n.slice(0, n.length - lm[0].length); }
+  var lc = tip.querySelector(".tip-l"), nt = tip.querySelector(".tip-note");
+  lc.textContent = lesson; lc.hidden = !lesson;
+  nt.textContent = rest;   nt.hidden = !rest;
+  tip.querySelector(".tip-meta").hidden = !(lesson || rest);
   tip.hidden = false;
 
   var rects = Array.prototype.slice.call(el.getClientRects());
