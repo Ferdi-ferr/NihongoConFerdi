@@ -240,8 +240,11 @@ body.weather-clear .sky,body.weather-clear .sky-night{filter:saturate(1.08)}
 .weather-icon{font-size:1.05rem;line-height:1}
 .weather-temp{font-variant-numeric:tabular-nums}
 /* ── GATITO CORREDOR ── */
+.tokyo-widget{position:relative}
 .runcat{
   --cat-dur:.72s;
+  /* fuera del flujo: no desplaza la hora ni la temperatura, que siguen centradas */
+  position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:.7rem;
   display:flex;align-items:center;
   padding-left:.6rem;
   border-left:1px solid rgba(160,128,112,.3);
