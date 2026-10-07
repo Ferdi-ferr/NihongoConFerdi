@@ -1082,6 +1082,9 @@ function renderVariants(card, st){
   el.innerHTML=`<span class="variant-also">también válido: </span>${variants}`;
 }
 
+// Las pistas de teclado sólo se muestran en equipos con ratón/teclado
+function hint(t){return (window.matchMedia&&matchMedia('(hover:hover)').matches)?t:'';}
+
 function renderActions(st){
   const row=document.getElementById('actionRow');
   row.innerHTML='';
@@ -1090,14 +1093,14 @@ function renderActions(st){
     r.className='abtn reveal';r.textContent='👁 Ver respuesta';
     r.onclick=revealAnswer;row.appendChild(r);
   } else if(st.phase==='wrong'){
-    setFeedback('Incorrecto — ¿intentas de nuevo?','err');
+    setFeedback('Incorrecto — ¿intentas de nuevo?'+hint('  ·  ⌫ reintentar  ·  Espacio saltar'),'err');
     const retry=document.createElement('button');
     retry.className='abtn retry';retry.textContent='↺ Reintentar';
     retry.onclick=retryCard;row.appendChild(retry);
   } else if(st.phase==='correct'){
-    setFeedback(st.hadError?'¡Correcto! (con reintento)':'¡Perfecto! ✓','ok');
+    setFeedback((st.hadError?'¡Correcto! (con reintento)':'¡Perfecto! ✓')+hint('  ·  Enter para seguir'),'ok');
   } else if(st.phase==='revealed'){
-    setFeedback('Respuesta revelada','warn');
+    setFeedback('Respuesta revelada'+hint('  ·  Enter para seguir'),'warn');
   }
 }
 
@@ -1105,6 +1108,25 @@ function renderActions(st){
 function handleKey(e){
   if(e.key==='Enter') verifyAnswer();
 }
+
+// Atajos de teclado una vez que la tarjeta ya se contestó (el campo queda desactivado):
+//   acierto o respuesta revelada → Enter (o Espacio) pasa a la siguiente
+//   respuesta incorrecta        → Borrar/Retroceso reintenta · Espacio salta sin reintentar
+document.addEventListener('keydown',function(e){
+  if(e.repeat||e.metaKey||e.ctrlKey||e.altKey)return;
+  const t=e.target;
+  if(t&&t.id==='romajiInput')return;                       // lo maneja handleKey
+  if(document.getElementById('mainCard').style.display==='none')return;
+  const st=cardStates[idx]; if(!st)return;
+  const onControl=!!(t&&t.closest&&t.closest('button,a,select,textarea,input'));
+  const k=e.key;
+  if(st.phase==='wrong'){
+    if(k==='Backspace'||k==='Delete'){e.preventDefault();retryCard();}
+    else if(k===' '&&!onControl){e.preventDefault();goNext();}
+  } else if(st.phase==='correct'||st.phase==='revealed'){
+    if((k==='Enter'||k===' ')&&!onControl){e.preventDefault();goNext();}
+  }
+});
 
 function normalize(s){
   let v=s.trim();
