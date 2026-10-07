@@ -107,6 +107,10 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
 .abtn.retry:hover{background:#f9d6d4}
 .abtn.reveal{background:#fdf6e3;color:#8a6800;border-color:transparent;font-size:12px}
 .abtn.reveal:hover{background:#faefc5}
+.retry-wrap{position:relative;display:inline-block}
+.key-hint{position:absolute;left:100%;top:50%;transform:translateY(-50%);margin-left:14px;display:flex;flex-direction:column;gap:2px;white-space:nowrap;font-size:11.5px;line-height:1.35;color:#999;text-align:left}
+.key-hint b{font-weight:600;color:#777}
+@media(max-width:520px){.key-hint{display:none}}
 
 /* nav */
 .nav-controls{display:flex;gap:8px;justify-content:center;align-items:center;margin-bottom:.75rem}
@@ -1093,14 +1097,22 @@ function renderActions(st){
     r.className='abtn reveal';r.textContent='👁 Ver respuesta';
     r.onclick=revealAnswer;row.appendChild(r);
   } else if(st.phase==='wrong'){
-    setFeedback('Incorrecto — ¿intentas de nuevo?'+hint('  ·  ⌫ reintentar  ·  Espacio saltar'),'err');
+    setFeedback('Incorrecto — ¿intentas de nuevo?','err');
     const retry=document.createElement('button');
     retry.className='abtn retry';retry.textContent='↺ Reintentar';
-    retry.onclick=retryCard;row.appendChild(retry);
+    retry.onclick=retryCard;
+    // el botón conserva su lugar: lo envuelvo y pongo el recordatorio de teclas a su derecha
+    const wrap=document.createElement('div');wrap.className='retry-wrap';wrap.appendChild(retry);
+    if(hint('x')){
+      const keys=document.createElement('div');keys.className='key-hint';
+      keys.innerHTML='<span><b>Borrar</b> – reintentar</span><span><b>Espacio</b> – saltar</span>';
+      wrap.appendChild(keys);
+    }
+    row.appendChild(wrap);
   } else if(st.phase==='correct'){
-    setFeedback((st.hadError?'¡Correcto! (con reintento)':'¡Perfecto! ✓')+hint('  ·  Enter para seguir'),'ok');
+    setFeedback((st.hadError?'¡Correcto! (con reintento)':'¡Perfecto! ✓')+hint('  ·  Enter – siguiente'),'ok');
   } else if(st.phase==='revealed'){
-    setFeedback('Respuesta revelada'+hint('  ·  Enter para seguir'),'warn');
+    setFeedback('Respuesta revelada'+hint('  ·  Enter – siguiente'),'warn');
   }
 }
 
