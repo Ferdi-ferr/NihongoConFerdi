@@ -90,6 +90,7 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
 .feedback.err{color:#b03030}
 .feedback.hint{color:#aaa}
 .feedback.warn{color:#8a6800}
+.feedback b{font-weight:700}
 
 /* variants display */
 .variants{
@@ -1110,9 +1111,9 @@ function renderActions(st){
     }
     row.appendChild(wrap);
   } else if(st.phase==='correct'){
-    setFeedback((st.hadError?'¡Correcto! (con reintento)':'¡Perfecto! ✓')+hint('  ·  Enter – siguiente'),'ok');
+    setFeedback(st.hadError?'¡Correcto! (con reintento)':'¡Perfecto! ✓','ok',hint('  ·  <b>Enter</b> – siguiente'));
   } else if(st.phase==='revealed'){
-    setFeedback('Respuesta revelada'+hint('  ·  Enter – siguiente'),'warn');
+    setFeedback('Respuesta revelada','warn',hint('  ·  <b>Enter</b> – siguiente'));
   }
 }
 
@@ -1208,9 +1209,10 @@ function updateStats(){
   document.getElementById('statBlank').textContent='— '+blank;
 }
 
-function setFeedback(msg,type){
+function setFeedback(msg,type,extraHtml){
   const el=document.getElementById('feedback');
   el.textContent=msg;
+  if(extraHtml) el.insertAdjacentHTML('beforeend',extraHtml);
   el.className='feedback'+(type?' '+type:'');
 }
 
