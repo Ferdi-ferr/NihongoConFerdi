@@ -194,6 +194,12 @@ function toggleCol(l){
 }
 
 build();
+
+// En compu (mouse + pantalla grande) el cursor ya queda en la barra de búsqueda.
+// En celular/tablet no, para que no se abra el teclado solo.
+if(window.matchMedia('(hover:hover) and (pointer:fine)').matches && window.innerWidth > 600){
+  document.getElementById('searchInput').focus();
+}
 </script>
 </body>
 </html>
