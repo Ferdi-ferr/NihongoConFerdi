@@ -129,9 +129,13 @@ function doSearch(){
     if(!VOCAB[l]) return;
     VOCAB[l].forEach(([es,jp])=>{
       const esMatch = es.toLowerCase().split(/[\s\/,]+/).some(w=>stripAccents(w).startsWith(qEs));
-      const jpRomWords = wanakana.toRomaji(jp).toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
-      const jpKanaWords = jp.split(/[\s\/\uFF0F,\u3001()\uFF08\uFF09\u300C\u300D\u301C~]+/).filter(Boolean);
-      const jpMatch = jpRomWords.some(w=>w.startsWith(q)) || jpKanaWords.some(w=>w.startsWith(raw));
+      // Las palabras con [お] / [あした] se pueden buscar con o sin la parte entre corchetes
+      const jpForms = [jp.replace(/[\[\]]/g,''), jp.replace(/\[[^\]]*\]/g,'')];
+      const jpMatch = jpForms.some(f=>{
+        const romWords = wanakana.toRomaji(f).toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+        const kanaWords = f.split(/[\s\/\uFF0F,\u3001()\uFF08\uFF09\u300C\u300D\u301C~]+/).filter(Boolean);
+        return romWords.some(w=>w.startsWith(q)) || kanaWords.some(w=>w.startsWith(raw));
+      });
       if(esMatch || jpMatch) hits.push({l,es,jp});
     });
   });
