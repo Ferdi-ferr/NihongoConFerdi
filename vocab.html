@@ -118,27 +118,51 @@ function stripAccents(s){
   return s.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 }
 
+// Texto normalizado: minúsculas, sin acentos ni signos, palabras separadas por un solo espacio
+function normEs(s){
+  return ' ' + stripAccents(s.toLowerCase()).replace(/[^\p{L}\p{N}]+/gu,' ').trim() + ' ';
+}
+function normRom(s){
+  return ' ' + s.toLowerCase().replace(/[^a-z0-9]+/g,' ').trim() + ' ';
+}
+const KANA_SEP = /[\s\/／,、。()（）「」〜~!?！？]+/g;
+function normKana(s){
+  return ' ' + s.replace(KANA_SEP,' ').trim() + ' ';
+}
+// 2 = empieza una palabra (o varias seguidas) con lo escrito; 1 = aparece en medio; 0 = no
+function matchScore(text, query, minSub){
+  const qt = query.trim();
+  if(!qt) return 0;
+  if(text.includes(' ' + qt)) return 2;
+  const tj = text.replace(/ /g,''), qj = qt.replace(/ /g,'');
+  if(qj.length >= minSub && tj.includes(qj)) return 1;
+  return 0;
+}
+
 function doSearch(){
   const raw = document.getElementById('searchInput').value.trim();
-  const q = raw.toLowerCase().replace(/\s+/g,'');
-  const qEs = stripAccents(raw.toLowerCase());
   const res = document.getElementById('searchResults');
-  if(!q){ res.classList.remove('active'); return; }
+  if(!raw){ res.classList.remove('active'); return; }
+  const hasJp = /[^\x00-\x7F]/.test(raw) && /[぀-ヿ一-鿿]/.test(raw);
+  const qEs = normEs(raw).trim();
+  const qRom = normRom(raw).trim();
+  const qKana = hasJp ? normKana(wanakana.toHiragana(raw)).trim() : '';
   const hits = [];
   [1,2,3,4,5,6,7].forEach(l=>{
     if(!VOCAB[l]) return;
     VOCAB[l].forEach(([es,jp])=>{
-      const esMatch = es.toLowerCase().split(/[\s\/,]+/).some(w=>stripAccents(w).startsWith(qEs));
+      let score = matchScore(normEs(es), qEs, 4);
       // Las palabras con [お] / [あした] se pueden buscar con o sin la parte entre corchetes
       const jpForms = [jp.replace(/[\[\]]/g,''), jp.replace(/\[[^\]]*\]/g,'')];
-      const jpMatch = jpForms.some(f=>{
-        const romWords = wanakana.toRomaji(f).toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
-        const kanaWords = f.split(/[\s\/\uFF0F,\u3001()\uFF08\uFF09\u300C\u300D\u301C~]+/).filter(Boolean);
-        return romWords.some(w=>w.startsWith(q)) || kanaWords.some(w=>w.startsWith(raw));
+      jpForms.forEach(f=>{
+        score = Math.max(score, matchScore(normRom(wanakana.toRomaji(f)), qRom, 4));
+        if(qKana) score = Math.max(score, matchScore(normKana(wanakana.toHiragana(f)), qKana, 2));
       });
-      if(esMatch || jpMatch) hits.push({l,es,jp});
+      if(score) hits.push({l,es,jp,score});
     });
   });
+  // primero las que empiezan igual; dentro de cada grupo, orden de lección
+  hits.sort((x,y)=>y.score-x.score);
   if(hits.length===0){
     res.innerHTML='<div class="no-results">Sin resultados</div>';
   } else {
