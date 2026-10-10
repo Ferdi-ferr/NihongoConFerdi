@@ -18,6 +18,9 @@
 
   /* 1 = full day, 0 = full night — driven by updateSkyDayNight() */
   --dayness:1;
+  /* colores de texto flotante: los calcula updateSkyDayNight() según la luz real del cielo */
+  --t-ink:#1a1209; --t-muted:#6b5a4e; --t-faint:#a08070; --t-accent:#c0392b;
+  --t-glow-a:rgba(255,255,255,.8); --t-glow-b:rgba(255,255,255,.9);
   --float-ink-day:#1a1209;
   --float-ink-night:#f5efe2;
   --float-muted-day:#6b5a4e;
@@ -166,22 +169,22 @@ body.weather-clear .sky,body.weather-clear .sky-night{filter:saturate(1.08)}
   font-size:clamp(2.8rem,8vw,5.5rem);
   font-weight:300;
   letter-spacing:.15em;
-  color:color-mix(in oklab, var(--float-ink-day) calc(var(--dayness)*100%), var(--float-ink-night));
+  color:var(--t-ink);
   line-height:1;
   margin-bottom:.3rem;
-  text-shadow:0 2px 20px color-mix(in oklab, rgba(255,255,255,.8) calc(var(--dayness)*100%), rgba(10,10,30,.55));
+  text-shadow:0 2px 20px var(--t-glow-a);
   transition:color 1.5s ease, text-shadow 1.5s ease;
 }
-.jp-title span{color:color-mix(in oklab, var(--float-accent-day) calc(var(--dayness)*100%), var(--float-accent-night));transition:color 1.5s ease;}
+.jp-title span{color:var(--t-accent);transition:color 1.5s ease;}
 
 .subtitle{
   font-size:clamp(1.1rem,3vw,1.5rem);
   font-weight:300;
   font-style:italic;
-  color:color-mix(in oklab, var(--float-muted-day) calc(var(--dayness)*100%), var(--float-muted-night));
+  color:var(--t-muted);
   letter-spacing:.06em;
   margin-bottom:0;
-  text-shadow:0 1px 8px color-mix(in oklab, rgba(255,255,255,.9) calc(var(--dayness)*100%), rgba(10,10,30,.5));
+  text-shadow:0 1px 8px var(--t-glow-b);
   transition:color 1.5s ease, text-shadow 1.5s ease;
 }
 
@@ -200,7 +203,7 @@ body.weather-clear .sky,body.weather-clear .sky-night{filter:saturate(1.08)}
   font-size:.65rem;
   letter-spacing:.14em;
   text-transform:uppercase;
-  color:color-mix(in oklab, var(--float-faint-day) calc(var(--dayness)*100%), var(--float-faint-night));
+  color:var(--t-faint);
   transition:color 1.5s ease;
 }
 .tokyo-stack{
@@ -217,14 +220,14 @@ body.weather-clear .sky,body.weather-clear .sky-night{filter:saturate(1.08)}
 .tokyo-time{
   font-size:1.05rem;
   font-weight:600;
-  color:color-mix(in oklab, var(--float-ink-day) calc(var(--dayness)*100%), var(--float-ink-night));
+  color:var(--t-ink);
   letter-spacing:.03em;
   font-variant-numeric:tabular-nums;
   transition:color 1.5s ease;
 }
 .tokyo-date{
   font-size:.7rem;
-  color:color-mix(in oklab, var(--float-muted-day) calc(var(--dayness)*100%), var(--float-muted-night));
+  color:var(--t-muted);
   letter-spacing:.04em;
   font-variant-numeric:tabular-nums;
   transition:color 1.5s ease;
@@ -232,7 +235,7 @@ body.weather-clear .sky,body.weather-clear .sky-night{filter:saturate(1.08)}
 .tokyo-weather{
   display:flex;align-items:center;gap:.3rem;
   font-size:.9rem;
-  color:color-mix(in oklab, var(--float-muted-day) calc(var(--dayness)*100%), var(--float-muted-night));
+  color:var(--t-muted);
   padding-left:.6rem;
   border-left:1px solid rgba(160,128,112,.3);
   transition:color 1.5s ease;
@@ -248,7 +251,7 @@ body.weather-clear .sky,body.weather-clear .sky-night{filter:saturate(1.08)}
   display:flex;align-items:center;
   padding-left:.6rem;
   border-left:1px solid rgba(160,128,112,.3);
-  color:color-mix(in oklab, var(--float-muted-day) calc(var(--dayness)*100%), var(--float-muted-night));
+  color:var(--t-muted);
   transition:color 1.5s ease;
   cursor:pointer;user-select:none;-webkit-user-select:none;
   -webkit-tap-highlight-color:transparent;
@@ -290,7 +293,7 @@ body.weather-clear .sky,body.weather-clear .sky-night{filter:saturate(1.08)}
 .divider-mark{
   font-family:'Noto Serif JP',serif;
   font-size:1.4rem;
-  color:color-mix(in oklab, var(--float-accent-day) calc(var(--dayness)*100%), var(--float-accent-night));
+  color:var(--t-accent);
   transition:color 1.5s ease;
 }
 
@@ -306,7 +309,7 @@ body.weather-clear .sky,body.weather-clear .sky-night{filter:saturate(1.08)}
   font-size:13px;
   letter-spacing:.2em;
   text-transform:uppercase;
-  color:color-mix(in oklab, var(--float-faint-day) calc(var(--dayness)*100%), var(--float-faint-night));
+  color:var(--t-faint);
   margin-bottom:1.25rem;
   transition:color 1.5s ease;
 }
@@ -419,7 +422,7 @@ footer{
   text-align:center;
   padding:2rem;
   font-size:.85rem;
-  color:color-mix(in oklab, var(--float-faint-day) calc(var(--dayness)*100%), var(--float-faint-night));
+  color:var(--t-faint);
   font-style:italic;
   letter-spacing:.05em;
   transition:color 1.5s ease;
@@ -834,6 +837,31 @@ function updateSkyDayNight(){
   const el = document.getElementById('skyNight');
   if(el) el.style.opacity = (1-dayness).toFixed(3);
   document.documentElement.style.setProperty('--dayness', dayness.toFixed(3));
+  setFloatingTextColors(dayness);
+}
+
+// Colores del texto sobre el cielo. Cambian de claro a oscuro cuando el cielo ya está
+// lo bastante claro (dayness ≈ .40), y en la zona intermedia usan tonos más fuertes
+// para que se lea bien mientras el fondo es gris medio.
+const TXT_DAY   = {ink:'#1a1209', muted:'#6b5a4e', faint:'#a08070', accent:'#c0392b'};
+const TXT_NIGHT = {ink:'#f5efe2', muted:'#cdbfae', faint:'#b8a894', accent:'#e8897e'};
+const TXT_DAY_STRONG   = {ink:'#1a1209', muted:'#1a1209', faint:'#3a2d24', accent:'#8a2a1f'};
+const TXT_NIGHT_STRONG = {ink:'#f5efe2', muted:'#f5efe2', faint:'#ece3d2', accent:'#ffb0a5'};
+function hexToRgb(h){return [1,3,5].map(i=>parseInt(h.slice(i,i+2),16));}
+function lerpHex(a,b,t){
+  const A=hexToRgb(a),B=hexToRgb(b);
+  return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('');
+}
+const TEXT_FLIP = 0.40;
+function setFloatingTextColors(d){
+  const isDay = d >= TEXT_FLIP;
+  const base = isDay ? TXT_DAY : TXT_NIGHT;
+  const strong = isDay ? TXT_DAY_STRONG : TXT_NIGHT_STRONG;
+  const boost = isDay ? 1 - smoothstep(TEXT_FLIP, 0.85, d) : smoothstep(0.05, TEXT_FLIP-0.02, d);
+  const root = document.documentElement.style;
+  ['ink','muted','faint','accent'].forEach(k=>root.setProperty('--t-'+k, lerpHex(base[k], strong[k], boost)));
+  root.setProperty('--t-glow-a', isDay ? 'rgba(255,255,255,.8)' : 'rgba(10,10,30,.55)');
+  root.setProperty('--t-glow-b', isDay ? 'rgba(255,255,255,.9)' : 'rgba(10,10,30,.5)');
 }
 
 // ── Tokyo clock ──
