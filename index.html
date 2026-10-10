@@ -458,6 +458,68 @@ footer{
   .app-card.small{max-width:100%;width:100%;justify-content:flex-start;padding:.55rem 1.25rem;}
 }
 
+
+/* ── MENÚ REDONDO: 8 círculos grandes en anillo + 3 pequeños al centro (compu) ── */
+.cards-grid{
+  --R:228px; --d:152px; --ds:104px; --rs:70px;
+  display:block;position:relative;
+  width:calc(2*var(--R) + var(--d) + 8px);
+  height:calc(2*var(--R) + var(--d) + 8px);
+  margin:0 auto;
+}
+.cards-grid .app-card{
+  position:absolute;
+  width:var(--d);height:var(--d);
+  border-radius:50%;
+  padding:.4rem .5rem;
+  flex-direction:column;align-items:center;justify-content:center;
+  gap:.12rem;text-align:center;
+  left:calc(50% + var(--R)*cos(var(--a)) - var(--d)/2);
+  top:calc(50% + var(--R)*sin(var(--a)) - var(--d)/2);
+  /* flotar: usa la propiedad "translate", que no choca con el transform del hover ni de la entrada */
+  animation:fadeUp .7s ease both, floaty var(--fdur,6.5s) ease-in-out var(--fdel,0s) infinite;
+}
+@keyframes floaty{
+  0%,100%{translate:0 0}
+  25%{translate:var(--fx,2px) calc(var(--fy,5px) * -1)}
+  50%{translate:0 calc(var(--fy,5px) * -.4)}
+  75%{translate:calc(var(--fx,2px) * -1) var(--fy,5px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .cards-grid .app-card{animation:fadeUp .7s ease both}
+}
+.cards-grid .app-card .card-icon{font-size:1.75rem}
+.cards-grid .app-card .card-jp{font-size:.95rem;text-align:center;line-height:1.25}
+.cards-grid .app-card .card-es{text-wrap:balance;font-size:.6rem;letter-spacing:.06em;text-align:center;line-height:1.3;max-width:100%}
+.cards-grid .app-card .card-desc,
+.cards-grid .app-card .card-arrow{display:none}
+.cards-grid .app-card.small{
+  --d:var(--ds);
+  min-width:0;max-width:none;
+  left:calc(50% + var(--rs)*cos(var(--a)) - var(--d)/2);
+  top:calc(50% + var(--rs)*sin(var(--a)) - var(--d)/2);
+  padding:.3rem .4rem;gap:.05rem;
+}
+.cards-grid .app-card.small > div:not(.card-icon):not(.card-arrow){display:flex;flex-direction:column;align-items:center;gap:.05rem}
+.cards-grid .app-card.small .card-icon{font-size:1.05rem;white-space:nowrap}
+.cards-grid .app-card.small .card-jp{font-size:.8rem !important}
+.cards-grid .app-card.small .card-es{font-size:.52rem;letter-spacing:.03em}
+.cards-grid .app-card.small .card-arrow{display:none !important}
+.cards-grid .app-card:nth-child(1){--a:150deg;--fy:5px;--fx:2.2px;--fdur:6.3s;--fdel:0s}
+.cards-grid .app-card:nth-child(2){--a:30deg;--fy:4px;--fx:1.8px;--fdur:7.1s;--fdel:-2s}
+.cards-grid .app-card:nth-child(3){--a:-90deg;--fy:5px;--fx:2px;--fdur:5.6s;--fdel:-1s}
+.cards-grid .app-card:nth-child(4){--a:-90deg;--fy:6px;--fx:2px;--fdur:6.8s;--fdel:-3s}
+.cards-grid .app-card:nth-child(5){--a:-135deg;--fy:5px;--fx:2.5px;--fdur:7.4s;--fdel:-4s}
+.cards-grid .app-card:nth-child(6){--a:-45deg;--fy:6px;--fx:2px;--fdur:6.1s;--fdel:-1.5s}
+.cards-grid .app-card:nth-child(7){--a:180deg;--fy:5px;--fx:2.2px;--fdur:7.8s;--fdel:-5s}
+.cards-grid .app-card:nth-child(8){--a:135deg;--fy:6px;--fx:2.4px;--fdur:6.6s;--fdel:-2.5s}
+.cards-grid .app-card:nth-child(9){--a:90deg;--fy:5px;--fx:2px;--fdur:7.2s;--fdel:-6s}
+.cards-grid .app-card:nth-child(10){--a:0deg;--fy:6px;--fx:2.4px;--fdur:5.9s;--fdel:-3.5s}
+.cards-grid .app-card:nth-child(11){--a:45deg;--fy:5px;--fx:2px;--fdur:6.9s;--fdel:-0.5s}
+@media(max-width:679px){
+  .cards-grid{display:flex;flex-direction:column;align-items:center;gap:.9rem;width:auto;height:auto;--d:148px;--ds:108px}
+  .cards-grid .app-card,.cards-grid .app-card.small{position:static;left:auto;top:auto;width:var(--d);height:var(--d)}
+}
 </style>
 </head>
 <body>
@@ -550,8 +612,8 @@ footer{
 
 <section class="cards-section">
   <p class="section-label">Ejercicios de práctica</p>
-  <!-- small utility cards row -->
-  <div class="small-cards-row" style="animation:fadeUp .5s ease both">
+
+  <div class="cards-grid">
     <a class="app-card small" href="kana_draw.html" style="animation-delay:.05s">
       <div class="card-icon">📝あ</div>
       <div>
@@ -576,11 +638,8 @@ footer{
       </div>
       <div class="card-arrow" style="display:block;margin-left:auto;opacity:1;transform:none;font-size:.8rem;color:#c0392b">→</div>
     </a>
-  </div>
 
-  <div class="cards-grid">
-
-    <a class="app-card" href="flashcards.html">
+    <a class="app-card" title="Vocabulario L1 — L7 — japonés ↔ español" href="flashcards.html">
       <div class="card-icon">🗂</div>
       <div class="card-jp">単語カード</div>
       <div class="card-es">Flashcards</div>
@@ -588,7 +647,7 @@ footer{
       <div class="card-arrow">始める →</div>
     </a>
 
-    <a class="app-card" href="romaji_typer.html">
+    <a class="app-card" title="Escribe en romaji — se convierte a kana automáticamente" href="romaji_typer.html">
       <div class="card-icon">⌨️</div>
       <div class="card-jp">ローマ字を書く</div>
       <div class="card-es">Escribe en Romaji</div>
@@ -596,7 +655,7 @@ footer{
       <div class="card-arrow">始める →</div>
     </a>
 
-    <a class="app-card" href="historias.html">
+    <a class="app-card" title="Lee historias cortas con tus compañeros; toca una palabra para ver su significado" href="historias.html">
       <div class="card-icon">📚</div>
       <div class="card-jp">お話</div>
       <div class="card-es">Mini historias</div>
@@ -604,7 +663,7 @@ footer{
       <div class="card-arrow">読む →</div>
     </a>
 
-    <a class="app-card" href="practica_numeros.html">
+    <a class="app-card" title="Escribe fechas, horas y precios en kana con Wanakana" href="practica_numeros.html">
       <div class="card-icon">🗓</div>
       <div class="card-jp">数字・日付・時間</div>
       <div class="card-es">Números, Fechas y Horas</div>
@@ -612,7 +671,7 @@ footer{
       <div class="card-arrow">始める →</div>
     </a>
 
-    <a class="app-card" href="numeros.html">
+    <a class="app-card" title="Practica los números del 1 al 90,000,000 en hiragana" href="numeros.html">
       <div class="card-icon">🔢</div>
       <div class="card-jp">数字の練習</div>
       <div class="card-es">Números</div>
@@ -620,7 +679,7 @@ footer{
       <div class="card-arrow">始める →</div>
     </a>
 
-    <a class="app-card" href="jinbutsu.html">
+    <a class="app-card" title="Practica describir personas, profesiones, países y objetos" href="jinbutsu.html">
       <div class="card-icon">👤</div>
       <div class="card-jp">じんぶつ練習</div>
       <div class="card-es">Personajes</div>
@@ -629,7 +688,7 @@ footer{
     </a>
 
 
-    <a class="app-card" href="repaso_horas.html">
+    <a class="app-card" title="Digital ↔ hiragana, am y pm" href="repaso_horas.html">
       <div class="card-icon">🕐</div>
       <div class="card-jp">時計の練習</div>
       <div class="card-es">Horas del reloj</div>
@@ -637,7 +696,7 @@ footer{
       <div class="card-arrow">始める →</div>
     </a>
 
-    <a class="app-card" href="repaso_verbos.html">
+    <a class="app-card" title="Ordena oraciones en presente y pasado" href="repaso_verbos.html">
       <div class="card-icon">📝</div>
       <div class="card-jp">動詞ます</div>
       <div class="card-es">Verbos ます</div>
