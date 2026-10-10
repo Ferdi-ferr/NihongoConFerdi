@@ -967,6 +967,102 @@ async function fetchTokyoWeather(){
 spawnSeasonalParticles(getTokyoSeason());
 fetchTokyoWeather();
 setInterval(fetchTokyoWeather, 15*60*1000); // refresh every 15 min
+
+// ── Transición al entrar a una práctica: las bolitas giran hacia afuera y la elegida se expande ──
+(function(){
+  const grid = document.querySelector('.cards-grid');
+  if(!grid) return;
+  const reduce = window.matchMedia('(prefers-reduced-motion:reduce)');
+  let leaving = false, anims = [];
+  window.__leaveAnims = anims;
+
+  function prefetch(href){
+    if(!href || document.querySelector('link[rel="prefetch"][href="'+href+'"]')) return;
+    const l = document.createElement('link'); l.rel = 'prefetch'; l.href = href; document.head.appendChild(l);
+  }
+  grid.querySelectorAll('.app-card').forEach(a=>{
+    const go = ()=>prefetch(a.getAttribute('href'));
+    a.addEventListener('pointerenter', go, {passive:true});
+    a.addEventListener('touchstart', go, {passive:true});
+  });
+
+  function A(el, kf, o){
+    const a = el.animate(kf, Object.assign({fill:'forwards'}, o));
+    anims.push(a); return a;
+  }
+
+  function leave(clicked){
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const ring = getComputedStyle(clicked).position === 'absolute';   // compu: anillo; celular: columnas
+    const D = ring ? 700 : 600;
+    const cards = [...grid.querySelectorAll('.app-card')];
+    const g = grid.getBoundingClientRect();
+    const cx = g.left + g.width/2, cy = g.top + g.height/2;
+    document.documentElement.style.overflow = 'hidden';
+    cards.forEach(c=>{ c.style.pointerEvents = 'none'; });
+
+    // el resto de la página se desvanece
+    document.querySelectorAll('.header-content,.divider,.section-label,footer').forEach(el=>
+      A(el, [{opacity:1},{opacity:0}], {duration:D*.7, easing:'ease-in'}));
+
+    // la bolita elegida se expande hasta llenar la pantalla, y su contenido crece con ella
+    const r = clicked.getBoundingClientRect();
+    if(getComputedStyle(clicked).position === 'static') clicked.style.position = 'relative';
+    clicked.style.zIndex = 10;
+    const dx = vw/2 - (r.left + r.width/2), dy = vh/2 - (r.top + r.height/2);
+    const s = Math.hypot(vw, vh) / r.width * 1.08;
+    A(clicked, [{transform:'translate(0,0) scale(1)'}, {transform:'translate('+dx+'px,'+dy+'px) scale('+s+')'}],
+      {duration:D, easing:'cubic-bezier(.55,0,.25,1)'});
+    [...clicked.children].forEach(t=>A(t, [{opacity:1},{opacity:1,offset:.6},{opacity:0}], {duration:D, easing:'linear'}));
+
+    // las demás
+    cards.forEach(c=>{
+      if(c === clicked) return;
+      if(ring){
+        // giran en espiral hacia afuera (centrífugo), se encogen y se desvanecen
+        const b = c.getBoundingClientRect();
+        const x = b.left + b.width/2, y = b.top + b.height/2;
+        const r0 = Math.hypot(x-cx, y-cy), a0 = Math.atan2(y-cy, x-cx);
+        const N = 16, TURN = 200*Math.PI/180, far = Math.max(vw, vh)*.55 + 80;
+        const kf = [];
+        for(let i=0;i<=N;i++){
+          const t = i/N, e = Math.pow(t, 1.6);
+          const rr = r0 + far*e, aa = a0 + TURN*e;
+          kf.push({
+            transform:'translate('+(cx+rr*Math.cos(aa)-x)+'px,'+(cy+rr*Math.sin(aa)-y)+'px) scale('+(1-.55*t)+')',
+            opacity: t < .45 ? 1 : Math.max(0, 1-(t-.45)/.55)
+          });
+        }
+        A(c, kf, {duration:D, easing:'linear'});
+      } else {
+        A(c, [{opacity:1, transform:'scale(1)'}, {opacity:0, transform:'scale(.7)'}], {duration:D*.6, easing:'ease-in'});
+      }
+    });
+    return D;
+  }
+
+  grid.addEventListener('click', function(e){
+    const a = e.target.closest('.app-card');
+    if(!a || !grid.contains(a)) return;
+    if(e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    if(leaving){ e.preventDefault(); return; }
+    if(reduce.matches || !a.animate) return;          // sin movimiento: el enlace funciona normal
+    e.preventDefault();
+    leaving = true;
+    const href = a.getAttribute('href');
+    prefetch(href);
+    const D = leave(a);
+    setTimeout(function(){ if(!window.__noNav) window.location.href = href; }, D);
+  });
+
+  // al volver con "atrás" (la página puede restaurarse ya animada), deja todo como estaba
+  window.addEventListener('pageshow', function(e){
+    if(!e.persisted) return;
+    anims.forEach(x=>x.cancel()); anims.length = 0; leaving = false;
+    document.documentElement.style.overflow = '';
+    grid.querySelectorAll('.app-card').forEach(c=>{ c.style.pointerEvents=''; c.style.zIndex=''; if(c.style.position==='relative') c.style.position=''; });
+  });
+})();
 </script>
 
 </body>
