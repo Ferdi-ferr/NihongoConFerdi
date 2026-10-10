@@ -519,9 +519,32 @@ footer{
 .cards-grid .app-card:nth-child(9){--a:90deg;--fy:5px;--fx:2px;--fdur:7.2s;--fdel:-6s}
 .cards-grid .app-card:nth-child(10){--a:0deg;--fy:6px;--fx:2.4px;--fdur:5.9s;--fdel:-3.5s}
 .cards-grid .app-card:nth-child(11){--a:45deg;--fy:5px;--fx:2px;--fdur:6.9s;--fdel:-0.5s}
+@media(min-width:1000px){
+  /* pantallas grandes: anillo más grande para aprovechar los lados */
+  .cards-section{max-width:900px}
+  .cards-grid{--R:300px;--d:204px;--ds:140px;--rs:94px}
+  .cards-grid .app-card .card-icon{font-size:2.3rem}
+  .cards-grid .app-card .card-jp{font-size:1.2rem}
+  .cards-grid .app-card .card-es{font-size:.78rem}
+  .cards-grid .app-card.small .card-icon{font-size:1.4rem}
+  .cards-grid .app-card.small .card-jp{font-size:1.02rem !important}
+  .cards-grid .app-card.small .card-es{font-size:.62rem;letter-spacing:.02em}
+}
 @media(max-width:679px){
-  .cards-grid{display:flex;flex-direction:column;align-items:center;gap:.9rem;width:auto;height:auto;--d:148px;--ds:108px}
+  /* celular: columnas de dos bolitas (mismo tamaño de antes), letra en español un poco mayor */
+  .cards-grid{
+    display:grid;grid-template-columns:repeat(2,var(--d));
+    justify-content:center;justify-items:center;align-items:center;
+    gap:.9rem .9rem;width:auto;height:auto;--d:148px;--ds:108px;
+  }
   .cards-grid .app-card,.cards-grid .app-card.small{position:static;left:auto;top:auto;width:var(--d);height:var(--d)}
+  .cards-grid .app-card.small{width:var(--ds);height:var(--ds)}
+  .cards-grid .app-card:nth-child(3){grid-column:1 / -1}
+  .cards-grid .app-card .card-es{font-size:.72rem}
+  .cards-grid .app-card.small .card-es{font-size:.62rem}
+}
+@media(max-width:359px){
+  .cards-grid{grid-template-columns:var(--d)}
 }
 </style>
 </head>
