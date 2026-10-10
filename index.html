@@ -1035,7 +1035,16 @@ setInterval(fetchTokyoWeather, 15*60*1000); // refresh every 15 min
         }
         A(c, kf, {duration:D, easing:'linear'});
       } else {
-        A(c, [{opacity:1, transform:'scale(1)'}, {opacity:0, transform:'scale(.7)'}], {duration:D*.6, easing:'ease-in'});
+        // celular: salen hacia los lados (columna izquierda a la izquierda, derecha a la derecha)
+        const b = c.getBoundingClientRect();
+        const x = b.left + b.width/2;
+        const dir = x < vw/2 - 4 ? -1 : (x > vw/2 + 4 ? 1 : -1);
+        const dist = dir < 0 ? b.right + 24 : vw - b.left + 24;
+        const delay = Math.min(Math.abs(b.top + b.height/2 - (r.top + r.height/2)) / 12, 120);
+        A(c, [{opacity:1, transform:'translateX(0) scale(1)'},
+              {opacity:1, offset:.55},
+              {opacity:0, transform:'translateX('+(dir*dist)+'px) scale(.85)'}],
+          {duration:D*.7, delay:delay, easing:'cubic-bezier(.5,0,.85,.5)'});
       }
     });
     return D;
