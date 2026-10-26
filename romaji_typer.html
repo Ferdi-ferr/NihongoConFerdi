@@ -172,6 +172,7 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
         <button class="lbtn active" id="lb5" onclick="toggleLesson(5,this)">L5</button>
         <button class="lbtn active" id="lb6" onclick="toggleLesson(6,this)">L6</button>
         <button class="lbtn active" id="lb7" onclick="toggleLesson(7,this)">L7</button>
+        <button class="lbtn active" id="lb8" onclick="toggleLesson(8,this)">L8</button>
       </div>
       <div class="filter-row">
         <span class="filter-label">Tema</span>
@@ -184,6 +185,8 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
         <button class="tbtn" onclick="selectTheme('objetos')">📦 Objetos</button>
         <button class="tbtn" onclick="selectTheme('frases')">💬 Frases</button>
         <button class="tbtn" onclick="selectTheme('paises')">🌍 Países</button>
+        <button class="tbtn" onclick="selectTheme('adjetivos')">✨ Adjetivos</button>
+        <button class="tbtn" onclick="selectTheme('colores')">🎨 Colores</button>
       </div>
     </div>
   </div>
@@ -589,6 +592,45 @@ const WORD_THEMES={
   "7|いただきます。":['frases'],
   "7|ごちそうさま。":['frases'],
   "7|スペイン":['paises'],
+  "8|ハンサム":['adjetivos'],
+  "8|きれい":['adjetivos'],
+  "8|しずか":['adjetivos'],
+  "8|にぎやか":['adjetivos'],
+  "8|ゆうめい":['adjetivos'],
+  "8|しんせつ":['adjetivos'],
+  "8|げんき":['adjetivos'],
+  "8|ひま":['adjetivos'],
+  "8|べんり":['adjetivos'],
+  "8|すてき":['adjetivos'],
+  "8|おおきい":['adjetivos'],
+  "8|ちいさい":['adjetivos'],
+  "8|あたらしい":['adjetivos'],
+  "8|ふるい":['adjetivos'],
+  "8|いい":['adjetivos'],
+  "8|わるい":['adjetivos'],
+  "8|あつい":['adjetivos'],
+  "8|さむい":['adjetivos'],
+  "8|つめたい":['adjetivos'],
+  "8|むずかしい":['adjetivos'],
+  "8|やさしい":['adjetivos'],
+  "8|たかい":['adjetivos'],
+  "8|やすい":['adjetivos'],
+  "8|ひくい":['adjetivos'],
+  "8|おもしろい":['adjetivos'],
+  "8|おいしい":['adjetivos'],
+  "8|いそがしい":['adjetivos'],
+  "8|たのしい":['adjetivos'],
+  "8|しろい":['colores','adjetivos'],
+  "8|くろい":['colores','adjetivos'],
+  "8|あかい":['colores','adjetivos'],
+  "8|あおい":['colores','adjetivos'],
+  "8|さくら":['objetos'],
+  "8|やま":['lugares'],
+  "8|まち":['lugares'],
+  "8|たべもの":['comida'],
+  "8|ところ":['lugares'],
+  "8|りょう":['lugares'],
+  "8|レストラン":['lugares','comida'],
 };
 
 const ALL = [
@@ -915,6 +957,62 @@ const ALL = [
   {es:"Muchas gracias. (al empezar a comer/beber)", kana:"いただきます。", accepted:["itadakimasu"], l:7},
   {es:"Muchas gracias. (después de comer/beber)", kana:"ごちそうさま。", accepted:["gochisousama","gochisoosama"], l:7},
   {es:"España", kana:"スペイン", accepted:["supein"], l:7},
+  // L8
+  {es:"guapo", kana:"ハンサム", accepted:["hansamu"], l:8},
+  {es:"hermoso, limpio", kana:"きれい", accepted:["kirei"], l:8},
+  {es:"silencioso", kana:"しずか", accepted:["shizuka"], l:8},
+  {es:"concurrido, animado", kana:"にぎやか", accepted:["nigiyaka"], l:8},
+  {es:"famoso, célebre", kana:"ゆうめい", accepted:["yuumei","yumei"], l:8},
+  {es:"amable, generoso (no se emplea al referir a la familia del hablante mismo)", kana:"しんせつ", accepted:["shinsetsu"], l:8},
+  {es:"sano, con ánimo", kana:"げんき", accepted:["genki"], l:8},
+  {es:"estar libre (tiempo)", kana:"ひま", accepted:["hima"], l:8},
+  {es:"útil, práctico, conveniente", kana:"べんり", accepted:["benri"], l:8},
+  {es:"bonito", kana:"すてき", accepted:["suteki"], l:8},
+  {es:"grande", kana:"おおきい", accepted:["ookii","okii"], l:8},
+  {es:"pequeño", kana:"ちいさい", accepted:["chiisai","chisai"], l:8},
+  {es:"nuevo", kana:"あたらしい", accepted:["atarashii"], l:8},
+  {es:"viejo, antiguo (no se emplea para referirse a la gente)", kana:"ふるい", accepted:["furui"], l:8},
+  {es:"bueno", kana:"いい", accepted:["ii","yoi"], l:8},
+  {es:"malo", kana:"わるい", accepted:["warui"], l:8},
+  {es:"caluroso, caliente", kana:"あつい", accepted:["atsui"], l:8},
+  {es:"frío (se limita su uso al clima o la temperatura ambiental)", kana:"さむい", accepted:["samui"], l:8},
+  {es:"frío (relativo al tacto)", kana:"つめたい", accepted:["tsumetai"], l:8},
+  {es:"difícil", kana:"むずかしい", accepted:["muzukashii"], l:8},
+  {es:"fácil", kana:"やさしい", accepted:["yasashii"], l:8},
+  {es:"caro, alto", kana:"たかい", accepted:["takai"], l:8},
+  {es:"barato", kana:"やすい", accepted:["yasui"], l:8},
+  {es:"bajo (relativo a altura y estatura)", kana:"ひくい", accepted:["hikui"], l:8},
+  {es:"interesante", kana:"おもしろい", accepted:["omoshiroi"], l:8},
+  {es:"delicioso, sabroso, rico", kana:"おいしい", accepted:["oishii"], l:8},
+  {es:"atareado, ocupado", kana:"いそがしい", accepted:["isogashii"], l:8},
+  {es:"divertido, placentero", kana:"たのしい", accepted:["tanoshii"], l:8},
+  {es:"blanco", kana:"しろい", accepted:["shiroi"], l:8},
+  {es:"negro", kana:"くろい", accepted:["kuroi"], l:8},
+  {es:"rojo", kana:"あかい", accepted:["akai"], l:8},
+  {es:"azul", kana:"あおい", accepted:["aoi"], l:8},
+  {es:"árbol o flor de cerezo", kana:"さくら", accepted:["sakura"], l:8},
+  {es:"montaña, monte", kana:"やま", accepted:["yama"], l:8},
+  {es:"población (normalmente se refiere a ciudades no muy grandes)", kana:"まち", accepted:["machi"], l:8},
+  {es:"comida, alimentos", kana:"たべもの", accepted:["tabemono"], l:8},
+  {es:"lugar", kana:"ところ", accepted:["tokoro"], l:8},
+  {es:"residencia, dormitorio", kana:"りょう", accepted:["ryou","ryo"], l:8},
+  {es:"restaurante", kana:"レストラン", accepted:["resutoran"], l:8},
+  {es:"vida (diaria)", kana:"せいかつ", accepted:["seikatsu"], l:8},
+  {es:"trabajo, profesión (〜を します: trabajar, hacer un trabajo)", kana:"しごと", accepted:["shigoto","oshigoto"], l:8},
+  {es:"cómo", kana:"どう", accepted:["dou","do"], l:8},
+  {es:"qué clase de 〜", kana:"どんな", accepted:["donna"], l:8},
+  {es:"muy, mucho", kana:"とても", accepted:["totemo"], l:8},
+  {es:"no tan, no muy (se emplea con formas negativas)", kana:"あまり", accepted:["amari"], l:8},
+  {es:"y (se emplea para conectar oraciones)", kana:"そして", accepted:["soshite"], l:8},
+  {es:"〜, pero 〜", kana:"〜が、〜", accepted:["ga"], l:8},
+  {es:"¿Cómo está Ud.?", kana:"おげんきですか。", accepted:["ogenki desu ka","ogenkidesuka"], l:8},
+  {es:"Bueno... (al estar pensando en qué contestar)", kana:"そうですね。", accepted:["sou desu ne","so desu ne","soudesune"], l:8},
+  {es:"¿Le apetece otra taza (copa, vaso) de [~]?", kana:"もう いっぱい いかがですか。", accepted:["mou ippai ikaga desu ka","mo ippai ikaga desu ka"], l:8},
+  {es:"No, gracias.", kana:"けっこうです。", accepted:["kekkou desu","kekko desu","kekkoudesu"], l:8},
+  {es:"Ya es 〜, [¿verdad?]", kana:"もう 〜です。", accepted:["mou desu","mo desu","moudesu"], l:8},
+  {es:"Es hora de marcharnos./Tenemos que marcharnos.", kana:"そろそろ しつれいします。", accepted:["sorosoro shitsurei shimasu","sorosoro shitsureishimasu"], l:8},
+  {es:"De nada./No hay de qué.", kana:"いいえ。", accepted:["iie"], l:8},
+  {es:"Vuelva(n) a visitarnos.", kana:"また いらっしゃって ください。", accepted:["mata irasshatte kudasai","mata irasshattekudasai"], l:8},
 ];
 
 // Tag themes
@@ -922,7 +1020,7 @@ ALL.forEach(tagThemes);
 
 // ── STATE ─────────────────────────────────────────────────────────
 let deck=[], idx=0, cardStates=[];
-let activeLessons=new Set([1,2,3,4,5,6,7]);
+let activeLessons=new Set([1,2,3,4,5,6,7,8]);
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
 
@@ -942,13 +1040,15 @@ function buildDeck(){
 const THEME_LESSONS = {
   verbos:    [4,5,6,7],
   tiempo:    [4,5],
-  lugares:   [3,4,5],
-  transporte:[5],
-  comida:    [6],
+  lugares:   [3,4,5,8],
+  transporte: [5],
+  comida:    [6,8],
   personas:  [1,5,7],
-  objetos:   [2,7],
-  frases:    [1,2,3,5,6,7],
+  objetos:   [2,7,8],
+  frases:    [1,2,3,5,6,7,8],
   paises:    [1,4,7],
+  adjetivos: [8],
+  colores:   [8],
 };
 
 
@@ -965,7 +1065,7 @@ function selectTheme(theme){
     activeTheme=null;
     document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
     // restore all lessons
-    [1,2,3,4,5,6,7].forEach(n=>{
+    [1,2,3,4,5,6,7,8].forEach(n=>{
       activeLessons.add(n);
       const btn=document.getElementById('lb'+n);
       if(btn) btn.classList.add('active');
@@ -979,7 +1079,7 @@ function selectTheme(theme){
   // activate only relevant lessons, deactivate others
   const relevant=new Set(THEME_LESSONS[theme]||[]);
   activeLessons.clear();
-  [1,2,3,4,5,6,7].forEach(n=>{
+  [1,2,3,4,5,6,7,8].forEach(n=>{
     const btn=document.getElementById('lb'+n);
     if(relevant.has(n)){
       activeLessons.add(n);

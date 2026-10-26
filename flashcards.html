@@ -115,6 +115,7 @@ h1{font-size:16px;font-weight:600;color:#444;margin-bottom:1.25rem;text-align:ce
         <button class="lbtn active" id="lb5" onclick="toggleLesson(5,this)">L5</button>
         <button class="lbtn active" id="lb6" onclick="toggleLesson(6,this)">L6</button>
         <button class="lbtn active" id="lb7" onclick="toggleLesson(7,this)">L7</button>
+        <button class="lbtn active" id="lb8" onclick="toggleLesson(8,this)">L8</button>
       </div>
       <div class="filter-row">
         <span class="filter-label">Tema</span>
@@ -127,6 +128,8 @@ h1{font-size:16px;font-weight:600;color:#444;margin-bottom:1.25rem;text-align:ce
         <button class="tbtn" data-theme="objetos" onclick="selectTheme('objetos')">📦 Objetos</button>
         <button class="tbtn" data-theme="frases" onclick="selectTheme('frases')">💬 Frases</button>
         <button class="tbtn" data-theme="paises" onclick="selectTheme('paises')">🌍 Países</button>
+        <button class="tbtn" data-theme="adjetivos" onclick="selectTheme('adjetivos')">✨ Adjetivos</button>
+        <button class="tbtn" data-theme="colores" onclick="selectTheme('colores')">🎨 Colores</button>
       </div>
     </div>
   </div>
@@ -519,6 +522,45 @@ const WORD_THEMES={
   "7|いただきます。":['frases'],
   "7|ごちそうさま[でした]。":['frases'],
   "7|スペイン":['paises'],
+  "8|ハンサム[な]":['adjetivos'],
+  "8|きれい[な]":['adjetivos'],
+  "8|しずか[な]":['adjetivos'],
+  "8|にぎやか[な]":['adjetivos'],
+  "8|ゆうめい[な]":['adjetivos'],
+  "8|しんせつ[な]":['adjetivos'],
+  "8|げんき[な]":['adjetivos'],
+  "8|ひま[な]":['adjetivos'],
+  "8|べんり[な]":['adjetivos'],
+  "8|すてき[な]":['adjetivos'],
+  "8|おおきい":['adjetivos'],
+  "8|ちいさい":['adjetivos'],
+  "8|あたらしい":['adjetivos'],
+  "8|ふるい":['adjetivos'],
+  "8|いい (よい)":['adjetivos'],
+  "8|わるい":['adjetivos'],
+  "8|あつい":['adjetivos'],
+  "8|さむい":['adjetivos'],
+  "8|つめたい":['adjetivos'],
+  "8|むずかしい":['adjetivos'],
+  "8|やさしい":['adjetivos'],
+  "8|たかい":['adjetivos'],
+  "8|やすい":['adjetivos'],
+  "8|ひくい":['adjetivos'],
+  "8|おもしろい":['adjetivos'],
+  "8|おいしい":['adjetivos'],
+  "8|いそがしい":['adjetivos'],
+  "8|たのしい":['adjetivos'],
+  "8|しろい":['colores','adjetivos'],
+  "8|くろい":['colores','adjetivos'],
+  "8|あかい":['colores','adjetivos'],
+  "8|あおい":['colores','adjetivos'],
+  "8|さくら":['objetos'],
+  "8|やま":['lugares'],
+  "8|まち":['lugares'],
+  "8|たべもの":['comida'],
+  "8|ところ":['lugares'],
+  "8|りょう":['lugares'],
+  "8|レストラン":['lugares','comida'],
 };
 
 const ALL=[
@@ -858,13 +900,68 @@ const ALL=[
   {es:"Muchas gracias. (al empezar a comer/beber)",jp:"いただきます。",rom:"itadakimasu",l:7},
   {es:"Muchas gracias. (después de comer/beber)",jp:"ごちそうさま[でした]。",rom:"gochisousama [deshita].",l:7},
   {es:"España",jp:"スペイン",rom:"supein",l:7},
+  {es:"guapo",jp:"ハンサム[な]",rom:"hansamu[na]",l:8},
+  {es:"hermoso, limpio",jp:"きれい[な]",rom:"kirei[na]",l:8},
+  {es:"silencioso",jp:"しずか[な]",rom:"shizuka[na]",l:8},
+  {es:"concurrido, animado",jp:"にぎやか[な]",rom:"nigiyaka[na]",l:8},
+  {es:"famoso, célebre",jp:"ゆうめい[な]",rom:"yuumei[na]",l:8},
+  {es:"amable, generoso (no se emplea al referir a la familia del hablante mismo)",jp:"しんせつ[な]",rom:"shinsetsu[na]",l:8},
+  {es:"sano, con ánimo",jp:"げんき[な]",rom:"genki[na]",l:8},
+  {es:"estar libre (tiempo)",jp:"ひま[な]",rom:"hima[na]",l:8},
+  {es:"útil, práctico, conveniente",jp:"べんり[な]",rom:"benri[na]",l:8},
+  {es:"bonito",jp:"すてき[な]",rom:"suteki[na]",l:8},
+  {es:"grande",jp:"おおきい",rom:"ookii",l:8},
+  {es:"pequeño",jp:"ちいさい",rom:"chiisai",l:8},
+  {es:"nuevo",jp:"あたらしい",rom:"atarashii",l:8},
+  {es:"viejo, antiguo (no se emplea para referirse a la gente)",jp:"ふるい",rom:"furui",l:8},
+  {es:"bueno",jp:"いい (よい)",rom:"ii (yoi)",l:8},
+  {es:"malo",jp:"わるい",rom:"warui",l:8},
+  {es:"caluroso, caliente",jp:"あつい",rom:"atsui",l:8},
+  {es:"frío (se limita su uso al clima o la temperatura ambiental)",jp:"さむい",rom:"samui",l:8},
+  {es:"frío (relativo al tacto)",jp:"つめたい",rom:"tsumetai",l:8},
+  {es:"difícil",jp:"むずかしい",rom:"muzukashii",l:8},
+  {es:"fácil",jp:"やさしい",rom:"yasashii",l:8},
+  {es:"caro, alto",jp:"たかい",rom:"takai",l:8},
+  {es:"barato",jp:"やすい",rom:"yasui",l:8},
+  {es:"bajo (relativo a altura y estatura)",jp:"ひくい",rom:"hikui",l:8},
+  {es:"interesante",jp:"おもしろい",rom:"omoshiroi",l:8},
+  {es:"delicioso, sabroso, rico",jp:"おいしい",rom:"oishii",l:8},
+  {es:"atareado, ocupado",jp:"いそがしい",rom:"isogashii",l:8},
+  {es:"divertido, placentero",jp:"たのしい",rom:"tanoshii",l:8},
+  {es:"blanco",jp:"しろい",rom:"shiroi",l:8},
+  {es:"negro",jp:"くろい",rom:"kuroi",l:8},
+  {es:"rojo",jp:"あかい",rom:"akai",l:8},
+  {es:"azul",jp:"あおい",rom:"aoi",l:8},
+  {es:"árbol o flor de cerezo",jp:"さくら",rom:"sakura",l:8},
+  {es:"montaña, monte",jp:"やま",rom:"yama",l:8},
+  {es:"población (normalmente se refiere a ciudades no muy grandes)",jp:"まち",rom:"machi",l:8},
+  {es:"comida, alimentos",jp:"たべもの",rom:"tabemono",l:8},
+  {es:"lugar",jp:"ところ",rom:"tokoro",l:8},
+  {es:"residencia, dormitorio",jp:"りょう",rom:"ryou",l:8},
+  {es:"restaurante",jp:"レストラン",rom:"resutoran",l:8},
+  {es:"vida (diaria)",jp:"せいかつ",rom:"seikatsu",l:8},
+  {es:"trabajo, profesión (〜を します: trabajar, hacer un trabajo)",jp:"[お]しごと",rom:"[o]shigoto",l:8},
+  {es:"cómo",jp:"どう",rom:"dou",l:8},
+  {es:"qué clase de 〜",jp:"どんな 〜",rom:"donna ~",l:8},
+  {es:"muy, mucho",jp:"とても",rom:"totemo",l:8},
+  {es:"no tan, no muy (se emplea con formas negativas)",jp:"あまり",rom:"amari",l:8},
+  {es:"y (se emplea para conectar oraciones)",jp:"そして",rom:"soshite",l:8},
+  {es:"〜, pero 〜",jp:"〜が、〜",rom:"~ga, ~",l:8},
+  {es:"¿Cómo está Ud.?",jp:"おげんきですか。",rom:"ogenki desu ka.",l:8},
+  {es:"Bueno... (al estar pensando en qué contestar)",jp:"そうですね。",rom:"sou desu ne.",l:8},
+  {es:"¿Le apetece otra taza (copa, vaso) de [~]?",jp:"[〜、] もう いっぱい いかがですか。",rom:"[~,] mou ippai ikaga desu ka.",l:8},
+  {es:"No, gracias.",jp:"[いいえ、] けっこうです。",rom:"[iie,] kekkou desu.",l:8},
+  {es:"Ya es 〜, [¿verdad?]",jp:"もう 〜です[ね]。",rom:"mou ~ desu [ne].",l:8},
+  {es:"Es hora de marcharnos./Tenemos que marcharnos.",jp:"そろそろ しつれいします。",rom:"sorosoro shitsurei shimasu.",l:8},
+  {es:"De nada./No hay de qué.",jp:"いいえ。",rom:"iie.",l:8},
+  {es:"Vuelva(n) a visitarnos.",jp:"また いらっしゃって ください。",rom:"mata irasshatte kudasai.",l:8},
 ];
 
 // Tag themes
 ALL.forEach(tagThemes);
 
 let deck=[],idx=0,flipped=false,known=0,skipped=0;
-let activeLessons=new Set([1,2,3,4,5,6,7]);
+let activeLessons=new Set([1,2,3,4,5,6,7,8]);
 let dirEsJp=false;
 let activeTheme=null;
 
@@ -878,13 +975,15 @@ function buildDeck(){
 const THEME_LESSONS = {
   verbos:    [4,5,6,7],
   tiempo:    [4,5],
-  lugares:   [3,4,5],
-  transporte:[5],
-  comida:    [6],
+  lugares:   [3,4,5,8],
+  transporte: [5],
+  comida:    [6,8],
   personas:  [1,5,7],
-  objetos:   [2,7],
-  frases:    [1,2,3,5,6,7],
+  objetos:   [2,7,8],
+  frases:    [1,2,3,5,6,7,8],
   paises:    [1,4,7],
+  adjetivos: [8],
+  colores:   [8],
 };
 
 
@@ -906,7 +1005,7 @@ function selectTheme(theme){
   if(activeTheme===theme){
     activeTheme=null;
     document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
-    [1,2,3,4,5,6,7].forEach(n=>{
+    [1,2,3,4,5,6,7,8].forEach(n=>{
       activeLessons.add(n);
       const btn=document.getElementById('lb'+n);
       if(btn) btn.classList.add('active');
@@ -919,7 +1018,7 @@ function selectTheme(theme){
   event.target.classList.add('active');
   const relevant=new Set(THEME_LESSONS[theme]||[]);
   activeLessons.clear();
-  [1,2,3,4,5,6,7].forEach(n=>{
+  [1,2,3,4,5,6,7,8].forEach(n=>{
     const btn=document.getElementById('lb'+n);
     if(relevant.has(n)){
       activeLessons.add(n);
