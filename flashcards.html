@@ -51,6 +51,9 @@ h1{font-size:16px;font-weight:600;color:#444;margin-bottom:1.25rem;text-align:ce
 .counter{font-size:13px;color:#999;min-width:70px;text-align:center}
 .stats-bar{display:flex;gap:8px;justify-content:center;font-size:12px;color:#aaa;flex-wrap:wrap}
 .stat{padding:3px 10px;border-radius:99px;background:#f0f0eb}
+.kbd-hint{display:none;text-align:center;font-size:12px;color:#999;margin-top:10px;line-height:1.9}
+.kbd-hint kbd{font:inherit;font-size:11px;padding:1px 6px;border:1px solid #d8d8d0;border-bottom-width:2px;border-radius:5px;background:#fafaf6;color:#777}
+@media (hover:hover) and (pointer:fine){.kbd-hint{display:block}}
 .stat.known{color:#2d7a3e}
 .stat.skipped{color:#b03030}
 .done-msg{text-align:center;padding:2.5rem 1rem;background:#fff;border-radius:16px;border:1px solid #e0e0d8}
@@ -141,7 +144,7 @@ h1{font-size:16px;font-weight:600;color:#444;margin-bottom:1.25rem;text-align:ce
         <span class="card-label" id="frontLabel">Español</span>
         <span class="card-lesson" id="cardLesson"></span>
         <div class="front-main" id="frontContent"></div>
-        <span class="card-hint">toca para voltear</span>
+        <span class="card-hint">toca o presiona espacio para voltear</span>
       </div>
       <div class="card-face card-back">
         <span class="card-label" id="backLabel">Japonés</span>
@@ -160,6 +163,7 @@ h1{font-size:16px;font-weight:600;color:#444;margin-bottom:1.25rem;text-align:ce
     <span class="stat known" id="statKnown"></span>
     <span class="stat skipped" id="statSkip"></span>
   </div>
+  <div class="kbd-hint" id="kbdHint"><kbd>Espacio</kbd> voltear &nbsp;·&nbsp; <kbd>Enter</kbd> / <kbd>→</kbd> ✓ Lo sé &nbsp;·&nbsp; <kbd>⌫</kbd> / <kbd>←</kbd> ✗ Repasar</div>
   <div id="doneMsg" class="done-msg" style="display:none">
     <h2>¡Ronda completa! 🎉</h2>
     <p id="doneSummary"></p>
@@ -1121,6 +1125,21 @@ function restart(onlySkipped){
   buildDeck();
   shuffleDeck();
 }
+
+document.addEventListener('keydown',function(e){
+  if(e.ctrlKey||e.metaKey||e.altKey||e.isComposing)return;
+  const t=e.target;
+  if(t&&(t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.tagName==='SELECT'||t.isContentEditable))return;
+  const k=e.key;
+  if(!(k===' '||k==='Enter'||k==='Backspace'||k==='ArrowRight'||k==='ArrowLeft'))return;
+  e.preventDefault();
+  if(document.activeElement&&document.activeElement.tagName==='BUTTON')document.activeElement.blur();
+  if(e.repeat)return;
+  if(idx>=deck.length){ if(k==='Enter')restart(false); return; }
+  if(k===' ')flipCard();
+  else if(k==='Enter'||k==='ArrowRight')markCard(true);
+  else markCard(false);
+});
 
 buildDeck();
 shuffleDeck();
