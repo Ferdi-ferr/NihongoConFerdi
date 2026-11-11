@@ -1070,6 +1070,19 @@ function toggleDir(){
   showCard();
 }
 
+let backTimer=null;
+function setBack(){
+  const c=deck[idx];
+  if(!c)return;
+  if(dirEsJp){
+    document.getElementById('backJP').textContent=c.jp;
+    document.getElementById('backRom').textContent=c.rom;
+  }else{
+    document.getElementById('backJP').textContent=c.es;
+    document.getElementById('backRom').textContent='';
+  }
+}
+
 function showCard(){
   const done=document.getElementById('doneMsg');
   const wrap=document.getElementById('cardWrap');
@@ -1082,12 +1095,11 @@ function showCard(){
   }
   done.style.display='none';wrap.style.display='block';ctrl.style.display='flex';
   const c=deck[idx];
+  const wasFlipped=document.getElementById('cardInner').classList.contains('flipped');
   if(dirEsJp){
     document.getElementById('frontLabel').textContent='Español';
     document.getElementById('frontContent').textContent=c.es;
     document.getElementById('backLabel').textContent='Japonés';
-    document.getElementById('backJP').textContent=c.jp;
-    document.getElementById('backRom').textContent=c.rom;
   }else{
     document.getElementById('frontLabel').textContent='Japonés';
     const fc=document.getElementById('frontContent');
@@ -1095,9 +1107,11 @@ function showCard(){
     const rs=document.createElement('span');rs.className='rom-fine';rs.textContent=c.rom;
     fc.appendChild(rs);
     document.getElementById('backLabel').textContent='Español';
-    document.getElementById('backJP').textContent=c.es;
-    document.getElementById('backRom').textContent='';
   }
+  // El reverso se actualiza hasta que la tarjeta termine de girar de regreso,
+  // para que no se alcance a ver la respuesta de la siguiente tarjeta.
+  clearTimeout(backTimer);
+  if(wasFlipped)backTimer=setTimeout(setBack,460);else setBack();
   document.getElementById('cardLesson').textContent='L'+c.l;
   document.getElementById('counter').textContent=(idx+1)+' / '+deck.length;
   const pct=Math.round((idx/deck.length)*100);
