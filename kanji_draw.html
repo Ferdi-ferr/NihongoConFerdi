@@ -12,7 +12,7 @@ h1{font-size:1rem;font-weight:500;color:#555;margin-bottom:.25rem;letter-spacing
 .subtitle{font-size:.8rem;color:#a08070;margin-bottom:1.25rem;text-align:center;font-style:italic}
 
 /* font preloader */
-#fontPreload{position:absolute;opacity:0;pointer-events:none;font-family:'Noto Sans JP',serif;font-size:180px;color:transparent;top:-999px}
+#fontPreload{position:fixed;top:0;left:-99999px;white-space:nowrap;opacity:0;pointer-events:none;font-family:'Noto Sans JP',serif;font-size:180px;color:transparent}
 
 /* filter bar */
 .filter-bar{display:flex;gap:6px;margin-bottom:.75rem;background:#fff;border:1px solid #e0d8d0;border-radius:99px;padding:4px}
@@ -130,6 +130,22 @@ h1{font-size:1rem;font-weight:500;color:#555;margin-bottom:.25rem;letter-spacing
   background-size:var(--comb-w,320px) var(--comb-h,154px),var(--comb-w,320px) var(--comb-h,154px),20px 20px,20px 20px;
 }
 
+/* info panel (radical, palabras útiles, oración) */
+.info-panel{width:100%;max-width:420px;display:none;flex-direction:column;gap:.7rem;border-top:1px solid #e8e0d8;padding-top:.9rem;text-align:left}
+.info-panel.show{display:flex}
+.info-h{font-size:.7rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#c0392b;margin-bottom:.2rem}
+.info-rad{display:flex;align-items:baseline;gap:.6rem}
+.info-rad .rad-char{font-size:1.7rem;color:#1a1209;line-height:1}
+.info-rad .rad-name{font-size:.85rem;color:#2d7a3e}
+.info-words{display:flex;flex-direction:column;gap:.45rem}
+.info-word{display:grid;grid-template-columns:minmax(3.6rem,auto) minmax(4.6rem,auto) 1fr;gap:.2rem .8rem;align-items:baseline}
+.info-word .w{font-size:1.15rem;font-weight:500;color:#1a1209}
+.info-word .r{font-size:.82rem;color:#3b72d4}
+.info-word .m{font-size:.8rem;color:#888}
+.info-sent .jp{font-size:1.05rem;color:#1a1209;line-height:1.6}
+.info-sent .es{font-size:.8rem;color:#888}
+@media(max-width:420px){.info-word{grid-template-columns:auto 1fr}.info-word .m{grid-column:1/-1;margin-top:-.2rem}}
+
 /* nav */
 .nav-controls{display:flex;gap:8px;justify-content:center;margin-top:.25rem;max-width:560px;width:100%}
 .nav-btn{font-size:13px;padding:9px 20px;border-radius:10px;border:1px solid #ddd;background:#f7f4f0;color:#333;cursor:pointer;transition:all .15s;font-weight:500;font-family:inherit}
@@ -167,7 +183,7 @@ h1{font-size:1rem;font-weight:500;color:#555;margin-bottom:.25rem;letter-spacing
   <span class="torii-label">inicio</span>
 </a>
 
-<div id="fontPreload">人日本何大学生先名前会社一二三四五六七八九十</div>
+<div id="fontPreload">一二三四五六七八九十人日本何大学生先名前会社百千万円毎時分半国月火水木金土書玉王星方員行来車友年今週休午後人日本何大学生先名前会社一二三四五六七八九十</div>
 
 <h1>漢字 — Escritura</h1>
 <p class="subtitle">Traza el kanji con mouse, dedo o lápiz electrónico</p>
@@ -197,6 +213,7 @@ h1{font-size:1rem;font-weight:500;color:#555;margin-bottom:.25rem;letter-spacing
   <div class="drawing-area" id="drawingArea"></div>
   <div class="stroke-hint" id="strokeHint"></div>
   <div class="btn-row" id="btnRow"></div>
+  <div class="info-panel" id="infoPanel"></div>
 </div>
 
 <div class="nav-controls">
@@ -228,72 +245,108 @@ const ALL_KANJIS = [
     on:['ジン','ニン'], kun:['ひと'],
     meanings:['persona','gente','ser humano','otro','cierta persona'],
     strokes:'2 trazos',
+    rad:['人','ひと'],
+    words:[['人','ひと','persona'],['日本人','にほんじん','japonés/japonesa'],['三人','さんにん','tres personas']],
+    sent:['あの 人は 先生です。','Esa persona es profesor/a.'],
   },
   {
     type:'single', char:'日',
     on:['ニチ','カ'], kun:['ひ','か'],
     meanings:['sol','día','fecha','luz del día','Japón'],
     strokes:'4 trazos',
+    rad:['日','ひ'],
+    words:[['日本','にほん','Japón'],['今日','きょう','hoy'],['毎日','まいにち','todos los días']],
+    sent:['今日は 何月 何日ですか。','¿Qué fecha es hoy?'],
   },
   {
     type:'single', char:'本',
     on:['ホン'], kun:['もと'],
     meanings:['origen','base','raíz','libro','principal','este (Japón)'],
     strokes:'5 trazos',
+    rad:['木','き'],
+    words:[['本','ほん','libro'],['日本','にほん','Japón'],['本当','ほんとう','verdad']],
+    sent:['これは 日本の 本です。','Este es un libro de Japón.'],
   },
   {
     type:'single', char:'何',
     on:['カ'], kun:['なに','なん'],
     meanings:['¿qué?','¿cuánto?','¿cuál?','algo','cierto número de'],
     strokes:'7 trazos',
+    rad:['亻','にんべん'],
+    words:[['何','なに / なん','¿qué?'],['何時','なんじ','¿qué hora?'],['何人','なんにん','¿cuántas personas?']],
+    sent:['何人ですか。','¿Cuántas personas son?'],
   },
   {
     type:'single', char:'大',
     on:['ダイ','タイ'], kun:['おお(きい)'],
     meanings:['grande','grandioso','mucho','mayor','importante'],
     strokes:'3 trazos',
+    rad:['大','だい'],
+    words:[['大きい','おおきい','grande'],['大学','だいがく','universidad'],['大切','たいせつ','importante']],
+    sent:['この 車は 大きいです。','Este coche es grande.'],
   },
   {
     type:'single', char:'学',
     on:['ガク'], kun:['まな(ぶ)'],
     meanings:['estudiar','aprender','ciencia','conocimiento','disciplina académica'],
     strokes:'8 trazos',
+    rad:['子','こ'],
+    words:[['学生','がくせい','estudiante'],['大学','だいがく','universidad'],['学校','がっこう','escuela']],
+    sent:['私は 大学の 学生です。','Soy estudiante de la universidad.'],
   },
   {
     type:'single', char:'生',
     on:['セイ','ショウ'], kun:['い(きます)','うま(れます)'],
     meanings:['vivir','nacer','vida','crudo','estudiante','persona'],
     strokes:'5 trazos',
+    rad:['生','うまれる'],
+    words:[['先生','せんせい','profesor/a'],['学生','がくせい','estudiante'],['生まれる','うまれる','nacer']],
+    sent:['先生は 日本人です。','El/la profesor/a es japonés/a.'],
   },
   {
     type:'single', char:'先',
     on:['セン'], kun:['さき','ま(ず)'],
     meanings:['antes','adelantado','previo','futuro','punta','primero que nada'],
     strokes:'6 trazos',
+    rad:['儿','にんにょう'],
+    words:[['先生','せんせい','profesor/a'],['先月','せんげつ','el mes pasado'],['先週','せんしゅう','la semana pasada']],
+    sent:['先週 友だちに 会いました。','La semana pasada me vi con un amigo.'],
   },
   {
     type:'single', char:'名',
-    on:['ナイ','ミョウ'], kun:['な'],
+    on:['メイ','ミョウ'], kun:['な'],
     meanings:['nombre','reputación','distinguido','famoso','contador de personas'],
     strokes:'6 trazos',
+    rad:['口','くち'],
+    words:[['名前','なまえ','nombre'],['有名','ゆうめい','famoso/a'],['名人','めいじん','maestro/experto']],
+    sent:['あの 人の 名前は タナカです。','El nombre de esa persona es Tanaka.'],
   },
   {
     type:'single', char:'前',
     on:['ゼン'], kun:['まえ'],
     meanings:['antes','delante','previo','frente','adelantado','anterior'],
     strokes:'9 trazos',
+    rad:['刂','りっとう'],
+    words:[['前','まえ','delante / antes'],['名前','なまえ','nombre'],['午前','ごぜん','a. m.']],
+    sent:['名前は なんですか。','¿Cómo te llamas?'],
   },
   {
     type:'single', char:'会',
     on:['カイ','エ'], kun:['あ(います)','あ(わせます)','あつ(まります)'],
     meanings:['conocer','encontrarse','reunirse','hacer un compromiso','coleccionar','asociación'],
     strokes:'6 trazos',
+    rad:['人','ひとやね'],
+    words:[['会う','あう','encontrarse'],['会社','かいしゃ','empresa'],['会話','かいわ','conversación']],
+    sent:['友だちに 会います。','Me veo con un amigo.'],
   },
   {
     type:'single', char:'社',
     on:['シャ'], kun:['やしろ'],
     meanings:['compañía','empresa','asociación','sociedad','templo sintoísta'],
     strokes:'7 trazos',
+    rad:['礻','しめすへん'],
+    words:[['会社','かいしゃ','empresa'],['社員','しゃいん','empleado/a'],['神社','じんじゃ','santuario sintoísta']],
+    sent:['私の 会社は 大きいです。','Mi empresa es grande.'],
   },
   // ── NUEVOS (números grandes, tiempo, elementos, días de la semana) ──
   {
@@ -301,114 +354,280 @@ const ALL_KANJIS = [
     on:['ヒャク'], kun:['もも'],
     meanings:['cien','100'],
     strokes:'6 trazos',
+    rad:['白','しろ'],
+    words:[['百','ひゃく','cien'],['三百','さんびゃく','300'],['六百','ろっぴゃく','600']],
+    sent:['これは 百円です。','Esto cuesta 100 yenes.'],
   },
   {
     type:'single', char:'千',
     on:['セン'], kun:['ち'],
     meanings:['mil','1000'],
     strokes:'3 trazos',
+    rad:['十','じゅう'],
+    words:[['千','せん','mil'],['三千','さんぜん','3000'],['八千','はっせん','8000']],
+    sent:['この 本は 千円です。','Este libro cuesta 1000 yenes.'],
   },
   {
     type:'single', char:'万',
     on:['マン','バン'], kun:['よろず'],
     meanings:['diez mil','10,000'],
     strokes:'3 trazos',
+    rad:['一','いち'],
+    words:[['一万','いちまん','diez mil'],['一万円','いちまんえん','10,000 yenes'],['百万','ひゃくまん','un millón']],
+    sent:['一万円です。','Son 10,000 yenes.'],
   },
   {
     type:'single', char:'円',
     on:['エン'], kun:['まる(い)'],
     meanings:['yen','círculo','redondo'],
     strokes:'4 trazos',
+    rad:['冂','どうがまえ'],
+    words:[['円','えん','yen'],['百円','ひゃくえん','100 yenes'],['千円','せんえん','1000 yenes']],
+    sent:['この 本は 何円ですか。','¿Cuántos yenes cuesta este libro?'],
   },
   {
     type:'single', char:'毎',
     on:['マイ'], kun:['ごと(に)'],
     meanings:['cada','siempre','todos los'],
     strokes:'6 trazos',
+    rad:['毋','なかれ'],
+    words:[['毎日','まいにち','todos los días'],['毎週','まいしゅう','cada semana'],['毎年','まいとし','cada año']],
+    sent:['毎日 電車で 来ます。','Vengo en tren todos los días.'],
   },
   {
     type:'single', char:'時',
     on:['ジ'], kun:['とき'],
     meanings:['tiempo','hora','ocasión'],
     strokes:'10 trazos',
+    rad:['日','ひへん'],
+    words:[['時','とき','tiempo / cuando'],['時間','じかん','tiempo / hora'],['何時','なんじ','¿qué hora?']],
+    sent:['何時に 会いますか。','¿A qué hora nos vemos?'],
   },
   {
     type:'single', char:'分',
     on:['フン','ブン','プン'], kun:['わ(かる)','わ(ける)'],
     meanings:['minuto','parte','entender','dividir'],
     strokes:'4 trazos',
+    rad:['刀','かたな'],
+    words:[['分かる','わかる','entender'],['五分','ごふん','cinco minutos'],['半分','はんぶん','mitad']],
+    sent:['十分 休みます。','Descanso diez minutos.'],
   },
   {
     type:'single', char:'半',
     on:['ハン'], kun:['なか(ば)'],
     meanings:['mitad','medio'],
     strokes:'5 trazos',
+    rad:['十','じゅう'],
+    words:[['半','はん','y media'],['半分','はんぶん','mitad'],['半年','はんとし','medio año']],
+    sent:['五時半に 会います。','Nos vemos a las 5:30.'],
   },
   {
     type:'single', char:'国',
     on:['コク'], kun:['くに'],
     meanings:['país','nación','país natal'],
     strokes:'8 trazos',
+    rad:['囗','くにがまえ'],
+    words:[['国','くに','país'],['外国','がいこく','extranjero'],['中国','ちゅうごく','China']],
+    sent:['あの 人は 外国人です。','Esa persona es extranjera.'],
   },
   {
     type:'single', char:'玉',
     on:['ギョク'], kun:['たま'],
     meanings:['joya','bola','esfera','precioso'],
     strokes:'5 trazos',
+    rad:['玉','たま'],
+    words:[['玉ねぎ','たまねぎ','cebolla'],['十円玉','じゅうえんだま','moneda de 10 yenes'],['お年玉','おとしだま','aguinaldo de Año Nuevo']],
+    sent:['十円玉が 三つ あります。','Hay tres monedas de 10 yenes.'],
   },
   {
     type:'single', char:'王',
     on:['オウ'], kun:[],
     meanings:['rey','monarca','soberano'],
     strokes:'4 trazos',
+    rad:['玉','たまへん'],
+    words:[['王様','おうさま','rey'],['女王','じょおう','reina'],['王子','おうじ','príncipe']],
+    sent:['王様は 大きい 国に います。','El rey está en un país grande.'],
   },
   {
     type:'single', char:'月',
     on:['ゲツ','ガツ'], kun:['つき'],
     meanings:['mes','luna'],
     strokes:'4 trazos',
+    rad:['月','つき'],
+    words:[['月','つき','luna'],['今月','こんげつ','este mes'],['来月','らいげつ','el mes próximo']],
+    sent:['来月 日本へ 行きます。','El mes próximo voy a Japón.'],
   },
   {
     type:'single', char:'火',
     on:['カ'], kun:['ひ','ほ'],
     meanings:['fuego','llama'],
     strokes:'4 trazos',
+    rad:['火','ひ'],
+    words:[['火','ひ','fuego'],['火曜日','かようび','martes'],['火山','かざん','volcán']],
+    sent:['火曜日は 休みです。','El martes es día libre.'],
   },
   {
     type:'single', char:'水',
     on:['スイ'], kun:['みず'],
     meanings:['agua'],
     strokes:'4 trazos',
+    rad:['水','みず'],
+    words:[['水','みず','agua'],['水曜日','すいようび','miércoles'],['水道','すいどう','agua corriente']],
+    sent:['水を ください。','Agua, por favor.'],
   },
   {
     type:'single', char:'木',
     on:['ボク','モク'], kun:['き','こ'],
     meanings:['árbol','madera'],
     strokes:'4 trazos',
+    rad:['木','き'],
+    words:[['木','き','árbol'],['木曜日','もくようび','jueves'],['大木','たいぼく','árbol grande']],
+    sent:['あの 木は 大きいです。','Ese árbol es grande.'],
   },
   {
     type:'single', char:'金',
     on:['キン','コン'], kun:['かね','かな'],
     meanings:['oro','dinero','metal'],
     strokes:'8 trazos',
+    rad:['金','かね'],
+    words:[['お金','おかね','dinero'],['金曜日','きんようび','viernes'],['金色','きんいろ','color dorado']],
+    sent:['お金が ありません。','No tengo dinero.'],
   },
   {
     type:'single', char:'土',
     on:['ド','ト'], kun:['つち'],
     meanings:['suelo','tierra'],
     strokes:'3 trazos',
+    rad:['土','つち'],
+    words:[['土','つち','tierra'],['土曜日','どようび','sábado'],['土地','とち','terreno']],
+    sent:['土曜日に 友だちに 会います。','El sábado me veo con un amigo.'],
   },
   {
     type:'single', char:'書',
     on:['ショ'], kun:['か(く)'],
     meanings:['escritura','escrito','escribir'],
     strokes:'10 trazos',
+    rad:['曰','ひらび'],
+    words:[['書く','かく','escribir'],['辞書','じしょ','diccionario'],['図書館','としょかん','biblioteca']],
+    sent:['名前を 書いて ください。','Por favor, escriba su nombre.'],
   },
   {
     type:'single', char:'星',
     on:['セイ'], kun:['ほし'],
     meanings:['estrella','astro'],
     strokes:'9 trazos',
+    rad:['日','ひ'],
+    words:[['星','ほし','estrella'],['火星','かせい','Marte'],['星空','ほしぞら','cielo estrellado']],
+    sent:['星が きれいです。','Las estrellas son hermosas.'],
+  },
+  // ── NUEVOS 2 (lección 8+: 方 員 行 来 車 友 年 今 週 休 午 後) ──
+  {
+    type:'single', char:'方',
+    on:['ホウ'], kun:['かた'],
+    meanings:['persona (cortés)','dirección','lado','manera','método'],
+    strokes:'4 trazos',
+    rad:['方','ほうへん'],
+    words:[['あの方','あのかた','esa persona (cortés)'],['書き方','かきかた','manera de escribir'],['方向','ほうこう','dirección']],
+    sent:['あの 方は どなたですか。','¿Quién es esa persona (cortés)?'],
+  },
+  {
+    type:'single', char:'員',
+    on:['イン'], kun:[],
+    meanings:['miembro','empleado','personal'],
+    strokes:'10 trazos',
+    rad:['口','くち'],
+    words:[['社員','しゃいん','empleado/a de empresa'],['会社員','かいしゃいん','oficinista'],['店員','てんいん','dependiente/a']],
+    sent:['私は 会社員です。','Soy empleado/a de una empresa.'],
+  },
+  {
+    type:'single', char:'行',
+    on:['コウ','ギョウ','アン'], kun:['い(く)','ゆ(く)','おこな(う)'],
+    meanings:['ir','viajar','realizar','línea','banco'],
+    strokes:'6 trazos',
+    rad:['行','ぎょうがまえ'],
+    words:[['行く','いく','ir'],['銀行','ぎんこう','banco'],['旅行','りょこう','viaje']],
+    sent:['毎日 大学へ 行きます。','Voy a la universidad todos los días.'],
+  },
+  {
+    type:'single', char:'来',
+    on:['ライ'], kun:['く(る)','きた(る)'],
+    meanings:['venir','llegar','próximo'],
+    strokes:'7 trazos',
+    rad:['木','き'],
+    words:[['来る','くる','venir'],['来年','らいねん','el año próximo'],['来週','らいしゅう','la semana próxima']],
+    sent:['来週 友だちが 来ます。','La semana próxima viene un amigo.'],
+  },
+  {
+    type:'single', char:'車',
+    on:['シャ'], kun:['くるま'],
+    meanings:['auto','vehículo','rueda'],
+    strokes:'7 trazos',
+    rad:['車','くるま'],
+    words:[['車','くるま','coche'],['電車','でんしゃ','tren'],['自転車','じてんしゃ','bicicleta']],
+    sent:['電車で 会社へ 行きます。','Voy a la empresa en tren.'],
+  },
+  {
+    type:'single', char:'友',
+    on:['ユウ'], kun:['とも'],
+    meanings:['amigo','camarada'],
+    strokes:'4 trazos',
+    rad:['又','また'],
+    words:[['友だち','ともだち','amigo/a'],['友人','ゆうじん','amigo/a (formal)'],['親友','しんゆう','mejor amigo/a']],
+    sent:['友だちは 学生です。','Mi amigo/a es estudiante.'],
+  },
+  {
+    type:'single', char:'年',
+    on:['ネン'], kun:['とし'],
+    meanings:['año','edad'],
+    strokes:'6 trazos',
+    rad:['干','かん'],
+    words:[['今年','ことし','este año'],['来年','らいねん','el año próximo'],['毎年','まいとし','cada año']],
+    sent:['今年は 二千二十六年です。','Este año es 2026.'],
+  },
+  {
+    type:'single', char:'今',
+    on:['コン','キン'], kun:['いま'],
+    meanings:['ahora','actual','este (hoy)'],
+    strokes:'4 trazos',
+    rad:['人','ひとやね'],
+    words:[['今','いま','ahora'],['今日','きょう','hoy'],['今週','こんしゅう','esta semana']],
+    sent:['今 十時半です。','Ahora son las diez y media.'],
+  },
+  {
+    type:'single', char:'週',
+    on:['シュウ'], kun:[],
+    meanings:['semana'],
+    strokes:'11 trazos',
+    rad:['辶','しんにょう'],
+    words:[['今週','こんしゅう','esta semana'],['来週','らいしゅう','la semana próxima'],['毎週','まいしゅう','cada semana']],
+    sent:['来週 友だちに 会います。','La semana próxima me veo con un amigo.'],
+  },
+  {
+    type:'single', char:'休',
+    on:['キュウ'], kun:['やす(む)','やす(み)'],
+    meanings:['descansar','descanso','vacaciones','faltar'],
+    strokes:'6 trazos',
+    rad:['亻','にんべん'],
+    words:[['休み','やすみ','descanso / día libre'],['休みます','やすみます','descansar'],['休日','きゅうじつ','día de descanso']],
+    sent:['今日は 休みです。','Hoy es día libre.'],
+  },
+  {
+    type:'single', char:'午',
+    on:['ゴ'], kun:[],
+    meanings:['mediodía','tarde (después del mediodía)'],
+    strokes:'4 trazos',
+    rad:['十','じゅう'],
+    words:[['午前','ごぜん','a. m.'],['午後','ごご','p. m.'],['正午','しょうご','mediodía']],
+    sent:['午前 十時に 大学へ 行きます。','A las 10 a. m. voy a la universidad.'],
+  },
+  {
+    type:'single', char:'後',
+    on:['ゴ','コウ'], kun:['あと','うし(ろ)','のち'],
+    meanings:['después','detrás','atrás','posterior'],
+    strokes:'9 trazos',
+    rad:['彳','ぎょうにんべん'],
+    words:[['午後','ごご','p. m.'],['後ろ','うしろ','atrás'],['後で','あとで','después']],
+    sent:['午後 友だちに 会います。','Por la tarde me veo con un amigo.'],
   },
   // ── COMBINADOS ───────────────────────────────────────────────
   {
@@ -449,60 +668,90 @@ const ALL_KANJIS = [
     on:['イチ','イツ'], kun:['ひと(つ)'],
     meanings:['uno','primero','único','un poco'],
     strokes:'1 trazo',
+    rad:['一','いち'],
+    words:[['一つ','ひとつ','uno (cosa)'],['一人','ひとり','una persona'],['一月','いちがつ','enero']],
+    sent:['今 一時です。','Ahora es la una.'],
   },
   {
     type:'number', char:'二',
     on:['ニ'], kun:['ふた(つ)'],
     meanings:['dos','segundo','doble'],
     strokes:'2 trazos',
+    rad:['二','に'],
+    words:[['二つ','ふたつ','dos (cosas)'],['二人','ふたり','dos personas'],['二月','にがつ','febrero']],
+    sent:['二人で 行きます。','Vamos los dos.'],
   },
   {
     type:'number', char:'三',
     on:['サン'], kun:['みっ(つ)','み'],
     meanings:['tres','tercero'],
     strokes:'3 trazos',
+    rad:['一','いち'],
+    words:[['三つ','みっつ','tres (cosas)'],['三人','さんにん','tres personas'],['三月','さんがつ','marzo']],
+    sent:['三時に 会います。','Nos vemos a las tres.'],
   },
   {
     type:'number', char:'四',
     on:['シ'], kun:['よっ(つ)','よん','よ'],
     meanings:['cuatro','cuarto'],
     strokes:'5 trazos',
+    rad:['囗','くにがまえ'],
+    words:[['四つ','よっつ','cuatro (cosas)'],['四月','しがつ','abril'],['四人','よにん','cuatro personas']],
+    sent:['四月に 日本へ 行きます。','Voy a Japón en abril.'],
   },
   {
     type:'number', char:'五',
     on:['ゴ'], kun:['いつ(つ)'],
     meanings:['cinco','quinto'],
     strokes:'4 trazos',
+    rad:['二','に'],
+    words:[['五つ','いつつ','cinco (cosas)'],['五月','ごがつ','mayo'],['五分','ごふん','cinco minutos']],
+    sent:['五分 休みます。','Descanso cinco minutos.'],
   },
   {
     type:'number', char:'六',
     on:['ロク','リク'], kun:['むっ(つ)','む'],
     meanings:['seis','sexto'],
     strokes:'4 trazos',
+    rad:['八','はちがしら'],
+    words:[['六つ','むっつ','seis (cosas)'],['六月','ろくがつ','junio'],['六人','ろくにん','seis personas']],
+    sent:['六時に 来ます。','Vengo a las seis.'],
   },
   {
     type:'number', char:'七',
     on:['シチ'], kun:['なな(つ)','なの'],
     meanings:['siete','séptimo'],
     strokes:'2 trazos',
+    rad:['一','いち'],
+    words:[['七つ','ななつ','siete (cosas)'],['七月','しちがつ','julio'],['七時','しちじ','las siete']],
+    sent:['七時に 行きます。','Voy a las siete.'],
   },
   {
     type:'number', char:'八',
     on:['ハチ'], kun:['やっ(つ)','や'],
     meanings:['ocho','octavo'],
     strokes:'2 trazos',
+    rad:['八','はち'],
+    words:[['八つ','やっつ','ocho (cosas)'],['八月','はちがつ','agosto'],['八時','はちじ','las ocho']],
+    sent:['八月は 休みです。','Agosto es vacaciones.'],
   },
   {
     type:'number', char:'九',
     on:['ク','キュウ'], kun:['ここの(つ)'],
     meanings:['nueve','noveno'],
     strokes:'2 trazos',
+    rad:['乙','おつ'],
+    words:[['九つ','ここのつ','nueve (cosas)'],['九月','くがつ','septiembre'],['九時','くじ','las nueve']],
+    sent:['九時に 会社へ 行きます。','Voy a la empresa a las nueve.'],
   },
   {
     type:'number', char:'十',
     on:['ジュウ','ジッ'], kun:['とお','と'],
     meanings:['diez','décimo','diez unidades'],
     strokes:'2 trazos',
+    rad:['十','じゅう'],
+    words:[['十','とお','diez (cosas)'],['十月','じゅうがつ','octubre'],['十分','じゅっぷん','diez minutos']],
+    sent:['十月に 来ます。','Vengo en octubre.'],
   },
 ];
 
@@ -618,6 +867,7 @@ function renderCard(){
   drawGuide(k.char, guideMode?0.12:0);
   setupDrawing();
   renderBtns();
+  updateInfo();
   // combined: stack model below
   if(isComb) document.getElementById('drawingArea').classList.add('combined');
 
@@ -680,6 +930,22 @@ function drawRef(char){
   }
 }
 
+// ── INFO (radical, palabras útiles, oración) ──────────────────────
+function updateInfo(){
+  const el=document.getElementById('infoPanel');
+  const k=deck[idx];
+  if(!k||!k.words||!(guideMode||compared)){el.classList.remove('show');el.innerHTML='';return;}
+  const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+  el.innerHTML=`
+    <div><div class="info-h">Radical</div>
+      <div class="info-rad"><span class="rad-char">${esc(k.rad[0])}</span><span class="rad-name">${esc(k.rad[1])}</span></div></div>
+    <div><div class="info-h">Palabras útiles</div>
+      <div class="info-words">${k.words.map(w=>`<div class="info-word"><span class="w">${esc(w[0])}</span><span class="r">${esc(w[1])}</span><span class="m">${esc(w[2])}</span></div>`).join('')}</div></div>
+    <div class="info-sent"><div class="info-h">Oración</div>
+      <div class="jp">${esc(k.sent[0])}</div><div class="es">${esc(k.sent[1])}</div></div>`;
+  el.classList.add('show');
+}
+
 // ── BUTTONS ───────────────────────────────────────────────────────
 function renderBtns(){
   const row=document.getElementById('btnRow');
@@ -702,6 +968,7 @@ function showModel(){
   document.getElementById('drawCanvas').style.pointerEvents='none';
   document.getElementById('canvasWrap').classList.add('locked');
   renderBtns();
+  updateInfo();
 }
 
 function clearDraw(){
@@ -716,6 +983,7 @@ function clearAndHide(){
   document.getElementById('drawCanvas').style.pointerEvents='auto';
   document.getElementById('canvasWrap').classList.remove('locked');
   renderBtns();
+  updateInfo();
 }
 
 // ── DRAWING ───────────────────────────────────────────────────────
