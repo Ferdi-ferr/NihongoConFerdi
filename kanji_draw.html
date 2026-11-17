@@ -14,6 +14,9 @@ h1{font-size:1rem;font-weight:500;color:#555;margin-bottom:.25rem;letter-spacing
 /* font preloader */
 #fontPreload{position:fixed;top:0;left:-99999px;white-space:nowrap;opacity:0;pointer-events:none;font-family:'Noto Sans JP',serif;font-size:180px;color:transparent}
 
+.repaso-link{font-size:12px;font-weight:500;color:#3b72d4;text-decoration:none;border:1px solid #cfdcf6;background:#eef3ff;border-radius:99px;padding:5px 14px;margin:-.5rem 0 1rem}
+.repaso-link:hover{background:#dfe9fb}
+
 /* filter bar */
 .filter-bar{display:flex;gap:6px;margin-bottom:.75rem;background:#fff;border:1px solid #e0d8d0;border-radius:99px;padding:4px}
 .fbtn{font-size:12px;padding:5px 14px;border-radius:99px;border:none;background:transparent;color:#888;cursor:pointer;transition:all .2s;font-family:inherit;font-weight:500}
@@ -187,6 +190,7 @@ h1{font-size:1rem;font-weight:500;color:#555;margin-bottom:.25rem;letter-spacing
 
 <h1>漢字 — Escritura</h1>
 <p class="subtitle">Traza el kanji con mouse, dedo o lápiz electrónico</p>
+<a class="repaso-link" href="kanji_repaso.html">📖 Ver repaso de kanjis</a>
 
 <div class="filter-bar">
   <button class="fbtn active" id="fAll"        onclick="setFilter('all')">Todo</button>
@@ -781,9 +785,16 @@ function setMode(mode){
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
 
+let startChar=null;
+try{ startChar=new URLSearchParams(location.search).get('k'); }catch(e){}
 function init(){
   deck=getFilteredDeck();
   shuffle(deck);
+  if(startChar){                       // viene desde el repaso: ese kanji va primero
+    const i=deck.findIndex(k=>k.char===startChar);
+    if(i>0) deck.unshift(deck.splice(i,1)[0]);
+    startChar=null;
+  }
   idx=0; compared=false;
   document.getElementById('doneMsg').style.display='none';
   document.getElementById('mainCard').style.display='flex';

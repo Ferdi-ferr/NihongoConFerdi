@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Repaso de Kanji — Nihongo con Ferdi</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Noto Sans JP',sans-serif;background:#f5f5f0;min-height:100vh;padding:1.5rem 1rem 3rem;display:flex;flex-direction:column;align-items:center}
+
+.torii-home{position:fixed;top:14px;left:14px;z-index:999;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:3px;opacity:.85;transition:opacity .2s,transform .2s}
+.torii-home:hover{opacity:1;transform:scale(1.08)}
+.torii-label{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#c0392b;font-family:sans-serif;font-weight:600}
+
+h1{font-size:15px;font-weight:600;color:#555;margin:.5rem 0 .25rem;text-align:center;letter-spacing:.03em}
+.subtitle{font-size:.8rem;color:#a08070;margin-bottom:1.25rem;text-align:center;font-style:italic}
+
+.wrap{width:100%;max-width:1100px}
+
+/* controles */
+.search-input{width:100%;font-size:.95rem;padding:9px 14px;border-radius:10px;border:1.5px solid #e0d8d0;background:#fff;outline:none;font-family:inherit;transition:border-color .15s}
+.search-input:focus{border-color:#3b72d4}
+.ctrl-row{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;justify-content:space-between;margin:.8rem 0 .6rem}
+.seg{display:flex;gap:4px;background:#fff;border:1px solid #e0d8d0;border-radius:99px;padding:3px}
+.seg button{font:500 12px 'Noto Sans JP',sans-serif;padding:5px 13px;border-radius:99px;border:none;background:transparent;color:#888;cursor:pointer;transition:all .2s}
+.seg button.active{background:#3b72d4;color:#fff}
+.study-btn{font:500 12px 'Noto Sans JP',sans-serif;padding:6px 14px;border-radius:99px;border:1px solid #e0d8d0;background:#fff;color:#888;cursor:pointer;transition:all .2s}
+.study-btn.active{background:#c0392b;border-color:#c0392b;color:#fff}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:.7rem}
+.chip{font:500 12px 'Noto Sans JP',sans-serif;padding:5px 12px;border-radius:99px;border:1px solid #e0d8d0;background:#fff;color:#777;cursor:pointer;transition:all .15s}
+.chip:hover{background:#f0f0eb}
+.chip.active{background:#eef3ff;border-color:#3b72d4;color:#3b72d4}
+.chip small{opacity:.6;margin-left:3px;font-size:10px}
+.count{font-size:.75rem;color:#aaa;margin:.2rem 0 .7rem}
+
+/* estudio: oculta hasta tocar */
+.study .hide{filter:blur(7px);cursor:pointer;user-select:none;transition:filter .2s}
+.study .hide.rev{filter:none;user-select:auto}
+
+/* LISTA */
+.list{background:#fff;border:1px solid #e0d8d0;border-radius:18px;overflow:hidden}
+.krow{border-bottom:1px solid #f0ede8}
+.krow:last-child{border-bottom:none}
+.k-top{display:grid;grid-template-columns:34px 64px 1fr auto 28px;gap:0 12px;align-items:center;padding:10px 14px;cursor:pointer}
+.k-top:hover{background:#fafaf7}
+.k-n{font-size:.7rem;color:#bbb;text-align:center}
+.k-char{font-size:2.3rem;line-height:1.1;color:#1a1209;text-align:center}
+.k-mean{font-size:.88rem;color:#c0392b;font-weight:500;line-height:1.4}
+.k-read{display:flex;flex-wrap:wrap;gap:2px 16px;margin-top:2px;font-size:.85rem}
+.k-read .lab{font-size:.62rem;font-weight:700;letter-spacing:.08em;color:#aaa;margin-right:5px}
+.k-read .on{color:#2255aa}.k-read .kun{color:#2d7a3e}
+.k-meta{font-size:.72rem;color:#aaa;text-align:right;white-space:nowrap;line-height:1.5}
+.k-arrow{color:#bbb;font-size:.8rem;transition:transform .2s;text-align:center}
+.krow.open .k-arrow{transform:rotate(180deg)}
+.k-more{display:none;padding:2px 14px 14px 124px}
+.krow.open .k-more{display:block}
+
+/* bloque extra (palabras, oración) */
+.more-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px 28px}
+.h{font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#c0392b;margin-bottom:4px}
+.w-row{display:grid;grid-template-columns:minmax(3.2rem,auto) minmax(4.4rem,auto) 1fr;gap:0 .8rem;align-items:baseline;padding:2px 0}
+.w-row .w{font-size:1.05rem;font-weight:500;color:#1a1209}
+.w-row .r{font-size:.8rem;color:#3b72d4}
+.w-row .m{font-size:.78rem;color:#888}
+.sent .jp{font-size:1rem;color:#1a1209;line-height:1.6}
+.sent .es{font-size:.8rem;color:#888}
+.rad{display:flex;align-items:baseline;gap:.5rem;margin-bottom:10px}
+.rad .rc{font-size:1.5rem;color:#1a1209;line-height:1}
+.rad .rn{font-size:.82rem;color:#2d7a3e}
+.practice{display:inline-block;margin-top:8px;font-size:.75rem;color:#3b72d4;text-decoration:none;border:1px solid #cfdcf6;background:#eef3ff;border-radius:99px;padding:3px 12px}
+.practice:hover{background:#dfe9fb}
+
+/* FICHAS */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:14px}
+.kcard .more-grid{grid-template-columns:1fr;gap:12px}
+.kcard .w-row{grid-template-columns:minmax(3.6rem,auto) minmax(4.6rem,auto) 1fr}
+.kcard{background:#fff;border:1px solid #e0d8d0;border-radius:18px;padding:16px 18px;position:relative}
+.kc-head{display:flex;gap:14px;align-items:center;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid #f0ede8}
+.kc-char{font-size:3.6rem;line-height:1;color:#1a1209}
+.kc-n{position:absolute;top:10px;right:14px;font-size:.7rem;color:#bbb}
+.kc-meta{font-size:.72rem;color:#aaa;margin-top:3px}
+.kcard .k-mean{margin-bottom:2px}
+.kcard .rad{margin:10px 0 8px}
+
+.empty{background:#fff;border:1px solid #e0d8d0;border-radius:16px;padding:1.5rem;text-align:center;color:#aaa;font-style:italic;font-size:.85rem}
+
+@media(max-width:640px){
+  .k-top{grid-template-columns:28px 52px 1fr 26px}
+  .k-meta{display:none}
+  .k-char{font-size:2rem}
+  .k-more{padding:2px 14px 14px 14px}
+  .more-grid{grid-template-columns:1fr}
+  .cards{grid-template-columns:1fr}
+  body{padding-top:4.2rem}
+}
+</style>
+<script src="https://unpkg.com/wanakana"></script>
+</head>
+<body>
+<a class="torii-home" href="./" title="Inicio">
+  <svg width="44" height="38" viewBox="0 0 44 38" xmlns="http://www.w3.org/2000/svg">
+    <defs><filter id="grain"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/><feBlend in="SourceGraphic" mode="multiply" result="blend"/><feComposite in="blend" in2="SourceGraphic" operator="in"/></filter></defs>
+    <ellipse cx="22" cy="37" rx="14" ry="2.5" fill="rgba(0,0,0,.13)"/>
+    <rect x="6" y="14" width="5" height="22" rx="1.5" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="33" y="14" width="5" height="22" rx="1.5" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="4" y="19" width="36" height="3.5" rx="1.5" fill="#a93226" filter="url(#grain)"/>
+    <path d="M1,8 Q3,4 22,5.5 Q41,4 43,8 L40,11 Q22,9.5 4,11 Z" fill="#c0392b" filter="url(#grain)"/>
+    <rect x="5" y="11" width="34" height="3" rx="1" fill="#b03020" filter="url(#grain)"/>
+    <path d="M4,8.5 Q22,7 40,8.5" stroke="rgba(255,255,255,.18)" stroke-width="1" fill="none"/>
+    <rect x="16" y="11.5" width="12" height="2" rx=".5" fill="#7a1f18" opacity=".7"/>
+  </svg>
+  <span class="torii-label">inicio</span>
+</a>
+
+<h1>漢字 — Repaso</h1>
+<p class="subtitle">Todos los kanjis vistos en clase, como un vocabulario</p>
+
+<div class="wrap">
+  <input class="search-input" id="q" type="search" placeholder="Busca por kanji, lectura (kana o romaji) o significado…" autocomplete="off">
+
+  <div class="ctrl-row">
+    <div class="seg" id="viewSeg">
+      <button data-v="list" class="active">☰ Lista</button>
+      <button data-v="cards">▦ Fichas</button>
+    </div>
+    <div class="seg" id="sortSeg">
+      <button data-s="class" class="active">Orden de clase</button>
+      <button data-s="strokes">Por trazos</button>
+    </div>
+    <button class="study-btn" id="studyBtn" title="Oculta significados y lecturas hasta que los toques">👁 Modo estudio</button>
+  </div>
+
+  <div class="chips" id="chips"></div>
+  <div class="count" id="count"></div>
+  <div id="out"></div>
+</div>
+
+<script>
+const KANJI = [{"c":"人","n":11,"g":"Gente","on":["ジン","ニン"],"kun":["ひと"],"m":["persona","gente","ser humano","otro","cierta persona"],"s":2,"rad":["人","ひと"],"w":[["人","ひと","persona"],["日本人","にほんじん","japonés/japonesa"],["三人","さんにん","tres personas"]],"t":["あの 人は 先生です。","Esa persona es profesor/a."]},
+{"c":"日","n":15,"g":"Tiempo","on":["ニチ","カ"],"kun":["ひ","か"],"m":["sol","día","fecha","luz del día","Japón"],"s":4,"rad":["日","ひ"],"w":[["日本","にほん","Japón"],["今日","きょう","hoy"],["毎日","まいにち","todos los días"]],"t":["今日は 何月 何日ですか。","¿Qué fecha es hoy?"]},
+{"c":"本","n":14,"g":"Escuela y trabajo","on":["ホン"],"kun":["もと"],"m":["origen","base","raíz","libro","principal","este (Japón)"],"s":5,"rad":["木","き"],"w":[["本","ほん","libro"],["日本","にほん","Japón"],["本当","ほんとう","verdad"]],"t":["これは 日本の 本です。","Este es un libro de Japón."]},
+{"c":"何","n":16,"g":"Otros","on":["カ"],"kun":["なに","なん"],"m":["¿qué?","¿cuánto?","¿cuál?","algo","cierto número de"],"s":7,"rad":["亻","にんべん"],"w":[["何","なに / なん","¿qué?"],["何時","なんじ","¿qué hora?"],["何人","なんにん","¿cuántas personas?"]],"t":["何人ですか。","¿Cuántas personas son?"]},
+{"c":"大","n":17,"g":"Otros","on":["ダイ","タイ"],"kun":["おお(きい)"],"m":["grande","grandioso","mucho","mayor","importante"],"s":3,"rad":["大","だい"],"w":[["大きい","おおきい","grande"],["大学","だいがく","universidad"],["大切","たいせつ","importante"]],"t":["この 車は 大きいです。","Este coche es grande."]},
+{"c":"学","n":18,"g":"Escuela y trabajo","on":["ガク"],"kun":["まな(ぶ)"],"m":["estudiar","aprender","ciencia","conocimiento","disciplina académica"],"s":8,"rad":["子","こ"],"w":[["学生","がくせい","estudiante"],["大学","だいがく","universidad"],["学校","がっこう","escuela"]],"t":["私は 大学の 学生です。","Soy estudiante de la universidad."]},
+{"c":"生","n":23,"g":"Gente","on":["セイ","ショウ"],"kun":["い(きます)","うま(れます)"],"m":["vivir","nacer","vida","crudo","estudiante","persona"],"s":5,"rad":["生","うまれる"],"w":[["先生","せんせい","profesor/a"],["学生","がくせい","estudiante"],["生まれる","うまれる","nacer"]],"t":["先生は 日本人です。","El/la profesor/a es japonés/a."]},
+{"c":"先","n":22,"g":"Gente","on":["セン"],"kun":["さき","ま(ず)"],"m":["antes","adelantado","previo","futuro","punta","primero que nada"],"s":6,"rad":["儿","にんにょう"],"w":[["先生","せんせい","profesor/a"],["先月","せんげつ","el mes pasado"],["先週","せんしゅう","la semana pasada"]],"t":["先週 友だちに 会いました。","La semana pasada me vi con un amigo."]},
+{"c":"名","n":12,"g":"Gente","on":["メイ","ミョウ"],"kun":["な"],"m":["nombre","reputación","distinguido","famoso","contador de personas"],"s":6,"rad":["口","くち"],"w":[["名前","なまえ","nombre"],["有名","ゆうめい","famoso/a"],["名人","めいじん","maestro/experto"]],"t":["あの 人の 名前は タナカです。","El nombre de esa persona es Tanaka."]},
+{"c":"前","n":48,"g":"Tiempo","on":["ゼン"],"kun":["まえ"],"m":["antes","delante","previo","frente","adelantado","anterior"],"s":9,"rad":["刂","りっとう"],"w":[["前","まえ","delante / antes"],["名前","なまえ","nombre"],["午前","ごぜん","a. m."]],"t":["名前は なんですか。","¿Cómo te llamas?"]},
+{"c":"会","n":21,"g":"Acciones","on":["カイ","エ"],"kun":["あ(います)","あ(わせます)","あつ(まります)"],"m":["conocer","encontrarse","reunirse","hacer un compromiso","coleccionar","asociación"],"s":6,"rad":["人","ひとやね"],"w":[["会う","あう","encontrarse"],["会社","かいしゃ","empresa"],["会話","かいわ","conversación"]],"t":["友だちに 会います。","Me veo con un amigo."]},
+{"c":"社","n":19,"g":"Escuela y trabajo","on":["シャ"],"kun":["やしろ"],"m":["compañía","empresa","asociación","sociedad","templo sintoísta"],"s":7,"rad":["礻","しめすへん"],"w":[["会社","かいしゃ","empresa"],["社員","しゃいん","empleado/a"],["神社","じんじゃ","santuario sintoísta"]],"t":["私の 会社は 大きいです。","Mi empresa es grande."]},
+{"c":"百","n":27,"g":"Números","on":["ヒャク"],"kun":["もも"],"m":["cien","100"],"s":6,"rad":["白","しろ"],"w":[["百","ひゃく","cien"],["三百","さんびゃく","300"],["六百","ろっぴゃく","600"]],"t":["これは 百円です。","Esto cuesta 100 yenes."]},
+{"c":"千","n":28,"g":"Números","on":["セン"],"kun":["ち"],"m":["mil","1000"],"s":3,"rad":["十","じゅう"],"w":[["千","せん","mil"],["三千","さんぜん","3000"],["八千","はっせん","8000"]],"t":["この 本は 千円です。","Este libro cuesta 1000 yenes."]},
+{"c":"万","n":29,"g":"Números","on":["マン","バン"],"kun":["よろず"],"m":["diez mil","10,000"],"s":3,"rad":["一","いち"],"w":[["一万","いちまん","diez mil"],["一万円","いちまんえん","10,000 yenes"],["百万","ひゃくまん","un millón"]],"t":["一万円です。","Son 10,000 yenes."]},
+{"c":"円","n":30,"g":"Otros","on":["エン"],"kun":["まる(い)"],"m":["yen","círculo","redondo"],"s":4,"rad":["冂","どうがまえ"],"w":[["円","えん","yen"],["百円","ひゃくえん","100 yenes"],["千円","せんえん","1000 yenes"]],"t":["この 本は 何円ですか。","¿Cuántos yenes cuesta este libro?"]},
+{"c":"毎","n":31,"g":"Tiempo","on":["マイ"],"kun":["ごと(に)"],"m":["cada","siempre","todos los"],"s":6,"rad":["毋","なかれ"],"w":[["毎日","まいにち","todos los días"],["毎週","まいしゅう","cada semana"],["毎年","まいとし","cada año"]],"t":["毎日 電車で 来ます。","Vengo en tren todos los días."]},
+{"c":"時","n":32,"g":"Tiempo","on":["ジ"],"kun":["とき"],"m":["tiempo","hora","ocasión"],"s":10,"rad":["日","ひへん"],"w":[["時","とき","tiempo / cuando"],["時間","じかん","tiempo / hora"],["何時","なんじ","¿qué hora?"]],"t":["何時に 会いますか。","¿A qué hora nos vemos?"]},
+{"c":"分","n":33,"g":"Tiempo","on":["フン","ブン","プン"],"kun":["わ(かる)","わ(ける)"],"m":["minuto","parte","entender","dividir"],"s":4,"rad":["刀","かたな"],"w":[["分かる","わかる","entender"],["五分","ごふん","cinco minutos"],["半分","はんぶん","mitad"]],"t":["十分 休みます。","Descanso diez minutos."]},
+{"c":"半","n":34,"g":"Tiempo","on":["ハン"],"kun":["なか(ば)"],"m":["mitad","medio"],"s":5,"rad":["十","じゅう"],"w":[["半","はん","y media"],["半分","はんぶん","mitad"],["半年","はんとし","medio año"]],"t":["五時半に 会います。","Nos vemos a las 5:30."]},
+{"c":"国","n":35,"g":"Otros","on":["コク"],"kun":["くに"],"m":["país","nación","país natal"],"s":8,"rad":["囗","くにがまえ"],"w":[["国","くに","país"],["外国","がいこく","extranjero"],["中国","ちゅうごく","China"]],"t":["あの 人は 外国人です。","Esa persona es extranjera."]},
+{"c":"玉","n":null,"g":"Otros","on":["ギョク"],"kun":["たま"],"m":["joya","bola","esfera","precioso"],"s":5,"rad":["玉","たま"],"w":[["玉ねぎ","たまねぎ","cebolla"],["十円玉","じゅうえんだま","moneda de 10 yenes"],["お年玉","おとしだま","aguinaldo de Año Nuevo"]],"t":["十円玉が 三つ あります。","Hay tres monedas de 10 yenes."]},
+{"c":"王","n":null,"g":"Otros","on":["オウ"],"kun":[],"m":["rey","monarca","soberano"],"s":4,"rad":["玉","たまへん"],"w":[["王様","おうさま","rey"],["女王","じょおう","reina"],["王子","おうじ","príncipe"]],"t":["王様は 大きい 国に います。","El rey está en un país grande."]},
+{"c":"月","n":36,"g":"Tiempo","on":["ゲツ","ガツ"],"kun":["つき"],"m":["mes","luna"],"s":4,"rad":["月","つき"],"w":[["月","つき","luna"],["今月","こんげつ","este mes"],["来月","らいげつ","el mes próximo"]],"t":["来月 日本へ 行きます。","El mes próximo voy a Japón."]},
+{"c":"火","n":37,"g":"Días y elementos","on":["カ"],"kun":["ひ","ほ"],"m":["fuego","llama"],"s":4,"rad":["火","ひ"],"w":[["火","ひ","fuego"],["火曜日","かようび","martes"],["火山","かざん","volcán"]],"t":["火曜日は 休みです。","El martes es día libre."]},
+{"c":"水","n":38,"g":"Días y elementos","on":["スイ"],"kun":["みず"],"m":["agua"],"s":4,"rad":["水","みず"],"w":[["水","みず","agua"],["水曜日","すいようび","miércoles"],["水道","すいどう","agua corriente"]],"t":["水を ください。","Agua, por favor."]},
+{"c":"木","n":39,"g":"Días y elementos","on":["ボク","モク"],"kun":["き","こ"],"m":["árbol","madera"],"s":4,"rad":["木","き"],"w":[["木","き","árbol"],["木曜日","もくようび","jueves"],["大木","たいぼく","árbol grande"]],"t":["あの 木は 大きいです。","Ese árbol es grande."]},
+{"c":"金","n":40,"g":"Días y elementos","on":["キン","コン"],"kun":["かね","かな"],"m":["oro","dinero","metal"],"s":8,"rad":["金","かね"],"w":[["お金","おかね","dinero"],["金曜日","きんようび","viernes"],["金色","きんいろ","color dorado"]],"t":["お金が ありません。","No tengo dinero."]},
+{"c":"土","n":41,"g":"Días y elementos","on":["ド","ト"],"kun":["つち"],"m":["suelo","tierra"],"s":3,"rad":["土","つち"],"w":[["土","つち","tierra"],["土曜日","どようび","sábado"],["土地","とち","terreno"]],"t":["土曜日に 友だちに 会います。","El sábado me veo con un amigo."]},
+{"c":"書","n":42,"g":"Acciones","on":["ショ"],"kun":["か(く)"],"m":["escritura","escrito","escribir"],"s":10,"rad":["曰","ひらび"],"w":[["書く","かく","escribir"],["辞書","じしょ","diccionario"],["図書館","としょかん","biblioteca"]],"t":["名前を 書いて ください。","Por favor, escriba su nombre."]},
+{"c":"星","n":null,"g":"Otros","on":["セイ"],"kun":["ほし"],"m":["estrella","astro"],"s":9,"rad":["日","ひ"],"w":[["星","ほし","estrella"],["火星","かせい","Marte"],["星空","ほしぞら","cielo estrellado"]],"t":["星が きれいです。","Las estrellas son hermosas."]},
+{"c":"方","n":13,"g":"Gente","on":["ホウ"],"kun":["かた"],"m":["persona (cortés)","dirección","lado","manera","método"],"s":4,"rad":["方","ほうへん"],"w":[["あの方","あのかた","esa persona (cortés)"],["書き方","かきかた","manera de escribir"],["方向","ほうこう","dirección"]],"t":["あの 方は どなたですか。","¿Quién es esa persona (cortés)?"]},
+{"c":"員","n":20,"g":"Escuela y trabajo","on":["イン"],"kun":[],"m":["miembro","empleado","personal"],"s":10,"rad":["口","くち"],"w":[["社員","しゃいん","empleado/a de empresa"],["会社員","かいしゃいん","oficinista"],["店員","てんいん","dependiente/a"]],"t":["私は 会社員です。","Soy empleado/a de una empresa."]},
+{"c":"行","n":24,"g":"Acciones","on":["コウ","ギョウ","アン"],"kun":["い(く)","ゆ(く)","おこな(う)"],"m":["ir","viajar","realizar","línea","banco"],"s":6,"rad":["行","ぎょうがまえ"],"w":[["行く","いく","ir"],["銀行","ぎんこう","banco"],["旅行","りょこう","viaje"]],"t":["毎日 大学へ 行きます。","Voy a la universidad todos los días."]},
+{"c":"来","n":25,"g":"Acciones","on":["ライ"],"kun":["く(る)","きた(る)"],"m":["venir","llegar","próximo"],"s":7,"rad":["木","き"],"w":[["来る","くる","venir"],["来年","らいねん","el año próximo"],["来週","らいしゅう","la semana próxima"]],"t":["来週 友だちが 来ます。","La semana próxima viene un amigo."]},
+{"c":"車","n":26,"g":"Otros","on":["シャ"],"kun":["くるま"],"m":["auto","vehículo","rueda"],"s":7,"rad":["車","くるま"],"w":[["車","くるま","coche"],["電車","でんしゃ","tren"],["自転車","じてんしゃ","bicicleta"]],"t":["電車で 会社へ 行きます。","Voy a la empresa en tren."]},
+{"c":"友","n":43,"g":"Gente","on":["ユウ"],"kun":["とも"],"m":["amigo","camarada"],"s":4,"rad":["又","また"],"w":[["友だち","ともだち","amigo/a"],["友人","ゆうじん","amigo/a (formal)"],["親友","しんゆう","mejor amigo/a"]],"t":["友だちは 学生です。","Mi amigo/a es estudiante."]},
+{"c":"年","n":44,"g":"Tiempo","on":["ネン"],"kun":["とし"],"m":["año","edad"],"s":6,"rad":["干","かん"],"w":[["今年","ことし","este año"],["来年","らいねん","el año próximo"],["毎年","まいとし","cada año"]],"t":["今年は 二千二十六年です。","Este año es 2026."]},
+{"c":"今","n":45,"g":"Tiempo","on":["コン","キン"],"kun":["いま"],"m":["ahora","actual","este (hoy)"],"s":4,"rad":["人","ひとやね"],"w":[["今","いま","ahora"],["今日","きょう","hoy"],["今週","こんしゅう","esta semana"]],"t":["今 十時半です。","Ahora son las diez y media."]},
+{"c":"週","n":46,"g":"Tiempo","on":["シュウ"],"kun":[],"m":["semana"],"s":11,"rad":["辶","しんにょう"],"w":[["今週","こんしゅう","esta semana"],["来週","らいしゅう","la semana próxima"],["毎週","まいしゅう","cada semana"]],"t":["来週 友だちに 会います。","La semana próxima me veo con un amigo."]},
+{"c":"休","n":47,"g":"Acciones","on":["キュウ"],"kun":["やす(む)","やす(み)"],"m":["descansar","descanso","vacaciones","faltar"],"s":6,"rad":["亻","にんべん"],"w":[["休み","やすみ","descanso / día libre"],["休みます","やすみます","descansar"],["休日","きゅうじつ","día de descanso"]],"t":["今日は 休みです。","Hoy es día libre."]},
+{"c":"午","n":49,"g":"Tiempo","on":["ゴ"],"kun":[],"m":["mediodía","tarde (después del mediodía)"],"s":4,"rad":["十","じゅう"],"w":[["午前","ごぜん","a. m."],["午後","ごご","p. m."],["正午","しょうご","mediodía"]],"t":["午前 十時に 大学へ 行きます。","A las 10 a. m. voy a la universidad."]},
+{"c":"後","n":50,"g":"Tiempo","on":["ゴ","コウ"],"kun":["あと","うし(ろ)","のち"],"m":["después","detrás","atrás","posterior"],"s":9,"rad":["彳","ぎょうにんべん"],"w":[["午後","ごご","p. m."],["後ろ","うしろ","atrás"],["後で","あとで","después"]],"t":["午後 友だちに 会います。","Por la tarde me veo con un amigo."]},
+{"c":"一","n":1,"g":"Números","on":["イチ","イツ"],"kun":["ひと(つ)"],"m":["uno","primero","único","un poco"],"s":1,"rad":["一","いち"],"w":[["一つ","ひとつ","uno (cosa)"],["一人","ひとり","una persona"],["一月","いちがつ","enero"]],"t":["今 一時です。","Ahora es la una."]},
+{"c":"二","n":2,"g":"Números","on":["ニ"],"kun":["ふた(つ)"],"m":["dos","segundo","doble"],"s":2,"rad":["二","に"],"w":[["二つ","ふたつ","dos (cosas)"],["二人","ふたり","dos personas"],["二月","にがつ","febrero"]],"t":["二人で 行きます。","Vamos los dos."]},
+{"c":"三","n":3,"g":"Números","on":["サン"],"kun":["みっ(つ)","み"],"m":["tres","tercero"],"s":3,"rad":["一","いち"],"w":[["三つ","みっつ","tres (cosas)"],["三人","さんにん","tres personas"],["三月","さんがつ","marzo"]],"t":["三時に 会います。","Nos vemos a las tres."]},
+{"c":"四","n":4,"g":"Números","on":["シ"],"kun":["よっ(つ)","よん","よ"],"m":["cuatro","cuarto"],"s":5,"rad":["囗","くにがまえ"],"w":[["四つ","よっつ","cuatro (cosas)"],["四月","しがつ","abril"],["四人","よにん","cuatro personas"]],"t":["四月に 日本へ 行きます。","Voy a Japón en abril."]},
+{"c":"五","n":5,"g":"Números","on":["ゴ"],"kun":["いつ(つ)"],"m":["cinco","quinto"],"s":4,"rad":["二","に"],"w":[["五つ","いつつ","cinco (cosas)"],["五月","ごがつ","mayo"],["五分","ごふん","cinco minutos"]],"t":["五分 休みます。","Descanso cinco minutos."]},
+{"c":"六","n":6,"g":"Números","on":["ロク","リク"],"kun":["むっ(つ)","む"],"m":["seis","sexto"],"s":4,"rad":["八","はちがしら"],"w":[["六つ","むっつ","seis (cosas)"],["六月","ろくがつ","junio"],["六人","ろくにん","seis personas"]],"t":["六時に 来ます。","Vengo a las seis."]},
+{"c":"七","n":7,"g":"Números","on":["シチ"],"kun":["なな(つ)","なの"],"m":["siete","séptimo"],"s":2,"rad":["一","いち"],"w":[["七つ","ななつ","siete (cosas)"],["七月","しちがつ","julio"],["七時","しちじ","las siete"]],"t":["七時に 行きます。","Voy a las siete."]},
+{"c":"八","n":8,"g":"Números","on":["ハチ"],"kun":["やっ(つ)","や"],"m":["ocho","octavo"],"s":2,"rad":["八","はち"],"w":[["八つ","やっつ","ocho (cosas)"],["八月","はちがつ","agosto"],["八時","はちじ","las ocho"]],"t":["八月は 休みです。","Agosto es vacaciones."]},
+{"c":"九","n":9,"g":"Números","on":["ク","キュウ"],"kun":["ここの(つ)"],"m":["nueve","noveno"],"s":2,"rad":["乙","おつ"],"w":[["九つ","ここのつ","nueve (cosas)"],["九月","くがつ","septiembre"],["九時","くじ","las nueve"]],"t":["九時に 会社へ 行きます。","Voy a la empresa a las nueve."]},
+{"c":"十","n":10,"g":"Números","on":["ジュウ","ジッ"],"kun":["とお","と"],"m":["diez","décimo","diez unidades"],"s":2,"rad":["十","じゅう"],"w":[["十","とお","diez (cosas)"],["十月","じゅうがつ","octubre"],["十分","じゅっぷん","diez minutos"]],"t":["十月に 来ます。","Vengo en octubre."]}];
+
+const GROUPS=['Todos','Números','Tiempo','Días y elementos','Gente','Escuela y trabajo','Acciones','Otros'];
+const st={q:'',g:'Todos',view:'list',sort:'class',study:false,open:new Set()};
+
+const esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const noAcc=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+const kataToHira=s=>s.replace(/[ァ-ヶ]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));
+const cleanKana=s=>kataToHira(s).replace(/[()（）.\-\s/／]/g,'');
+const hasW=typeof wanakana!=='undefined';
+
+// índice de búsqueda por kanji
+KANJI.forEach(k=>{
+  k._es=noAcc(k.m.join(' | ')+' | '+k.w.map(w=>w[2]).join(' | ')+' | '+k.t[1]);
+  k._kana=[...k.on,...k.kun].map(cleanKana).concat(k.w.map(w=>cleanKana(w[1].replace(/\s*\/\s*/g,'|')))).join('|');
+  k._jp=k.c+k.w.map(w=>w[0]).join('')+k.t[0];
+});
+
+function matches(k,raw){
+  const q=raw.trim();
+  if(!q) return true;
+  if(/[㐀-鿿]/.test(q)) return k._jp.includes(q);             // kanji
+  const nq=noAcc(q);
+  let ok=nq.length>=2 && k._es.includes(nq);                           // español
+  const kq=hasW?cleanKana(wanakana.toHiragana(q)):'';
+  if(!ok && kq && /[぀-ゟ]/.test(kq) && (kq.length>=2||/[぀-ゟ]/.test(q))){
+    ok=k._kana.includes(kq);                                           // lectura (romaji o kana)
+  }
+  return ok;
+}
+
+function list(){
+  let a=KANJI.filter(k=>(st.g==='Todos'||k.g===st.g)&&matches(k,st.q));
+  if(st.sort==='strokes') a.sort((x,y)=>x.s-y.s||((x.n||99)-(y.n||99)));
+  else a.sort((x,y)=>(x.n||99)-(y.n||99));
+  return a;
+}
+
+function wordsHtml(k){
+  return k.w.map(w=>`<div class="w-row"><span class="w">${esc(w[0])}</span><span class="r hide">${esc(w[1])}</span><span class="m hide">${esc(w[2])}</span></div>`).join('');
+}
+function moreHtml(k){
+  return `<div class="more-grid">
+    <div>
+      <div class="h">Radical</div>
+      <div class="rad"><span class="rc">${esc(k.rad[0])}</span><span class="rn">${esc(k.rad[1])}</span></div>
+      <div class="h">Oración</div>
+      <div class="sent"><div class="jp">${esc(k.t[0])}</div><div class="es hide">${esc(k.t[1])}</div></div>
+      <a class="practice" href="kanji_draw.html?k=${encodeURIComponent(k.c)}">✍ Practicar escritura</a>
+    </div>
+    <div><div class="h">Palabras útiles</div>${wordsHtml(k)}</div>
+  </div>`;
+}
+const readHtml=k=>`<div class="k-read">
+  <span class="hide"><span class="lab">ON</span><span class="on">${esc(k.on.join('、')||'—')}</span></span>
+  <span class="hide"><span class="lab">KUN</span><span class="kun">${esc(k.kun.join('、')||'—')}</span></span></div>`;
+
+function render(){
+  const a=list();
+  document.getElementById('count').textContent=a.length+(a.length===1?' kanji':' kanjis');
+  const out=document.getElementById('out');
+  out.className=st.study?'study':'';
+  if(!a.length){out.innerHTML='<div class="empty">No encontré ningún kanji con eso.</div>';return;}
+  if(st.view==='list'){
+    out.innerHTML='<div class="list">'+a.map(k=>`
+      <div class="krow${st.open.has(k.c)?' open':''}" data-c="${k.c}">
+        <div class="k-top">
+          <div class="k-n">${k.n||''}</div>
+          <div class="k-char">${k.c}</div>
+          <div><div class="k-mean hide">${esc(k.m.join(' · '))}</div>${readHtml(k)}</div>
+          <div class="k-meta">${k.s} trazos<br>${esc(k.rad[0])} ${esc(k.rad[1])}</div>
+          <div class="k-arrow">▾</div>
+        </div>
+        <div class="k-more">${moreHtml(k)}</div>
+      </div>`).join('')+'</div>';
+  }else{
+    out.innerHTML='<div class="cards">'+a.map(k=>`
+      <div class="kcard">
+        <span class="kc-n">${k.n?'#'+k.n:''}</span>
+        <div class="kc-head"><div class="kc-char">${k.c}</div>
+          <div><div class="k-mean hide">${esc(k.m.join(' · '))}</div>${readHtml(k)}<div class="kc-meta">${k.s} trazos</div></div></div>
+        ${moreHtml(k)}
+      </div>`).join('')+'</div>';
+  }
+}
+
+function renderChips(){
+  const el=document.getElementById('chips');
+  el.innerHTML=GROUPS.map(g=>{
+    const n=g==='Todos'?KANJI.length:KANJI.filter(k=>k.g===g).length;
+    return `<button class="chip${st.g===g?' active':''}" data-g="${g}">${g}<small>${n}</small></button>`;
+  }).join('');
+}
+
+document.getElementById('q').addEventListener('input',e=>{st.q=e.target.value;render();});
+document.getElementById('chips').addEventListener('click',e=>{
+  const b=e.target.closest('.chip');if(!b)return;st.g=b.dataset.g;renderChips();render();});
+document.getElementById('viewSeg').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;st.view=b.dataset.v;
+  document.querySelectorAll('#viewSeg button').forEach(x=>x.classList.toggle('active',x===b));render();});
+document.getElementById('sortSeg').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;st.sort=b.dataset.s;
+  document.querySelectorAll('#sortSeg button').forEach(x=>x.classList.toggle('active',x===b));render();});
+document.getElementById('studyBtn').addEventListener('click',e=>{
+  st.study=!st.study;e.currentTarget.classList.toggle('active',st.study);render();});
+document.getElementById('out').addEventListener('click',e=>{
+  const h=e.target.closest('.hide');
+  if(st.study&&h){h.classList.toggle('rev');return;}          // en modo estudio, tocar revela
+  if(e.target.closest('a'))return;
+  const top=e.target.closest('.k-top');
+  if(top){const row=top.parentElement,c=row.dataset.c;
+    row.classList.toggle('open');row.classList.contains('open')?st.open.add(c):st.open.delete(c);}
+});
+
+renderChips();render();
+</script>
+</body>
+</html>
