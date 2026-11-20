@@ -173,6 +173,7 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
         <button class="lbtn active" id="lb6" onclick="toggleLesson(6,this)">L6</button>
         <button class="lbtn active" id="lb7" onclick="toggleLesson(7,this)">L7</button>
         <button class="lbtn active" id="lb8" onclick="toggleLesson(8,this)">L8</button>
+        <button class="lbtn active" id="lb9" onclick="toggleLesson(9,this)">L9</button>
       </div>
       <div class="filter-row">
         <span class="filter-label">Tema</span>
@@ -187,6 +188,8 @@ h1{font-size:15px;font-weight:600;color:#555;margin-bottom:1.2rem;text-align:cen
         <button class="tbtn" onclick="selectTheme('paises')">🌍 Países</button>
         <button class="tbtn" onclick="selectTheme('adjetivos')">✨ Adjetivos</button>
         <button class="tbtn" onclick="selectTheme('colores')">🎨 Colores</button>
+        <button class="tbtn" onclick="selectTheme('pasatiempos')">🎶 Pasatiempos</button>
+        <button class="tbtn" onclick="selectTheme('escritura')">✍️ Escritura</button>
       </div>
     </div>
   </div>
@@ -631,6 +634,39 @@ const WORD_THEMES={
   "8|ところ":['lugares'],
   "8|りょう":['lugares'],
   "8|レストラン":['lugares','comida'],
+  "9|わかります":['verbos'],
+  "9|あります":['verbos'],
+  "9|すき":['adjetivos'],
+  "9|きらい":['adjetivos'],
+  "9|じょうず":['adjetivos'],
+  "9|へた":['adjetivos'],
+  "9|のみもの":['comida'],
+  "9|りょうり":['comida'],
+  "9|スポーツ":['pasatiempos'],
+  "9|やきゅう":['pasatiempos'],
+  "9|ダンス":['pasatiempos'],
+  "9|りょこう":['pasatiempos'],
+  "9|おんがく":['pasatiempos'],
+  "9|うた":['pasatiempos'],
+  "9|クラシック":['pasatiempos'],
+  "9|ジャズ":['pasatiempos'],
+  "9|コンサート":['pasatiempos'],
+  "9|カラオケ":['pasatiempos'],
+  "9|かぶき":['pasatiempos'],
+  "9|え":['pasatiempos'],
+  "9|じ":['escritura'],
+  "9|かんじ":['escritura'],
+  "9|ひらがな":['escritura'],
+  "9|かたかな":['escritura'],
+  "9|ローマじ":['escritura'],
+  "9|こまかい おかね":['objetos'],
+  "9|チケット":['objetos', 'pasatiempos'],
+  "9|じかん":['tiempo'],
+  "9|ごしゅじん":['personas'],
+  "9|おっと／しゅじん":['personas'],
+  "9|おくさん":['personas'],
+  "9|つま／かない":['personas'],
+  "9|こども":['personas'],
 };
 
 const ALL = [
@@ -1013,6 +1049,58 @@ const ALL = [
   {es:"Es hora de marcharnos./Tenemos que marcharnos.", kana:"そろそろ しつれいします。", accepted:["sorosoro shitsurei shimasu","sorosoro shitsureishimasu"], l:8},
   {es:"De nada./No hay de qué.", kana:"いいえ。", accepted:["iie"], l:8},
   {es:"Vuelva(n) a visitarnos.", kana:"また いらっしゃって ください。", accepted:["mata irasshatte kudasai","mata irasshattekudasai"], l:8},
+  {es:"entender, comprender", kana:"わかります", accepted:["wakarimasu"], l:9},
+  {es:"haber", kana:"あります", accepted:["arimasu"], l:9},
+  {es:"gustar", kana:"すき", accepted:["suki"], l:9},
+  {es:"no gustar", kana:"きらい", accepted:["kirai"], l:9},
+  {es:"ser bueno, ser hábil", kana:"じょうず", accepted:["jouzu", "jozu"], l:9},
+  {es:"no ser bueno, no ser hábil", kana:"へた", accepted:["heta"], l:9},
+  {es:"bebida", kana:"のみもの", accepted:["nomimono"], l:9},
+  {es:"plato (relativo a la comida), cocina (〜を します: cocinar)", kana:"りょうり", accepted:["ryouri", "ryori"], l:9},
+  {es:"deporte (〜を します: practicar un deporte)", kana:"スポーツ", accepted:["supootsu", "supotsu"], l:9},
+  {es:"béisbol (〜を します: jugar al béisbol)", kana:"やきゅう", accepted:["yakyuu", "yakyu"], l:9},
+  {es:"baile (〜を します: bailar)", kana:"ダンス", accepted:["dansu"], l:9},
+  {es:"viaje (〜[を] します: ir de viaje, viajar)", kana:"りょこう", accepted:["ryokou", "ryoko"], l:9},
+  {es:"música", kana:"おんがく", accepted:["ongaku"], l:9},
+  {es:"canción", kana:"うた", accepted:["uta"], l:9},
+  {es:"música clásica", kana:"クラシック", accepted:["kurashikku"], l:9},
+  {es:"jazz", kana:"ジャズ", accepted:["jazu"], l:9},
+  {es:"concierto", kana:"コンサート", accepted:["konsaato", "konsato"], l:9},
+  {es:"karaoke", kana:"カラオケ", accepted:["karaoke"], l:9},
+  {es:"kabuki (teatro tradicional de Japón)", kana:"かぶき", accepted:["kabuki"], l:9},
+  {es:"pintura, dibujo, cuadro", kana:"え", accepted:["e"], l:9},
+  {es:"letra", kana:"じ", accepted:["ji"], l:9},
+  {es:"caracteres chinos", kana:"かんじ", accepted:["kanji"], l:9},
+  {es:"escritura de hiragana", kana:"ひらがな", accepted:["hiragana"], l:9},
+  {es:"escritura de katakana", kana:"かたかな", accepted:["katakana"], l:9},
+  {es:"alfabeto latino", kana:"ローマじ", accepted:["roomaji", "romaji"], l:9},
+  {es:"cambio (pequeña cantidad de dinero en monedas)", kana:"こまかい おかね", accepted:["komakai okane", "komakaiokane"], l:9},
+  {es:"entrada", kana:"チケット", accepted:["chiketto"], l:9},
+  {es:"tiempo", kana:"じかん", accepted:["jikan"], l:9},
+  {es:"algo que hacer", kana:"ようじ", accepted:["youji", "yoji"], l:9},
+  {es:"cita, compromiso (〜[を] します: arreglar una cita)", kana:"やくそく", accepted:["yakusoku"], l:9},
+  {es:"trabajo temporal, trabajo eventual (〜を します: hacer trabajo temporal)", kana:"アルバイト", accepted:["arubaito"], l:9},
+  {es:"(su/tu) esposo", kana:"ごしゅじん", accepted:["goshujin"], l:9},
+  {es:"(mi) marido", kana:"おっと／しゅじん", accepted:["otto", "shujin", "otto/shujin"], l:9},
+  {es:"(su/tu) esposa", kana:"おくさん", accepted:["okusan"], l:9},
+  {es:"(mi) esposa", kana:"つま／かない", accepted:["tsuma", "kanai", "tsuma/kanai"], l:9},
+  {es:"niño, (mi) hijo", kana:"こども", accepted:["kodomo"], l:9},
+  {es:"bien, mucho", kana:"よく", accepted:["yoku"], l:9},
+  {es:"más o menos, aproximadamente", kana:"だいたい", accepted:["daitai"], l:9},
+  {es:"mucho", kana:"たくさん", accepted:["takusan"], l:9},
+  {es:"poco, un poco", kana:"すこし", accepted:["sukoshi"], l:9},
+  {es:"nada 〜 (se emplea con expresiones negativas)", kana:"ぜんぜん", accepted:["zenzen"], l:9},
+  {es:"temprano, rápido", kana:"はやく", accepted:["hayaku"], l:9},
+  {es:"porque 〜", kana:"〜から", accepted:["kara"], l:9},
+  {es:"por qué", kana:"どうして", accepted:["doushite", "doshite"], l:9},
+  {es:"Por favor, préstame.", kana:"かして ください。", accepted:["kashite kudasai"], l:9},
+  {es:"Sí, claro.", kana:"いいですよ。", accepted:["ii desu yo"], l:9},
+  {es:"Lo siento[, pero... ]", kana:"ざんねんです", accepted:["zannen desu", "zannen desu ga"], l:9},
+  {es:"¡Ah! (indica que ha caído en la cuenta de quién está llamando)", kana:"ああ", accepted:["aa", "a"], l:9},
+  {es:"¿Me (Nos) acompaña?", kana:"いっしょに いかがですか。", accepted:["issho ni ikaga desu ka"], l:9},
+  {es:"[〜] es un poco difícil. (eufemismo utilizado para rechazar una invitación)", kana:"ちょっと……。", accepted:["chotto", "wa chotto"], l:9},
+  {es:"¿No puede?", kana:"だめですか。", accepted:["dame desu ka"], l:9},
+  {es:"Por favor, vuelva a invitarme una próxima vez. (esta expresión se emplea al rechazar una invitación de manera indirecta considerando el sentimiento de quien le ha invitado)", kana:"また こんど おねがいします。", accepted:["mata kondo onegai shimasu"], l:9},
 ];
 
 // Tag themes
@@ -1020,7 +1108,7 @@ ALL.forEach(tagThemes);
 
 // ── STATE ─────────────────────────────────────────────────────────
 let deck=[], idx=0, cardStates=[];
-let activeLessons=new Set([1,2,3,4,5,6,7,8]);
+let activeLessons=new Set([1,2,3,4,5,6,7,8,9]);
 
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
 
@@ -1038,17 +1126,19 @@ function buildDeck(){
 
 // ── THEME FILTER ──────────────────────────────────────────────────
 const THEME_LESSONS = {
-  verbos:    [4,5,6,7],
-  tiempo:    [4,5],
+  verbos:    [4,5,6,7,9],
+  tiempo:    [4,5,9],
   lugares:   [3,4,5,8],
   transporte: [5],
-  comida:    [6,8],
-  personas:  [1,5,7],
-  objetos:   [2,7,8],
-  frases:    [1,2,3,5,6,7,8],
+  comida:    [6,8,9],
+  personas:  [1,5,7,9],
+  objetos:   [2,7,8,9],
+  frases:    [1,2,3,5,6,7,8,9],
   paises:    [1,4,7],
-  adjetivos: [8],
+  adjetivos: [8,9],
   colores:   [8],
+  pasatiempos: [9],
+  escritura: [9],
 };
 
 
@@ -1065,7 +1155,7 @@ function selectTheme(theme){
     activeTheme=null;
     document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
     // restore all lessons
-    [1,2,3,4,5,6,7,8].forEach(n=>{
+    [1,2,3,4,5,6,7,8,9].forEach(n=>{
       activeLessons.add(n);
       const btn=document.getElementById('lb'+n);
       if(btn) btn.classList.add('active');
@@ -1079,7 +1169,7 @@ function selectTheme(theme){
   // activate only relevant lessons, deactivate others
   const relevant=new Set(THEME_LESSONS[theme]||[]);
   activeLessons.clear();
-  [1,2,3,4,5,6,7,8].forEach(n=>{
+  [1,2,3,4,5,6,7,8,9].forEach(n=>{
     const btn=document.getElementById('lb'+n);
     if(relevant.has(n)){
       activeLessons.add(n);

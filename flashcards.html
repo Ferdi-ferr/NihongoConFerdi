@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flashcards Nihongo — L1 a L7</title>
+<title>Flashcards Nihongo — L1 a L9</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:sans-serif;background:#f5f5f0;min-height:100vh;display:flex;align-items:flex-start;justify-content:center;padding:2rem 1rem}
@@ -120,6 +120,7 @@ h1{font-size:16px;font-weight:600;color:#444;margin-bottom:1.25rem;text-align:ce
         <button class="lbtn active" id="lb6" onclick="toggleLesson(6,this)">L6</button>
         <button class="lbtn active" id="lb7" onclick="toggleLesson(7,this)">L7</button>
         <button class="lbtn active" id="lb8" onclick="toggleLesson(8,this)">L8</button>
+        <button class="lbtn active" id="lb9" onclick="toggleLesson(9,this)">L9</button>
       </div>
       <div class="filter-row">
         <span class="filter-label">Tema</span>
@@ -134,6 +135,8 @@ h1{font-size:16px;font-weight:600;color:#444;margin-bottom:1.25rem;text-align:ce
         <button class="tbtn" data-theme="paises" onclick="selectTheme('paises')">🌍 Países</button>
         <button class="tbtn" data-theme="adjetivos" onclick="selectTheme('adjetivos')">✨ Adjetivos</button>
         <button class="tbtn" data-theme="colores" onclick="selectTheme('colores')">🎨 Colores</button>
+        <button class="tbtn" data-theme="pasatiempos" onclick="selectTheme('pasatiempos')">🎶 Pasatiempos</button>
+        <button class="tbtn" data-theme="escritura" onclick="selectTheme('escritura')">✍️ Escritura</button>
       </div>
     </div>
   </div>
@@ -566,6 +569,39 @@ const WORD_THEMES={
   "8|ところ":['lugares'],
   "8|りょう":['lugares'],
   "8|レストラン":['lugares','comida'],
+  "9|わかります":['verbos'],
+  "9|あります":['verbos'],
+  "9|すき[な]":['adjetivos'],
+  "9|きらい[な]":['adjetivos'],
+  "9|じょうず[な]":['adjetivos'],
+  "9|へた[な]":['adjetivos'],
+  "9|のみもの":['comida'],
+  "9|りょうり":['comida'],
+  "9|スポーツ":['pasatiempos'],
+  "9|やきゅう":['pasatiempos'],
+  "9|ダンス":['pasatiempos'],
+  "9|りょこう":['pasatiempos'],
+  "9|おんがく":['pasatiempos'],
+  "9|うた":['pasatiempos'],
+  "9|クラシック":['pasatiempos'],
+  "9|ジャズ":['pasatiempos'],
+  "9|コンサート":['pasatiempos'],
+  "9|カラオケ":['pasatiempos'],
+  "9|かぶき":['pasatiempos'],
+  "9|え":['pasatiempos'],
+  "9|じ":['escritura'],
+  "9|かんじ":['escritura'],
+  "9|ひらがな":['escritura'],
+  "9|かたかな":['escritura'],
+  "9|ローマじ":['escritura'],
+  "9|こまかい おかね":['objetos'],
+  "9|チケット":['objetos', 'pasatiempos'],
+  "9|じかん":['tiempo'],
+  "9|ごしゅじん":['personas'],
+  "9|おっと／しゅじん":['personas'],
+  "9|おくさん":['personas'],
+  "9|つま／かない":['personas'],
+  "9|こども":['personas'],
 };
 
 const ALL=[
@@ -960,13 +996,65 @@ const ALL=[
   {es:"Es hora de marcharnos./Tenemos que marcharnos.",jp:"そろそろ しつれいします。",rom:"sorosoro shitsurei shimasu.",l:8},
   {es:"De nada./No hay de qué.",jp:"いいえ。",rom:"iie.",l:8},
   {es:"Vuelva(n) a visitarnos.",jp:"また いらっしゃって ください。",rom:"mata irasshatte kudasai.",l:8},
+  {es:"entender, comprender",jp:"わかります",rom:"wakarimasu",l:9},
+  {es:"haber",jp:"あります",rom:"arimasu",l:9},
+  {es:"gustar",jp:"すき[な]",rom:"suki[na]",l:9},
+  {es:"no gustar",jp:"きらい[な]",rom:"kirai[na]",l:9},
+  {es:"ser bueno, ser hábil",jp:"じょうず[な]",rom:"jouzu[na]",l:9},
+  {es:"no ser bueno, no ser hábil",jp:"へた[な]",rom:"heta[na]",l:9},
+  {es:"bebida",jp:"のみもの",rom:"nomimono",l:9},
+  {es:"plato (relativo a la comida), cocina (〜を します: cocinar)",jp:"りょうり",rom:"ryouri",l:9},
+  {es:"deporte (〜を します: practicar un deporte)",jp:"スポーツ",rom:"supootsu",l:9},
+  {es:"béisbol (〜を します: jugar al béisbol)",jp:"やきゅう",rom:"yakyuu",l:9},
+  {es:"baile (〜を します: bailar)",jp:"ダンス",rom:"dansu",l:9},
+  {es:"viaje (〜[を] します: ir de viaje, viajar)",jp:"りょこう",rom:"ryokou",l:9},
+  {es:"música",jp:"おんがく",rom:"ongaku",l:9},
+  {es:"canción",jp:"うた",rom:"uta",l:9},
+  {es:"música clásica",jp:"クラシック",rom:"kurashikku",l:9},
+  {es:"jazz",jp:"ジャズ",rom:"jazu",l:9},
+  {es:"concierto",jp:"コンサート",rom:"konsaato",l:9},
+  {es:"karaoke",jp:"カラオケ",rom:"karaoke",l:9},
+  {es:"kabuki (teatro tradicional de Japón)",jp:"かぶき",rom:"kabuki",l:9},
+  {es:"pintura, dibujo, cuadro",jp:"え",rom:"e",l:9},
+  {es:"letra",jp:"じ",rom:"ji",l:9},
+  {es:"caracteres chinos",jp:"かんじ",rom:"kanji",l:9},
+  {es:"escritura de hiragana",jp:"ひらがな",rom:"hiragana",l:9},
+  {es:"escritura de katakana",jp:"かたかな",rom:"katakana",l:9},
+  {es:"alfabeto latino",jp:"ローマじ",rom:"roomaji",l:9},
+  {es:"cambio (pequeña cantidad de dinero en monedas)",jp:"こまかい おかね",rom:"komakai okane",l:9},
+  {es:"entrada",jp:"チケット",rom:"chiketto",l:9},
+  {es:"tiempo",jp:"じかん",rom:"jikan",l:9},
+  {es:"algo que hacer",jp:"ようじ",rom:"youji",l:9},
+  {es:"cita, compromiso (〜[を] します: arreglar una cita)",jp:"やくそく",rom:"yakusoku",l:9},
+  {es:"trabajo temporal, trabajo eventual (〜を します: hacer trabajo temporal)",jp:"アルバイト",rom:"arubaito",l:9},
+  {es:"(su/tu) esposo",jp:"ごしゅじん",rom:"goshujin",l:9},
+  {es:"(mi) marido",jp:"おっと／しゅじん",rom:"otto/shujin",l:9},
+  {es:"(su/tu) esposa",jp:"おくさん",rom:"okusan",l:9},
+  {es:"(mi) esposa",jp:"つま／かない",rom:"tsuma/kanai",l:9},
+  {es:"niño, (mi) hijo",jp:"こども",rom:"kodomo",l:9},
+  {es:"bien, mucho",jp:"よく",rom:"yoku",l:9},
+  {es:"más o menos, aproximadamente",jp:"だいたい",rom:"daitai",l:9},
+  {es:"mucho",jp:"たくさん",rom:"takusan",l:9},
+  {es:"poco, un poco",jp:"すこし",rom:"sukoshi",l:9},
+  {es:"nada 〜 (se emplea con expresiones negativas)",jp:"ぜんぜん",rom:"zenzen",l:9},
+  {es:"temprano, rápido",jp:"はやく",rom:"hayaku",l:9},
+  {es:"porque 〜",jp:"〜から",rom:"~kara",l:9},
+  {es:"por qué",jp:"どうして",rom:"doushite",l:9},
+  {es:"Por favor, préstame.",jp:"かして ください。",rom:"kashite kudasai.",l:9},
+  {es:"Sí, claro.",jp:"いいですよ。",rom:"ii desu yo.",l:9},
+  {es:"Lo siento[, pero... ]",jp:"ざんねんです[が]",rom:"zannen desu [ga]",l:9},
+  {es:"¡Ah! (indica que ha caído en la cuenta de quién está llamando)",jp:"ああ",rom:"aa",l:9},
+  {es:"¿Me (Nos) acompaña?",jp:"いっしょに いかがですか。",rom:"issho ni ikaga desu ka.",l:9},
+  {es:"[〜] es un poco difícil. (eufemismo utilizado para rechazar una invitación)",jp:"[〜は] ちょっと……。",rom:"[~wa] chotto......",l:9},
+  {es:"¿No puede?",jp:"だめですか。",rom:"dame desu ka.",l:9},
+  {es:"Por favor, vuelva a invitarme una próxima vez. (esta expresión se emplea al rechazar una invitación de manera indirecta considerando el sentimiento de quien le ha invitado)",jp:"また こんど おねがいします。",rom:"mata kondo onegai shimasu.",l:9},
 ];
 
 // Tag themes
 ALL.forEach(tagThemes);
 
 let deck=[],idx=0,flipped=false,known=0,skipped=0;
-let activeLessons=new Set([1,2,3,4,5,6,7,8]);
+let activeLessons=new Set([1,2,3,4,5,6,7,8,9]);
 let dirEsJp=false;
 let activeTheme=null;
 
@@ -978,17 +1066,19 @@ function buildDeck(){
 
 // ── THEME FILTER ──────────────────────────────────────────────────
 const THEME_LESSONS = {
-  verbos:    [4,5,6,7],
-  tiempo:    [4,5],
+  verbos:    [4,5,6,7,9],
+  tiempo:    [4,5,9],
   lugares:   [3,4,5,8],
   transporte: [5],
-  comida:    [6,8],
-  personas:  [1,5,7],
-  objetos:   [2,7,8],
-  frases:    [1,2,3,5,6,7,8],
+  comida:    [6,8,9],
+  personas:  [1,5,7,9],
+  objetos:   [2,7,8,9],
+  frases:    [1,2,3,5,6,7,8,9],
   paises:    [1,4,7],
-  adjetivos: [8],
+  adjetivos: [8,9],
   colores:   [8],
+  pasatiempos: [9],
+  escritura: [9],
 };
 
 
@@ -1010,7 +1100,7 @@ function selectTheme(theme){
   if(activeTheme===theme){
     activeTheme=null;
     document.querySelectorAll('.tbtn').forEach(b=>b.classList.remove('active'));
-    [1,2,3,4,5,6,7,8].forEach(n=>{
+    [1,2,3,4,5,6,7,8,9].forEach(n=>{
       activeLessons.add(n);
       const btn=document.getElementById('lb'+n);
       if(btn) btn.classList.add('active');
@@ -1023,7 +1113,7 @@ function selectTheme(theme){
   event.target.classList.add('active');
   const relevant=new Set(THEME_LESSONS[theme]||[]);
   activeLessons.clear();
-  [1,2,3,4,5,6,7,8].forEach(n=>{
+  [1,2,3,4,5,6,7,8,9].forEach(n=>{
     const btn=document.getElementById('lb'+n);
     if(relevant.has(n)){
       activeLessons.add(n);
